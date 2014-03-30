@@ -30,9 +30,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
      {$schoolErr = "School is required";}
    else
      {
-     $name = test_input($_POST["school"]);
+     $school = test_input($_POST["school"]);
      // check if name only contains letters and whitespace
-     if (!preg_match("/^[a-zA-Z ]*$/",$name))
+     if (!preg_match("/^[a-zA-Z ]*$/",$school))
        {
        $schoolErr = "Only letters and white space allowed for School Name"; 
        }
