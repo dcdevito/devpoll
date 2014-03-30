@@ -65,7 +65,7 @@ border:#666666 solid 1px;
 <body bgcolor="#FFFFFF">
 <div><h3>Cokely Communications School Survey Site <a href="http://www.devpoll.net/adminpage.html">Click Here</a></h3></div>
 
-<div style="font-weight:bold; margin-bottom:10px">Login Details -> Username : <a href="#">test</a>  Password : <a href="#">test</a></div>
+<!--<div style="font-weight:bold; margin-bottom:10px">Login Details -> Username : <a href="#">test</a>  Password : <a href="#">test</a></div><-->
 
 <div align="center">
 <div style="width:300px; border: solid 1px #333333; " align="left">
