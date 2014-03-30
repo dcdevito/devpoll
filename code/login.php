@@ -11,7 +11,7 @@ $username=addslashes($_POST['username']);
 $password=addslashes($_POST['password']); 
 
 
-$sql="SELECT id FROM devpoll.users WHERE username='$username' and passcode='$password'";
+$sql="SELECT userid FROM devpoll.users WHERE username='$username' and passcode='$password'";
 $result=mysql_query($sql);
 $row=mysql_fetch_array($result);
 $active=$row['active'];
