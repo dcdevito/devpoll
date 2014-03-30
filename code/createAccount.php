@@ -27,14 +27,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
      }
      
    if (empty($_POST["school"]))
-     {$nameErr = "School is required";}
+     {$schoolErr = "School is required";}
    else
      {
      $name = test_input($_POST["school"]);
      // check if name only contains letters and whitespace
      if (!preg_match("/^[a-zA-Z ]*$/",$name))
        {
-       $nameErr = "Only letters and white space allowed"; 
+       $schoolErr = "Only letters and white space allowed for School Name"; 
        }
      }
    
@@ -89,7 +89,7 @@ function test_input($data)
    <span class="error">* <?php echo $nameErr;?></span>
    <br><br>
    School: <input type="text" name="school" value="<?php echo $school;?>">
-   <span class="error">* <?php echo $nameErr;?></span>
+   <span class="error">* <?php echo $schoolErr;?></span>
    <br><br>
    E-mail: <input type="text" name="email" value="<?php echo $email;?>">
    <span class="error">* <?php echo $emailErr;?></span>
@@ -104,7 +104,7 @@ function test_input($data)
    <input type="radio" name="gender" <?php if (isset($gender) && $gender=="male") echo "checked";?>  value="male">Male
    <span class="error">* <?php echo $genderErr;?></span>
    <br><br>
-   <input type="submit" name="submit" value="Submit"> 
+   <input type="submit" name="submit" value="Create Account"> 
 </form>
 
 <?php
