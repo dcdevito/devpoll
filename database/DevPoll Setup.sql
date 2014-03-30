@@ -94,6 +94,7 @@ opensurveys varchar(20),
 firstname varchar(30),
 lastname varchar(30),
 email varchar(30),
+password varchar(60),
 foreign key (userid) references security (userid));
 
 insert into devpoll.roles 
