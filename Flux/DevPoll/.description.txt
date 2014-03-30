@@ -1,1 +1,0 @@
-A simple, generic template that could be adapted to most uses.
