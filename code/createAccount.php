@@ -1,23 +1,11 @@
-<!DOCTYPE HTML> 
-<html>
-<head>
-<style>
-.error {color: #FF0000;}
-</style>
-</head>
-<body> 
-
 <?php
 
 include("config.php");
 session_start();
 
 // define variables and set to empty values
-$nameErr = $schoolErr = $emailErr = $genderErr = $websiteErr = "";
-$firstName = $lastName = $school = $email = $password = $gender = $comment = $website = "";
-
-
-
+//$nameErr = $schoolErr = $emailErr = $genderErr = $websiteErr = "";
+//$firstName = $lastName = $school = $email = $password = $gender = $comment = $website = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST")
 {
@@ -111,57 +99,31 @@ function test_input($data)
      $data = htmlspecialchars($data);
      return $data;
 }
+
+//$sql = 'INSERT INTO devpoll.users '.
+//      ' (userid, districtid, schoolid, role, opensurveys, firstname, lastname, email, password) '.
+//      ' VALUES ("devpoll3", 00002, 00002, 1, null,"Ben", "Dover", "bdover@upyours.com", "oldballs") ';
+//
+
+$sql = "INSERT INTO devpoll.users (userid, districtid, schoolid, role, opensurveys, firstname, lastname, email, password) 
+        VALUES ('$email', 00002, 00002, 1, null, '$firstName', '$lastName', '$email', '$password')";
+      
+$result=mysql_query($sql);
+//$row=mysql_fetch_array($result);
+//$active=$row['active'];
+//$count=mysql_num_rows($result);
+
+if (!mysql_query($bd,$sql))
+{
+   echo "$sql";
+   die('Error: ' . mysql_error($bd));
+   echo "$email";
+}
+else
+   echo "One record added";
+
+
+mysqli_close($bd);
+
 ?>
 
-<h2>Stokely LLC Communications School Survey Site</h2>
-<p><span class="error">* required field.</span></p>
-<form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>"> 
-   First Name: <input type="text" name="firstName" value="<?php echo $firstName;?>">
-   <span class="error">* <?php echo $nameErr;?></span>
-   <br><br>
-   Last Name: <input type="text" name="lastName" value="<?php echo $lastName;?>">
-   <span class="error">* <?php echo $nameErr;?></span>
-   <br><br>
-   School: <input type="text" name="school" value="<?php echo $school;?>">
-   <span class="error">* <?php echo $schoolErr;?></span>
-   <br><br>
-   E-mail: <input type="text" name="email" value="<?php echo $email;?>">
-   <span class="error">* <?php echo $emailErr;?></span>
-   <br><br>
-   Password: <input type="text" name="password" value="<?php echo $password;?>">
-   <span class="error">* <?php echo $passwordErr;?></span>
-   <br><br>
-   Website: <input type="text" name="website" value="<?php echo $website;?>">
-   <span class="error"><?php echo $websiteErr;?></span>
-   <br><br>
-   Comment: <textarea name="comment" rows="5" cols="40"><?php echo $comment;?></textarea>
-   <br><br>
-   Gender:
-   <input type="radio" name="gender" <?php if (isset($gender) && $gender=="female") echo "checked";?>  value="female">Female
-   <input type="radio" name="gender" <?php if (isset($gender) && $gender=="male") echo "checked";?>  value="male">Male
-   <span class="error">* <?php echo $genderErr;?></span>
-   <br><br>
-   <input type="submit" name="submit" value="Create Account"> 
-</form>
-
-<?php
-echo "<h2>You've Entered (to be eventually saved into the DB):</h2>";
-echo $firstName;
-echo "<br>";
-echo $lastName;
-echo "<br>";
-echo $school;
-echo "<br>";
-echo $email;
-echo "<br>";
-echo $password;
-echo "<br>";
-echo $website;
-echo "<br>";
-echo $comment;
-echo "<br>";
-echo $gender;
-?>
-
-</body>
-</html>
