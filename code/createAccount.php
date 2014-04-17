@@ -8,19 +8,38 @@
 <body> 
 
 <?php
+
+include("config.php");
+session_start();
+
 // define variables and set to empty values
-$nameErr = $emailErr = $genderErr = $websiteErr = "";
-$name = $email = $gender = $comment = $website = "";
+$nameErr = $schoolErr = $emailErr = $genderErr = $websiteErr = "";
+$firstName = $lastName = $school = $email = $password = $gender = $comment = $website = "";
+
+
+
 
 if ($_SERVER["REQUEST_METHOD"] == "POST")
 {
-   if (empty($_POST["name"]))
-     {$nameErr = "Name is required";}
+   if (empty($_POST["firstName"]))
+     {$nameErr = "First Name is required";}
    else
      {
-     $name = test_input($_POST["name"]);
+     $firstName = test_input($_POST["firstName"]);
      // check if name only contains letters and whitespace
-     if (!preg_match("/^[a-zA-Z ]*$/",$name))
+     if (!preg_match("/^[a-zA-Z ]*$/",$firstName))
+       {
+       $nameErr = "Only letters and white space allowed"; 
+       }
+     }
+   
+      if (empty($_POST["lastName"]))
+     {$nameErr = "Last Name is required";}
+   else
+     {
+     $lastName = test_input($_POST["lastName"]);
+     // check if name only contains letters and whitespace
+     if (!preg_match("/^[a-zA-Z ]*$/",$lastName))
        {
        $nameErr = "Only letters and white space allowed"; 
        }
@@ -34,7 +53,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
      // check if name only contains letters and whitespace
      if (!preg_match("/^[a-zA-Z ]*$/",$school))
        {
-       $schoolErr = "Only letters and white space allowed for School Name"; 
+       $schoolErr = "Only letters and white space allowed for School Name";
        }
      }
    
@@ -47,6 +66,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
      if (!preg_match("/([\w\-]+\@[\w\-]+\.[\w\-]+)/",$email))
        {
        $emailErr = "Invalid email format"; 
+       }
+     }
+     
+   if (empty($_POST["password"]))
+     {$passwordErr = "Password is required";}
+   else
+     {
+     $password = test_input($_POST["password"]);
+     // check if password is valid
+     if (!preg_match("/^[a-zA-Z ]*$/",$password))
+       {
+       $passwordErr = "Invalid password format"; 
        }
      }
      
@@ -82,10 +113,13 @@ function test_input($data)
 }
 ?>
 
-<h2>Cokely Communications School Survey Site</h2>
+<h2>Stokely LLC Communications School Survey Site</h2>
 <p><span class="error">* required field.</span></p>
 <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>"> 
-   Name: <input type="text" name="name" value="<?php echo $name;?>">
+   First Name: <input type="text" name="firstName" value="<?php echo $firstName;?>">
+   <span class="error">* <?php echo $nameErr;?></span>
+   <br><br>
+   Last Name: <input type="text" name="lastName" value="<?php echo $lastName;?>">
    <span class="error">* <?php echo $nameErr;?></span>
    <br><br>
    School: <input type="text" name="school" value="<?php echo $school;?>">
@@ -93,6 +127,9 @@ function test_input($data)
    <br><br>
    E-mail: <input type="text" name="email" value="<?php echo $email;?>">
    <span class="error">* <?php echo $emailErr;?></span>
+   <br><br>
+   Password: <input type="text" name="password" value="<?php echo $password;?>">
+   <span class="error">* <?php echo $passwordErr;?></span>
    <br><br>
    Website: <input type="text" name="website" value="<?php echo $website;?>">
    <span class="error"><?php echo $websiteErr;?></span>
@@ -109,11 +146,15 @@ function test_input($data)
 
 <?php
 echo "<h2>You've Entered (to be eventually saved into the DB):</h2>";
-echo $name;
+echo $firstName;
+echo "<br>";
+echo $lastName;
 echo "<br>";
 echo $school;
 echo "<br>";
 echo $email;
+echo "<br>";
+echo $password;
 echo "<br>";
 echo $website;
 echo "<br>";
