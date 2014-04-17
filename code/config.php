@@ -1,5 +1,5 @@
 <?php
-$mysql_hostname = "localhost";
+$mysql_hostname = "localhost:8888";
 $mysql_user = "devpoll";
 $mysql_password = "devpoll";
 $mysql_database = "devpoll";

@@ -7,11 +7,14 @@ if($_SERVER["REQUEST_METHOD"] == "POST")
 {
 // username and password sent from form 
 
-$username=addslashes($_POST['username']); 
-$password=addslashes($_POST['password']); 
+//Set the URL to the main page; in this case we are using the bare bones admin devpoll page
+$url = 'http://www.devpoll.net/adminpage.html';
+
+$userid=addslashes($_POST['userid']); 
+$accesscode=addslashes($_POST['accesscode']); 
 
 
-$sql="SELECT userid FROM devpoll.users WHERE username='$username' and passcode='$password'";
+$sql="SELECT userid FROM devpoll.security WHERE userid='$userid' and accesscode='$accesscode'";
 $result=mysql_query($sql);
 $row=mysql_fetch_array($result);
 $active=$row['active'];
@@ -22,10 +25,11 @@ $count=mysql_num_rows($result);
 // If result matched $username and $password, table row must be 1 row
 if($count==1)
 {
-session_register("myusername");
-$_SESSION['login_user']=$username;
+session_register("myuserid");
+$_SESSION['login_user']=$userid;
 
-header("location: welcome.php");
+//header("location: welcome.php");
+header("location: $url" );
 }
 else 
 {
@@ -75,8 +79,8 @@ border:#666666 solid 1px;
 <div style="margin:30px">
 
 <form action="" method="post">
-<label>UserName  :</label><input type="text" name="username" class="box"/><br /><br />
-<label>Password  :</label><input type="password" name="password" class="box" /><br/><br />
+<label>User ID  :</label><input type="text" name="userid" class="box"/><br /><br />
+<label>Password  :</label><input type="password" name="accesscode" class="box" /><br/><br />
 <input type="submit" value=" Submit "/><br />
 
 </form>
