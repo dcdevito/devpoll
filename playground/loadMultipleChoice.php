@@ -7,7 +7,7 @@
 
 	for ($i = 1; $i <= $answers; $i++)
 	{
-		$answersvalue .= "Answer $i: <input type='text' name='saanswer$i'><br/>";
+		$answersvalue .= "Answer $i: <input type='text' name='mcanswer$i'><br/>";
 	}
 	$answersvalue .= "<br/>";
 	$answersvalue .= "<input type='hidden' name='numberofanswers' value='$answers'>";

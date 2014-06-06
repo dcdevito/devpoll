@@ -19,6 +19,31 @@
 				XMLHttpRequestObject = new ActiveXObject("Microsoft.XMLHTTP");
 			}
 
+			function loadMultipleChoice()
+			{
+				if (XMLHttpRequestObject)
+				{
+					XMLHttpRequestObject.open("POST", "loadMultipleChoice.php");
+
+					XMLHttpRequestObject.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+					XMLHttpRequestObject.onreadystatechange = function()
+					{
+						if (XMLHttpRequestObject.readyState == 4 && XMLHttpRequestObject.status == 200)
+						{
+							var returnedData = XMLHttpRequestObject.responseText;
+
+							var mcanswersDiv = document.getElementById('mcanswers');
+							mcanswersDiv.innerHTML = returnedData;
+						}
+					}
+				}
+
+				var answers = document.getElementById('mchoice').value;
+				
+				XMLHttpRequestObject.send('answers=' + answers);
+			}
+
 			function loadSeveralAnswers()
 			{
 				if (XMLHttpRequestObject)
@@ -40,7 +65,6 @@
 				}
 
 				var answers = document.getElementById('severalanswers').value;
-				alert("Answers = " + answers);
 				
 				XMLHttpRequestObject.send('answers=' + answers);
 			}
@@ -100,15 +124,20 @@
 				}
 				else
 				{
+					// The survey name is valid, and we can enter a question.
 					$canenterquestions = true;
 
 					// Check if we just created a question.
-					if ($createtruefalse == 'yes')
+					$createdquestion = mysql_real_escape_string($_POST['createdquestion']);
+
+					// What type of question are we creating.
+					if ($createdquestion == 'truefalse')
 					{
 						$questionnumber = mysql_real_escape_string($_POST['questionNumber']);
-						$questiontype = mysql_real_escape_string($_POST['questiontype']);
+						$questiontype = mysql_real_escape_string($_POST['createdquestion']);
 						$questiontext = mysql_real_escape_string($_POST['questiontext']);
 
+						// Get the type of headings for the true/false question. 
 						$truefalsetype = mysql_real_escape_string($_POST['truefalsetype']);
 						switch ($truefalsetype)
 						{
@@ -130,34 +159,53 @@
 								break;
 						}
 
-						//addTrueFalse($questionnumber, $questiontype, $questiontext, $truefalseheading1, $truefalseheading2);
+						// Add the truefalse question to the database.
+						addTrueFalse($questionnumber, $questiontype, $questiontext, $truefalseheading1, $truefalseheading2);
 
 					}
-					elseif ($createmultiplechoice == 'yes')
+					elseif ($createdquestion == 'multiplechoice')
 					{
 						$questionnumber = mysql_real_escape_string($_POST['questionNumber']);
-						$questiontype = mysql_real_escape_string($_POST['questiontype']);
+						$questiontype = mysql_real_escape_string($_POST['createdquestion']);
 						$questiontext = mysql_real_escape_string($_POST['questiontext']);
 
-						$answer1 = mysql_real_escape_string($_POST['mcanswer1']);
-						$answer2 = mysql_real_escape_string($_POST['mcanswer2']);
-						$answer3 = mysql_real_escape_string($_POST['mcanswer3']);
-						$answer4 = "";
-						$answer5 = "";
+						$numberofanswers = mysql_real_escape_string($_POST['numberofanswers']);
 
-						if ($questiontype == 'mcfour')
+						// Loop through the answers and create an array of the values.
+						$answers = array();
+						for ($i = 1; $i <= $numberofanswers; $i++)
 						{
-							$answer4 = mysql_real_escape_string($_POST['mcanswer4']);
-						}
-						elseif ($questiontype == 'mcfive')
-						{
-							$answer4 = mysql_real_escape_string($_POST['mcanswer4']);
-							$answer5 = mysql_real_escape_string($_POST['mcanswer5']);
+							$answernum = 'mcanswer'.$i;
+
+							$answer = mysql_real_escape_string($_POST[$answernum]);
+							$answers[] = $answer;
 						}
 
-						//addMultipleChoice($questionnumber, $questiontype, $questiontext, $answer1, $answer2, $answer3, $answer4, $answer5);
+						// Add the multiple choice question to the database.
+						addMultipleChoice($questionnumber, $questiontype, $questiontext, $numberofanswers, $answers);
 					}
-					elseif ($createseveralanswer == 'yes')
+					elseif ($createdquestion == 'severalanswer')
+					{
+						$questionnumber = mysql_real_escape_string($_POST['questionNumber']);
+						$questiontype = mysql_real_escape_string($_POST['createdquestion']);
+						$questiontext = mysql_real_escape_string($_POST['questiontext']);
+
+						$numberofanswers = mysql_real_escape_string($_POST['numberofanswers']);
+
+						// Loop through the answers and create an array of the values.
+						$answers = array();
+						for ($i = 1; $i <= $numberofanswers; $i++)
+						{
+							$answernum = 'saanswer'.$i;
+
+							$answer = mysql_real_escape_string($_POST[$answernum]);
+							$answers[] = $answer;
+						}
+
+						// Add the severalanswer question to the database.
+						addSeveralAnswer($questionnumber, $questiontype, $questiontext, $numberofanswers, $answers);
+					}
+					elseif ($createdquestion == 'freeform')
 					{
 						$questionnumber = mysql_real_escape_string($_POST['questionNumber']);
 						$questiontype = mysql_real_escape_string($_POST['questiontype']);
@@ -165,15 +213,7 @@
 
 						//addTrueFalse($questionnumber);
 					}
-					elseif ($createfreeform == 'yes')
-					{
-						$questionnumber = mysql_real_escape_string($_POST['questionNumber']);
-						$questiontype = mysql_real_escape_string($_POST['questiontype']);
-						$questiontext = mysql_real_escape_string($_POST['questiontext']);
-
-						//addTrueFalse($questionnumber);
-					}
-					elseif ($createrating == 'yes')
+					elseif ($createdquestion == 'rating')
 					{
 						$questionnumber = mysql_real_escape_string($_POST['questionNumber']);
 						$questiontype = mysql_real_escape_string($_POST['questiontype']);
@@ -183,6 +223,7 @@
 					}
 				}
 
+				// 
 				if ($canenterquestions == true)
 				{
 					// See if every question is of the same type.
@@ -207,21 +248,14 @@
 					// Next question number.
 					$questionNumber++;
 
+					// What question type was chosen.
 					if ($questiontype == "truefalse")
 					{
 						createTrueFalse($surveyname, $questionNumber, $everyquestion);
 					}
-					elseif ($questiontype == "mcthree")
+					elseif ($questiontype == "multiplechoice")
 					{
-						createMultipleChoice($surveyname, 3, $questionNumber, $everyquestion);	
-					}
-					elseif ($questiontype == "mcfour")
-					{
-						createMultipleChoice($surveyname, 4, $questionNumber, $everyquestion);
-					}
-					elseif ($questiontype == "mcfive")
-					{
-						createMultipleChoice($surveyname, 5, $questionNumber, $everyquestion);
+						createMultipleChoice($surveyname, $questionNumber, $everyquestion);	
 					}
 					elseif ($questiontype == "severalanswer")
 					{
@@ -237,6 +271,7 @@
 					}
 					else
 					{
+						// Choose a question type.
 						$questionNumber = 0; 
 
 						createQuestionDiv($surveyname, $questionNumber, $everyquestion);
@@ -254,11 +289,53 @@
 </html>
 
 <?php
+	// Add the truefalse question to the database.
 	function addTrueFalse($questionnumber, $questiontype, $questiontext, $truefalseheading1, $truefalseheading2)
 	{
-		// Add true false question to DB
+		// Add true false question to DB.
+		echo "Inside addTrueFalse<br/><br/>";
+
+		echo "
+			Question Number = $questionnumber<br/>
+			Question Type = $questiontype<br/>
+			Question Text = $questiontext<br/>
+			<br/>
+			Heading1 = $truefalseheading1<br/>
+			Heading2 = $truefalseheading2<br/>
+		";
 	}
 
+	// Add the severalanswer question to the database.
+	function addSeveralAnswer($questionnumber, $questiontype, $questiontext, $numberofanswers, $answers)
+	{
+		// Add several answers question to DB.
+		echo "Inside addSeveralAnswer<br/><br/>";
+
+		echo "
+			Question Number = $questionnumber<br/>
+			Question Type = $questiontype<br/>
+			Question Text = $questiontext<br/>
+			<br/>
+			Number of Answers = $numberofanswers<br/>
+			<br/>
+			Answers:
+		";
+
+		for ($i = 0; $i < $numberofanswers; $i++)
+		{
+			$answer = $answers[$i];
+
+			echo "Answer ".($i + 1)." = ".$answer."<br/>";
+		}
+
+		echo "
+			<br/>
+			End of Function.
+		";
+	}
+
+
+	// Display the question type selection.
 	function createQuestionDiv($surveyname, $questionNumber, $everyquestion)
 	{
 		echo "
@@ -267,11 +344,7 @@
 					<p>Survey $surveyname</p>
 					<p>Please select the type of question:</p>
 					<p><input type='radio' name='questiontype' value='truefalse'>True / False</p>
-					<p>Multiple Choice:</br>
-					<input type='radio' name='questiontype' value='mcthree'>3 questions<br/>
-					<input type='radio' name='questiontype' value='mcfour'>4 questions<br/>
-					<input type='radio' name='questiontype' value='mcfive'>5 questions<br/>
-					</p>
+					<p><input type='radio' name='questiontype' value='multiplechoice'>Multiple Choice<br/>
 					<p><input type='radio' name='questiontype' value='severalanswer'>Several Answers</p>
 					<p><input type='radio' name='questiontype' value='freeform'>Free Form Text</p>
 					<p><input type='radio' name='questiontype' value='rating'>Rating</p>
@@ -299,6 +372,7 @@
 		";
 	}
 
+	// Add the survey name to the Database.
 	function addSurveyToDB($surveyname, $districtid)
 	{
 		// Connect to the database.
@@ -346,6 +420,7 @@
 		";		
 	}
 
+	// Create a truefalse question.
 	function createTrueFalse($surveyname, $questionNumber, $everyquestion)
 	{
 		echo "
@@ -354,7 +429,7 @@
 					<p>Question $questionNumber</p>
 					<p>Create True / False Question</p>
 					<p>Please enter the question:</p>
-					<p><textarea name='questiontext' rows='3' cols='30'></textarea></p>
+					<p><textarea name='questiontext' rows='3' cols='30' required></textarea></p>
 					<p>Answer type:</p>
 					<p>
 					<input type='radio' name='truefalsetype' value='truefalse'>True / False<br/>
@@ -382,7 +457,7 @@
 					&nbsp;&nbsp;
 					<input type='button' value='Cancel'>
 					</p>
-					<input type='hidden' name='createtruefalse' value='yes'>
+					<input type='hidden' name='createdquestion' value='truefalse'>
 					<input type='hidden' name='surveyname' value='$surveyname'>
 					<input type='hidden' name='createtype' value='truefalse'>
 					<input type='hidden' name='questionNumber' value='$questionNumber'>
@@ -391,9 +466,9 @@
 		";      
 	}
 
+	// Create a multiple choice question.
 	function createMultipleChoice($surveyname, $answers, $questionNumber, $everyquestion)
 	{
-		/***
 		echo "
 			<div id='multiplechoice'>
 				<form action='createsurvey.php' method='POST'>
@@ -404,31 +479,26 @@
 					<p>
 		";
 
-		// Answer 1, 2 and 3
-		$type = "mcthree";
-
+		// Answer 1 and 2
 		echo "
-			Answer 1: <input type='text' id='mcanswer1'><br/>
-			Answer 2: <input type='text' id='mcanswer2'><br/>
-			Answer 3: <input type='text' id='mcanswer3'><br/>
+			How many answers?
 		";
 
-		// Answer 4
-		if ($answers == 4 || $answers == 5)
-		{
-			$type = "mcfour";
-			echo "Answer 4: <input type='text' id='mcanswer4'><br/>";
-		}
-
-		// Answer 5
-		if ($answers == 5)
-		{
-			$type = "mcfive";
-			echo "Answer 5: <input type='text' id='mcanswer5'><br/>";        
-		}
-
 		echo "
-					</p>
+			<select id='mchoice' name='mchoice' required='required'>
+		";
+
+		for ($i = 1; $i <= 20; $i++)
+		{
+			echo "<option value='$i'>$i</option>";
+		}
+
+		echo "</select><br/>";
+		echo "<p><input type='button' value='Create Answers' onclick='loadMultipleChoice();'></p>";
+
+		echo "<div id='mcanswers'></div>";
+		echo "
+			</p>
 		";
 
 		// Check the "everyquestion" checkbox if it was checked already.
@@ -443,25 +513,25 @@
 
 		echo "
 					<p>
-					<input type='submit' value='Create Question'>
-					&nbsp;&nbsp;
-					<input type='button' value='Cancel'>
+						<input type='submit' value='Create Question'>
+						&nbsp;&nbsp;
+						<input type='button' value='Cancel'>
 					</p>
-					<input type='hidden' name='createmultiplechoice' value='yes'>
+					<input type='hidden' name='createdquestion' value='multiplechoice'>
 					<input type='hidden' name='surveyname' value='$surveyname'>
-					<input type='hidden' name='createtype' value='$type'>
+					<input type='hidden' name='createtype' value='multiplechoice'>
 					<input type='hidden' name='questionNumber' value='$questionNumber'>
 				</form>
 			</div>
 		";
-		***/
 	}
 
+	// Create a several answer question.
 	function createSeveralAnswer($surveyname, $questionNumber, $everyquestion)
 	{
 		echo "
 			<div id='severalanswer'>
-				<form action='createSeveralAnswer.php' method='POST'>
+				<form action='createsurvey.php' method='POST'>
 					<p>Question $questionNumber</p>
 					<p>Create Several Answer Question</p>
 					<p>Please enter the question:</p>
@@ -484,10 +554,9 @@
 		}
 
 		echo "</select><br/>";
-		echo "<p>aaa<input type='button' value='Create Answers' onclick='loadSeveralAnswers();'>zzz</p>";
+		echo "<p><input type='button' value='Create Answers' onclick='loadSeveralAnswers();'></p>";
 
 		echo "<div id='saanswers'></div>";
-
 		echo "
 			</p>
 		";
@@ -508,7 +577,7 @@
 						&nbsp;&nbsp;
 						<input type='button' value='Cancel'>
 					</p>
-					<input type='hidden' name='createseveralanswer' value='yes'>
+					<input type='hidden' name='createdquestion' value='severalanswer'>
 					<input type='hidden' name='surveyname' value='$surveyname'>
 					<input type='hidden' name='createtype' value='severalanswer'>
 					<input type='hidden' name='questionNumber' value='$questionNumber'>
@@ -517,6 +586,7 @@
 		";
 	}
 
+	// Create a free form text question. 
 	function createFreeFormText($surveyname, $questionNumber, $everyquestion)
 	{
 		/***
@@ -546,7 +616,7 @@
 						&nbsp;&nbsp;
 						<input type='button' value='Cancel'>
 					</p>
-					<input type='hidden' name='createfreeform' value='yes'>
+					<input type='hidden' name='createdquestion' value='freeform'>
 					<input type='hidden' name='surveyname' value='$surveyname'>
 					<input type='hidden' name='createtype' value='freeform'>
 					<input type='hidden' name='questionNumber' value='$questionNumber'>
@@ -556,6 +626,7 @@
 		***/
 	}
 
+	// Create a rating question.
 	function createRating($surveyname, $questionNumber, $everyquestion)
 	{
 		/***
@@ -614,7 +685,7 @@
 						&nbsp;&nbsp;
 						<input type='button' value='Cancel'>
 					</p>
-					<input type='hidden' name='createrating' value='yes'>
+					<input type='hidden' name='createdquestion' value='rating'>
 					<input type='hidden' name='surveyname' value='$surveyname'>
 					<input type='hidden' name='createtype' value='rating'>
 					<input type='hidden' name='questionNumber' value='$questionNumber'>
@@ -624,11 +695,13 @@
 		***/
 	}
 
+	// Display the questions we have already created.
 	function displayQuestions($surveyname)
 	{
 		echo "<p>Questions go here</p>";
 	}
 
+	// Choose an existing question from a list.
 	function existingQuestionsList()
 	{
 		echo "
