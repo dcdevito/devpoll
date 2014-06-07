@@ -114,6 +114,9 @@
 						$result = addSurveyToDB($surveyname, $districtid);
 
 						$canenterquestions = true;
+
+						// Get survey id.
+						getSurveyId($surveyname, $districtid);
 					}
 					else
 					{
@@ -211,7 +214,8 @@
 						$questiontype = mysql_real_escape_string($_POST['questiontype']);
 						$questiontext = mysql_real_escape_string($_POST['questiontext']);
 
-						//addTrueFalse($questionnumber);
+						// Add the free form question to the database.
+						addFreeForm($questionnumber, $questiontype, $questiontext);
 					}
 					elseif ($createdquestion == 'rating')
 					{
@@ -219,7 +223,7 @@
 						$questiontype = mysql_real_escape_string($_POST['questiontype']);
 						$questiontext = mysql_real_escape_string($_POST['questiontext']);
 						
-						//addTrueFalse($questionnumber);
+						addRating($questionnumber);
 					}
 				}
 
@@ -292,48 +296,155 @@
 	// Add the truefalse question to the database.
 	function addTrueFalse($questionnumber, $questiontype, $questiontext, $truefalseheading1, $truefalseheading2)
 	{
-		// Add true false question to DB.
-		echo "Inside addTrueFalse<br/><br/>";
+		// Connect to the database.
+		include("connectToDB.php");
 
-		echo "
-			Question Number = $questionnumber<br/>
-			Question Type = $questiontype<br/>
-			Question Text = $questiontext<br/>
-			<br/>
-			Heading1 = $truefalseheading1<br/>
-			Heading2 = $truefalseheading2<br/>
-		";
+		// Get the surveyid.
+		$surveyid = $_SESSION['surveyid'];
+
+		// Start a transaction.
+		$conn->autocommit(false);
+
+		// Insert the values into the database.
+		$conn->query("INSERT INTO questions(surveyid, questionnumber, questiontext, questiontype, lastmodified) 
+							VALUES ($surveyid, $questionnumber, '$questiontext', 'truefalse', now());");
+
+		$conn->query("INSERT INTO answers(surveyid, questionnumber, answernumber, answertext) 
+							VALUES($surveyid, $questionnumber, 0, $truefalseheading1);");
+
+		$conn->query("INSERT INTO answers(surveyid, questionnumber, answernumber, answertext) 
+							VALUES($surveyid, $questionnumber, 1, $truefalseheading2);");
+
+		// Commit the transaction.
+		$conn->commit();		
+
+		// Close the connetion.
+		$conn->close();
+	}
+
+	// Add the multiple choice question to the database.
+	function addMultipleChoice($questionnumber, $questiontype, $questiontext, $numberofanswers, $answers)
+	{
+		// Connect to the database.
+		include("connectToDB.php");
+
+		// Get the surveyid.
+		$surveyid = $_SESSION['surveyid'];
+
+		// Start a transaction.
+		$conn->autocommit(false);
+
+		// Insert the values into the database.
+		$questionquery = "INSERT INTO questions(surveyid, questionnumber, questiontext, questiontype, lastmodified) 
+							VALUES ($surveyid, $questionnumber, '$questiontext', 'multiplechoice', now());";
+
+		if ($numberofanswers > 0)
+		{
+			for ($i = 0; $i < $numberofanswers; $i++)
+			{
+				$answer = $answers[$i];
+
+				$answerquery = "INSERT INTO answers(surveyid, questionnumber, answernumber, answertext)
+									VALUES($surveyid, $questionnumber, $i, $answer);";
+
+				$conn->query($answerquery);
+			}
+		}
+
+		// Commit the transaction.
+		$conn->commit();		
+
+		// Close the connetion.
+		$conn->close();
 	}
 
 	// Add the severalanswer question to the database.
 	function addSeveralAnswer($questionnumber, $questiontype, $questiontext, $numberofanswers, $answers)
 	{
-		// Add several answers question to DB.
-		echo "Inside addSeveralAnswer<br/><br/>";
+		// Connect to the database.
+		include("connectToDB.php");
 
-		echo "
-			Question Number = $questionnumber<br/>
-			Question Type = $questiontype<br/>
-			Question Text = $questiontext<br/>
-			<br/>
-			Number of Answers = $numberofanswers<br/>
-			<br/>
-			Answers:
-		";
+		// Get the surveyid.
+		$surveyid = $_SESSION['surveyid'];
 
-		for ($i = 0; $i < $numberofanswers; $i++)
+		// Start a transaction.
+		$conn->autocommit(false);
+
+		// Insert the values into the database.
+		$questionquery = "INSERT INTO questions(surveyid, questionnumber, questiontext, questiontype, lastmodified) 
+							VALUES ($surveyid, $questionnumber, '$questiontext', 'severalanswer', now());";
+
+		if ($numberofanswers > 0)
 		{
-			$answer = $answers[$i];
+			for ($i = 0; $i < $numberofanswers; $i++)
+			{
+				$answer = $answers[$i];
 
-			echo "Answer ".($i + 1)." = ".$answer."<br/>";
+				$answerquery = "INSERT INTO answers(surveyid, questionnumber, answernumber, answertext)
+									VALUES($surveyid, $questionnumber, $i, $answer);";
+
+				$conn->query($answerquery);
+			}
 		}
 
-		echo "
-			<br/>
-			End of Function.
-		";
+		// Commit the transaction.
+		$conn->commit();		
+
+		// Close the connetion.
+		$conn->close();
 	}
 
+	// Add the free form question to the database.
+	function addFreeForm($questionnumber, $questiontype, $questiontext)
+	{
+		// Connect to the database.
+		include("connectToDB.php");
+
+		// Get the surveyid.
+		$surveyid = $_SESSION['surveyid'];
+
+		// Start a transaction.
+		$conn->autocommit(false);
+
+		// Insert the values into the database.
+		$conn->query("INSERT INTO questions(surveyid, questionnumber, questiontext, questiontype, lastmodified) 
+							VALUES ($surveyid, $questionnumber, '$questiontext', 'freeform', now());");
+
+		$conn->query("INSERT INTO answers(surveyid, questionnumber, answernumber, answertext) 
+							VALUES($surveyid, $questionnumber, 0, '');");
+
+		// Commit the transaction.
+		$conn->commit();		
+
+		// Close the connetion.
+		$conn->close();
+	}
+
+	// Add the rating question to the database.
+	function addRating($questionnumber, $questiontype, $questiontext, $lowvalue, $highvalue, $lowdescription, $highdescription)
+	{
+		// Connect to the database.
+		include("connectToDB.php");
+
+		// Get the surveyid.
+		$surveyid = $_SESSION['surveyid'];
+
+		// Start a transaction.
+		$conn->autocommit(false);
+
+		// Insert the values into the database.
+		$conn->query("INSERT INTO questions(surveyid, questionnumber, questiontext, questiontype, lastmodified) 
+							VALUES ($surveyid, $questionnumber, '$questiontext', 'rating', now());");
+
+		$conn->query("INSERT INTO answers(surveyid, questionnumber, answernumber, lowvalue, highvalue, lowdescription, highdescription) 
+							VALUES($surveyid, $questionnumber, 0, $lowvalue, $highvalue, $lowdescription, $highdescription);");
+
+		// Commit the transaction.
+		$conn->commit();		
+
+		// Close the connetion.
+		$conn->close();
+	}
 
 	// Display the question type selection.
 	function createQuestionDiv($surveyname, $questionNumber, $everyquestion)
@@ -380,10 +491,6 @@
 
 		// Insert the values into the database.
 		$query = "INSERT INTO survey(surveyname, districtid, dateopen) VALUES (?, ?, now())"; 
-
-		echo "Query is ".$query."<br/>";
-		echo "districtid = ".$districtid."<br/>";
-		echo "surveyname = ".$surveyname."<br/>";
 
 		if ($stmt = $conn->prepare($query))
 		{
@@ -589,10 +696,9 @@
 	// Create a free form text question. 
 	function createFreeFormText($surveyname, $questionNumber, $everyquestion)
 	{
-		/***
 		echo "
 			<div id='freeformtext'>
-				<form action='createFreeForm.php' method='POST'>
+				<form action='createsurvey.php' method='POST'>
 					<p>Question $questionNumber</p>
 					<p>Create Free Form Question</p>
 					<p>Please enter the question:</p>
@@ -623,16 +729,14 @@
 				</form>
 			</div>
 		";  
-		***/
 	}
 
 	// Create a rating question.
 	function createRating($surveyname, $questionNumber, $everyquestion)
 	{
-		/***
 		echo "
 			<div id='rating'>
-				<form action='createRating.php' method='POST'>
+				<form action='createsurvey.php' method='POST'>
 					<p>Question $questionNumber</p>
 					<p>Create Rating Question</p>
 					<p>Please enter the question:</p>
@@ -641,14 +745,14 @@
 					<p>
 						Rating from 1 to 
 						<select name='values'>
-						<option value='10'>10</option>
-						<option value='9'>9</option>
-						<option value='8'>8</option>
-						<option value='7'>7</option>
-						<option value='6'>6</option>
-						<option value='5'>5</option>
-						<option value='4'>4</option>
-						<option value='3'>3</option>
+		";
+
+		for ($i = 20; $i >= 1; $i--)
+		{
+			echo "<option value='$i'>$i</option>";
+		}
+
+		echo "
 						</select>
 					</p>
 
@@ -692,7 +796,6 @@
 				</form>
 			</div>
 		";	
-		***/
 	}
 
 	// Display the questions we have already created.
@@ -725,5 +828,30 @@
 				</table>
 			</div>
 		";
+	}
+
+	// Make a session variable of the surveyid we are in.
+	function getSurveyId($surveyname, $districtid)
+	{
+		session_start();
+
+		// Connect to the databasse.
+		include("connectToDB.php");
+
+		$surveyidRS = $conn->query("SELECT surveyid FROM survey WHERE surveyname = '$surveyname' AND districtid = '$districtid';");
+
+		if ($surveyidRS === false)
+		{
+			trigger_error('A problem has occurred getting the surveyid: '.$conn->error, E_USER_ERROR);
+		}
+		else
+		{
+			$arr = $surveyidRS->fetch_array(MYSQLI_ASSOC);
+
+			$_SESSION['surveyid'] = $arr['surveyid'];
+		}
+
+		// Close the connection.
+		$conn->close();
 	}
 ?>

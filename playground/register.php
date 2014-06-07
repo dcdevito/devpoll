@@ -54,15 +54,15 @@
 			else
 			{
 				// Make sure the username isn't already taken.
-				$usernameQuery = $conn->query("SELECT username FROM security WHERE userid = '$username'");
+				$usernameRS = $conn->query("SELECT username FROM security WHERE userid = '$username'");
 
-				if ($rs === false)
+				if ($usernameRS === false)
 				{
 					trigger_error('A problem has occurred registering: '.$conn->error, E_USER_ERROR);
 				}
 				else
 				{
-					$usernameExists = $usernameQuery->num_rows;
+					$usernameExists = $usernameRS->num_rows;
 
 					// If the number of rows is greater than 0 then the username exists in the database.
 					// If this is the case allow the user to enter a different username.
