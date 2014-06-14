@@ -24,20 +24,13 @@
 		$email = mysql_real_escape_string($_POST['email']);
 
 		// Connect to the database.
-		require_once("connectToDB.php");
+		require("connectToDB.php");
 
 		// Make sure the email address is in the database.
-		$sql = "select s.userid, u.email, s.accesscode from security s join users u on s.userid = u.userid where s.userid = '$username' and u.email='$email'";
+		$sql = "SELECT s.userid, u.email, s.accesscode FROM devpoll.security s join devpoll.users u ON s.userid = u.userid WHERE s.userid = '$username' AND u.email='$email'";
 
 		// Obtain a resultset from the query.
-		$rs = $conn->query($sql);
-
-		if ($rs === false)
-		{
-			// Trigger a predefined constant E_USER_ERROR.
-			trigger_error($conn->error, E_USER_ERROR);
-		}
-		else
+		if ($rs = $conn->query($sql))
 		{
 			// If there are any number of rows returned then the username and email exist in the database.
 			$emailExists = $rs->num_rows;
@@ -85,6 +78,11 @@
 				echo '<a href="login.php">Return to Login page"</a>';
 			}
 		}		
+		else
+		{
+			// Trigger a predefined constant E_USER_ERROR.
+			trigger_error($conn->error, E_USER_ERROR);
+		}
 		
 		// Close the database connection.
 		$conn->close();

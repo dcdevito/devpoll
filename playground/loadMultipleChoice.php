@@ -3,14 +3,14 @@
 
 
 	// Holds the value to be returned back to the createsurvey page.
-	$answersvalue = "";
+	$answersValue = "";
 
 	for ($i = 1; $i <= $answers; $i++)
 	{
-		$answersvalue .= "Answer $i: <input type='text' name='mcanswer$i'><br/>";
+		$answersValue .= "Answer $i: <input type='text' name='mcanswer$i'><br/>";
 	}
-	$answersvalue .= "<br/>";
-	$answersvalue .= "<input type='hidden' name='numberofanswers' value='$answers'>";
+	$answersValue .= "<br/>";
+	$answersValue .= "<input type='hidden' name='numberOfAnswers' value='$answers'>";
 
-	echo $answersvalue;
+	echo $answersValue;
 ?>

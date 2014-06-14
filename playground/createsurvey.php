@@ -33,13 +33,13 @@
 						{
 							var returnedData = XMLHttpRequestObject.responseText;
 
-							var mcanswersDiv = document.getElementById('mcanswers');
-							mcanswersDiv.innerHTML = returnedData;
+							var mcAnswersDiv = document.getElementById('mcAnswers');
+							mcAnswersDiv.innerHTML = returnedData;
 						}
 					}
 				}
 
-				var answers = document.getElementById('mchoice').value;
+				var answers = document.getElementById('mChoice').value;
 				
 				XMLHttpRequestObject.send('answers=' + answers);
 			}
@@ -58,13 +58,13 @@
 						{
 							var returnedData = XMLHttpRequestObject.responseText;
 
-							var saanswersDiv = document.getElementById('saanswers');
-							saanswersDiv.innerHTML = returnedData;
+							var sevAnswersDiv = document.getElementById('sevAnswers');
+							sevAnswersDiv.innerHTML = returnedData;
 						}
 					}
 				}
 
-				var answers = document.getElementById('severalanswers').value;
+				var answers = document.getElementById('severalAnswers').value;
 				
 				XMLHttpRequestObject.send('answers=' + answers);
 			}
@@ -76,29 +76,33 @@
 			{
 				//   ***********************************************************
 				//  *************************************************************
-				// **** WE NEED TO REPLACE districtid WITH A SESSION VARIABLE ****
+				// **** WE NEED TO REPLACE districtId WITH A SESSION VARIABLE ****
 				//  *************************************************************
 				//   ***********************************************************
-				$districtid = 1;
+				$districtId = 1;
 
-				$entername = mysql_real_escape_string($_POST['entername']);
-				$surveyname = mysql_real_escape_string($_POST['surveyname']);
+				$enterName = mysql_real_escape_string($_POST['enterName']);
+				$surveyName = mysql_real_escape_string($_POST['surveyName']);
 
 				// Are we entering the name for the first time.
-				if ($entername == "entername")
+				if ($enterName == "enterName")
 				{
-					$canenterquestions = false;
+					//-------------------------------------------
+					echo "We are entering the survey name<br/>";
+					//-------------------------------------------
+
+					$canEnterQuestions = false;
 
 					// Connect to the database.
 					include("connectToDB.php");
 
 					// Check if the name is taken for this district.
-					$result = $conn->query("SELECT surveyname FROM survey WHERE districtid = $districtid");
+					$result = $conn->query("SELECT surveyName FROM survey WHERE districtId = $districtId");
 
 					$nameOK = true;
 					while($row = $result->fetch_assoc()) 
 					{
-						if ($row['surveyname'] == $surveyname)
+						if ($row['surveyName'] == $surveyName)
 						{
 							// The name is taken.
 							$nameOK = false;
@@ -111,12 +115,14 @@
 					if ($nameOK == true)
 					{
 						// Write the name to the database.
-						$result = addSurveyToDB($surveyname, $districtid);
+						$result = addSurveyToDB($surveyName, $districtId);
 
-						$canenterquestions = true;
+						$canEnterQuestions = true;
+
+						$questionNumber = 0;
 
 						// Get survey id.
-						getSurveyId($surveyname, $districtid);
+						getSurveyId($surveyName, $districtId);
 					}
 					else
 					{
@@ -128,159 +134,153 @@
 				else
 				{
 					// The survey name is valid, and we can enter a question.
-					$canenterquestions = true;
+					$canEnterQuestions = true;
 
 					// Check if we just created a question.
-					$createdquestion = mysql_real_escape_string($_POST['createdquestion']);
+					$createdQuestion = mysql_real_escape_string($_POST['createdQuestion']);
+
+					$questionNumber = mysql_real_escape_string($_POST['questionNumber']);
+					$questionType = mysql_real_escape_string($_POST['questionType']);
+					$questionText = mysql_real_escape_string($_POST['questionText']);
+
+					//-------------------------------------------
+					echo "Created Question = $createdQuestion<br/>";
+					echo "Question Number = $questionNumber<br/>";
+					echo "Question Type = $questionType<br/>";
+					echo "Question Text = $questionText<br/>";
+					//-------------------------------------------
 
 					// What type of question are we creating.
-					if ($createdquestion == 'truefalse')
+					if ($createdQuestion == 'trueFalse')
 					{
-						$questionnumber = mysql_real_escape_string($_POST['questionNumber']);
-						$questiontype = mysql_real_escape_string($_POST['createdquestion']);
-						$questiontext = mysql_real_escape_string($_POST['questiontext']);
-
 						// Get the type of headings for the true/false question. 
-						$truefalsetype = mysql_real_escape_string($_POST['truefalsetype']);
-						switch ($truefalsetype)
+						$trueFalseType = mysql_real_escape_string($_POST['trueFalsetype']);
+						switch ($trueFalseType)
 						{
 							case "ab":
-								$truefalseheading1 = 'A';
-								$truefalseheading2 = 'B';
+								$trueFalseHeading1 = 'A';
+								$trueFalseHeading2 = 'B';
 								break;
 							case "yesno":
-								$truefalseheading1 = 'Yes';
-								$truefalseheading2 = 'No';
+								$trueFalseHeading1 = 'Yes';
+								$trueFalseHeading2 = 'No';
 								break;
 							case "custom":
-								$truefalseheading1 = mysql_real_escape_string($_POST['truefalsecustom1']);
-								$truefalseheading2 = mysql_real_escape_string($_POST['truefalsecustom2']);
+								$trueFalseHeading1 = mysql_real_escape_string($_POST['trueFalsecustom1']);
+								$trueFalseHeading2 = mysql_real_escape_string($_POST['trueFalsecustom2']);
 								break;
 							default:
-								$truefalseheading1 = 'true';
-								$truefalseheading2 = 'false';
+								$trueFalseHeading1 = 'true';
+								$trueFalseHeading2 = 'false';
 								break;
 						}
 
-						// Add the truefalse question to the database.
-						addTrueFalse($questionnumber, $questiontype, $questiontext, $truefalseheading1, $truefalseheading2);
-
+						// Add the trueFalse question to the database.
+						addTrueFalse($questionNumber, $questionType, $questionText, $trueFalseHeading1, $trueFalseHeading2);
 					}
-					elseif ($createdquestion == 'multiplechoice')
+					elseif ($createdQuestion == 'multipleChoice')
 					{
-						$questionnumber = mysql_real_escape_string($_POST['questionNumber']);
-						$questiontype = mysql_real_escape_string($_POST['createdquestion']);
-						$questiontext = mysql_real_escape_string($_POST['questiontext']);
-
-						$numberofanswers = mysql_real_escape_string($_POST['numberofanswers']);
+						$numberOfAnswers = mysql_real_escape_string($_POST['numberOfAnswers']);
 
 						// Loop through the answers and create an array of the values.
 						$answers = array();
-						for ($i = 1; $i <= $numberofanswers; $i++)
+						for ($i = 1; $i <= $numberOfAnswers; $i++)
 						{
-							$answernum = 'mcanswer'.$i;
+							$answerNum = 'mcanswer'.$i;
 
-							$answer = mysql_real_escape_string($_POST[$answernum]);
+							$answer = mysql_real_escape_string($_POST[$answerNum]);
 							$answers[] = $answer;
 						}
 
 						// Add the multiple choice question to the database.
-						addMultipleChoice($questionnumber, $questiontype, $questiontext, $numberofanswers, $answers);
+						addMultipleChoice($questionNumber, $questionType, $questionText, $numberOfAnswers, $answers);
 					}
-					elseif ($createdquestion == 'severalanswer')
+					elseif ($createdQuestion == 'severalAnswer')
 					{
-						$questionnumber = mysql_real_escape_string($_POST['questionNumber']);
-						$questiontype = mysql_real_escape_string($_POST['createdquestion']);
-						$questiontext = mysql_real_escape_string($_POST['questiontext']);
-
-						$numberofanswers = mysql_real_escape_string($_POST['numberofanswers']);
+						$numberOfAnswers = mysql_real_escape_string($_POST['numberOfAnswers']);
 
 						// Loop through the answers and create an array of the values.
 						$answers = array();
-						for ($i = 1; $i <= $numberofanswers; $i++)
+						for ($i = 1; $i <= $numberOfAnswers; $i++)
 						{
-							$answernum = 'saanswer'.$i;
+							$answerNum = 'sevanswer'.$i;
 
-							$answer = mysql_real_escape_string($_POST[$answernum]);
+							$answer = mysql_real_escape_string($_POST[$answerNum]);
 							$answers[] = $answer;
 						}
 
-						// Add the severalanswer question to the database.
-						addSeveralAnswer($questionnumber, $questiontype, $questiontext, $numberofanswers, $answers);
+						// Add the severalAnswer question to the database.
+						addSeveralAnswer($questionNumber, $questionType, $questionText, $numberOfAnswers, $answers);
 					}
-					elseif ($createdquestion == 'freeform')
+					elseif ($createdQuestion == 'freeForm')
 					{
-						$questionnumber = mysql_real_escape_string($_POST['questionNumber']);
-						$questiontype = mysql_real_escape_string($_POST['questiontype']);
-						$questiontext = mysql_real_escape_string($_POST['questiontext']);
-
 						// Add the free form question to the database.
-						addFreeForm($questionnumber, $questiontype, $questiontext);
+						addFreeForm($questionNumber, $questionType, $questionText);
 					}
-					elseif ($createdquestion == 'rating')
+					elseif ($createdQuestion == 'rating')
 					{
-						$questionnumber = mysql_real_escape_string($_POST['questionNumber']);
-						$questiontype = mysql_real_escape_string($_POST['questiontype']);
-						$questiontext = mysql_real_escape_string($_POST['questiontext']);
 						
-						addRating($questionnumber);
+						addRating($questionNumber);
 					}
 				}
 
 				// 
-				if ($canenterquestions == true)
+				if ($canEnterQuestions == true)
 				{
+					// Get question number.
+					//$questionNumber = mysql_real_escape_string($_POST['questionNumber']);
+					//$questionNumber++;
+
 					// See if every question is of the same type.
-					$everyquestion = mysql_real_escape_string($_POST['everyquestion']);
+					$everyQuestion = mysql_real_escape_string($_POST['everyQuestion']);
 
 					// The checkbox has been checked, so every question is of the same type.
-					$createtype = mysql_real_escape_string($_POST['createtype']);
+					$createType = mysql_real_escape_string($_POST['createType']);
 
-					if ($everyquestion == "everyquestion" && $createtype != "selecttype")
+					if ($everyQuestion == "everyQuestion" && $createType != "selectType")
 					{
+						$questionNumber++;
+
 						// Every question is of the same type.
-						$questiontype = $createtype;
+						$questionType = $createType;
 					}
 					else
 					{
 						// Check what type of question was chosen and load that box.
-						$questiontype = mysql_real_escape_string($_POST['questiontype']);
+						$questionType = mysql_real_escape_string($_POST['questionType']);
 					}
-
-					// Get question number.
-					$questionNumber = mysql_real_escape_string($_POST['questionNumber']);
-					// Next question number.
-					$questionNumber++;
 
 					// What question type was chosen.
-					if ($questiontype == "truefalse")
+					if ($questionType == "trueFalse")
 					{
-						createTrueFalse($surveyname, $questionNumber, $everyquestion);
+						createTrueFalse($surveyName, $questionNumber, $everyQuestion);
 					}
-					elseif ($questiontype == "multiplechoice")
+					elseif ($questionType == "multipleChoice")
 					{
-						createMultipleChoice($surveyname, $questionNumber, $everyquestion);	
+						createMultipleChoice($surveyName, $questionNumber, $everyQuestion);	
 					}
-					elseif ($questiontype == "severalanswer")
+					elseif ($questionType == "severalAnswer")
 					{
-						createSeveralAnswer($surveyname, $questionNumber, $everyquestion);
+						createSeveralAnswer($surveyName, $questionNumber, $everyQuestion);
 					}
-					elseif ($questiontype == "freeform")
+					elseif ($questionType == "freeForm")
 					{
-						createFreeFormText($surveyname, $questionNumber, $everyquestion);
+						createFreeFormText($surveyName, $questionNumber, $everyQuestion);
 					}
-					elseif ($questiontype == "rating")
+					elseif ($questionType == "rating")
 					{
-						createRating($surveyname, $questionNumber, $everyquestion);
+						createRating($surveyName, $questionNumber, $everyQuestion);
 					}
 					else
 					{
 						// Choose a question type.
-						$questionNumber = 0; 
+						//$questionNumber = 0; 
+						// Next question number.
+						$questionNumber++;
 
-						createQuestionDiv($surveyname, $questionNumber, $everyquestion);
+						createQuestionDiv($surveyName, $questionNumber, $everyQuestion);
 
-						displayQuestions($surveyname);
+						displayQuestions($surveyName);
 					}
 				}
 			}
@@ -293,27 +293,51 @@
 </html>
 
 <?php
-	// Add the truefalse question to the database.
-	function addTrueFalse($questionnumber, $questiontype, $questiontext, $truefalseheading1, $truefalseheading2)
+	// Add the trueFalse question to the database.
+	function addTrueFalse($questionNumber, $questionType, $questionText, $trueFalseHeading1, $trueFalseHeading2)
 	{
 		// Connect to the database.
 		include("connectToDB.php");
 
-		// Get the surveyid.
-		$surveyid = $_SESSION['surveyid'];
+		// Get the surveyId.
+		$surveyId = $_SESSION['surveyId'];
 
 		// Start a transaction.
 		$conn->autocommit(false);
 
+		echo "About to add the question<br/>";
+
 		// Insert the values into the database.
-		$conn->query("INSERT INTO questions(surveyid, questionnumber, questiontext, questiontype, lastmodified) 
-							VALUES ($surveyid, $questionnumber, '$questiontext', 'truefalse', now());");
+		$conn->query("INSERT INTO questions(surveyId, questionNumber, questionText, questionType, lastmodified) 
+							VALUES ($surveyId, $questionNumber, '$questionText', 'trueFalse', now());");
 
-		$conn->query("INSERT INTO answers(surveyid, questionnumber, answernumber, answertext) 
-							VALUES($surveyid, $questionnumber, 0, $truefalseheading1);");
+		echo "About to add answer 1<br/>";
 
-		$conn->query("INSERT INTO answers(surveyid, questionnumber, answernumber, answertext) 
-							VALUES($surveyid, $questionnumber, 1, $truefalseheading2);");
+		$answerQuery = "INSERT INTO answers(surveyId, questionNumber, answerNumber, answerText) 
+							VALUES($surveyId, $questionNumber, 0, '$trueFalseHeading1');";
+		echo "Answer 1 Query = ".$answerQuery."<br/>";
+
+		$conn->query("INSERT INTO answers(surveyId, questionNumber, answerNumber, answerText) 
+							VALUES($surveyId, $questionNumber, 0, '$trueFalseHeading1');");
+
+		echo "Answer 1 added<br/>";
+
+		echo $conn->errno."<br/>";
+		echo $conn->error."<br/>";
+
+		echo "About to add answer 2<br/>";
+
+		$answerQuery = "INSERT INTO answers(surveyId, questionNumber, answerNumber, answerText) 
+							VALUES($surveyId, $questionNumber, 1, '$trueFalseHeading2');";
+		echo "Answer 2 Query = ".$answerQuery."<br/>";
+
+		$conn->query("INSERT INTO answers(surveyId, questionNumber, answerNumber, answerText) 
+							VALUES($surveyId, $questionNumber, 1, '$trueFalseHeading2');");
+
+		echo "Answer 2 added<br/>";
+
+		echo $conn->errno."<br/>";
+		echo $conn->error."<br/>";
 
 		// Commit the transaction.
 		$conn->commit();		
@@ -323,31 +347,33 @@
 	}
 
 	// Add the multiple choice question to the database.
-	function addMultipleChoice($questionnumber, $questiontype, $questiontext, $numberofanswers, $answers)
+	function addMultipleChoice($questionNumber, $questionType, $questionText, $numberOfAnswers, $answers)
 	{
 		// Connect to the database.
 		include("connectToDB.php");
 
-		// Get the surveyid.
-		$surveyid = $_SESSION['surveyid'];
+		// Get the surveyId.
+		$surveyId = $_SESSION['surveyId'];
 
 		// Start a transaction.
 		$conn->autocommit(false);
 
 		// Insert the values into the database.
-		$questionquery = "INSERT INTO questions(surveyid, questionnumber, questiontext, questiontype, lastmodified) 
-							VALUES ($surveyid, $questionnumber, '$questiontext', 'multiplechoice', now());";
+		$questionQuery = "INSERT INTO questions(surveyId, questionNumber, questionText, questionType, lastmodified) 
+							VALUES ($surveyId, $questionNumber, '$questionText', 'multipleChoice', now());";
 
-		if ($numberofanswers > 0)
+		$conn->query($questionQuery);
+
+		if ($numberOfAnswers > 0)
 		{
-			for ($i = 0; $i < $numberofanswers; $i++)
+			for ($i = 0; $i < $numberOfAnswers; $i++)
 			{
 				$answer = $answers[$i];
 
-				$answerquery = "INSERT INTO answers(surveyid, questionnumber, answernumber, answertext)
-									VALUES($surveyid, $questionnumber, $i, $answer);";
+				$answerQuery = "INSERT INTO answers(surveyId, questionNumber, answerNumber, answerText)
+									VALUES($surveyId, $questionNumber, $i, '$answer');";
 
-				$conn->query($answerquery);
+				$conn->query($answerQuery);
 			}
 		}
 
@@ -358,32 +384,34 @@
 		$conn->close();
 	}
 
-	// Add the severalanswer question to the database.
-	function addSeveralAnswer($questionnumber, $questiontype, $questiontext, $numberofanswers, $answers)
+	// Add the severalAnswer question to the database.
+	function addSeveralAnswer($questionNumber, $questionType, $questionText, $numberOfAnswers, $answers)
 	{
 		// Connect to the database.
 		include("connectToDB.php");
 
-		// Get the surveyid.
-		$surveyid = $_SESSION['surveyid'];
+		// Get the surveyId.
+		$surveyId = $_SESSION['surveyId'];
 
 		// Start a transaction.
 		$conn->autocommit(false);
 
 		// Insert the values into the database.
-		$questionquery = "INSERT INTO questions(surveyid, questionnumber, questiontext, questiontype, lastmodified) 
-							VALUES ($surveyid, $questionnumber, '$questiontext', 'severalanswer', now());";
+		$questionQuery = "INSERT INTO questions(surveyId, questionNumber, questionText, questionType, lastmodified) 
+							VALUES ($surveyId, $questionNumber, '$questionText', 'severalAnswer', now());";
 
-		if ($numberofanswers > 0)
+		$conn->query($questionQuery);
+
+		if ($numberOfAnswers > 0)
 		{
-			for ($i = 0; $i < $numberofanswers; $i++)
+			for ($i = 0; $i < $numberOfAnswers; $i++)
 			{
 				$answer = $answers[$i];
 
-				$answerquery = "INSERT INTO answers(surveyid, questionnumber, answernumber, answertext)
-									VALUES($surveyid, $questionnumber, $i, $answer);";
+				$answerQuery = "INSERT INTO answers(surveyId, questionNumber, answerNumber, answerText)
+									VALUES($surveyId, $questionNumber, $i, '$answer');";
 
-				$conn->query($answerquery);
+				$conn->query($answerQuery);
 			}
 		}
 
@@ -395,23 +423,23 @@
 	}
 
 	// Add the free form question to the database.
-	function addFreeForm($questionnumber, $questiontype, $questiontext)
+	function addFreeForm($questionNumber, $questionType, $questionText)
 	{
 		// Connect to the database.
 		include("connectToDB.php");
 
-		// Get the surveyid.
-		$surveyid = $_SESSION['surveyid'];
+		// Get the surveyId.
+		$surveyId = $_SESSION['surveyId'];
 
 		// Start a transaction.
 		$conn->autocommit(false);
 
 		// Insert the values into the database.
-		$conn->query("INSERT INTO questions(surveyid, questionnumber, questiontext, questiontype, lastmodified) 
-							VALUES ($surveyid, $questionnumber, '$questiontext', 'freeform', now());");
+		$conn->query("INSERT INTO questions(surveyId, questionNumber, questionText, questionType, lastmodified) 
+							VALUES ($surveyId, $questionNumber, '$questionText', 'freeForm', now());");
 
-		$conn->query("INSERT INTO answers(surveyid, questionnumber, answernumber, answertext) 
-							VALUES($surveyid, $questionnumber, 0, '');");
+		$conn->query("INSERT INTO answers(surveyId, questionNumber, answerNumber, answerText) 
+							VALUES($surveyId, $questionNumber, 0, '');");
 
 		// Commit the transaction.
 		$conn->commit();		
@@ -421,23 +449,23 @@
 	}
 
 	// Add the rating question to the database.
-	function addRating($questionnumber, $questiontype, $questiontext, $lowvalue, $highvalue, $lowdescription, $highdescription)
+	function addRating($questionNumber, $questionType, $questionText, $lowvalue, $highvalue, $lowdescription, $highdescription)
 	{
 		// Connect to the database.
 		include("connectToDB.php");
 
-		// Get the surveyid.
-		$surveyid = $_SESSION['surveyid'];
+		// Get the surveyId.
+		$surveyId = $_SESSION['surveyId'];
 
 		// Start a transaction.
 		$conn->autocommit(false);
 
 		// Insert the values into the database.
-		$conn->query("INSERT INTO questions(surveyid, questionnumber, questiontext, questiontype, lastmodified) 
-							VALUES ($surveyid, $questionnumber, '$questiontext', 'rating', now());");
+		$conn->query("INSERT INTO questions(surveyId, questionNumber, questionText, questionType, lastmodified) 
+							VALUES ($surveyId, $questionNumber, '$questionText', 'rating', now());");
 
-		$conn->query("INSERT INTO answers(surveyid, questionnumber, answernumber, lowvalue, highvalue, lowdescription, highdescription) 
-							VALUES($surveyid, $questionnumber, 0, $lowvalue, $highvalue, $lowdescription, $highdescription);");
+		$conn->query("INSERT INTO answers(surveyId, questionNumber, answerNumber, lowvalue, highvalue, lowdescription, highdescription) 
+							VALUES($surveyId, $questionNumber, 0, $lowvalue, $highvalue, '$lowdescription', '$highdescription');");
 
 		// Commit the transaction.
 		$conn->commit();		
@@ -447,23 +475,24 @@
 	}
 
 	// Display the question type selection.
-	function createQuestionDiv($surveyname, $questionNumber, $everyquestion)
+	function createQuestionDiv($surveyName, $questionNumber, $everyQuestion)
 	{
 		echo "
 			<div id='questions'>
 				<form action='createsurvey.php' method='POST'>
-					<p>Survey $surveyname</p>
+					<p>Survey $surveyName</p>
+					<p>Question Number: $questionNumber</p>
 					<p>Please select the type of question:</p>
-					<p><input type='radio' name='questiontype' value='truefalse'>True / False</p>
-					<p><input type='radio' name='questiontype' value='multiplechoice'>Multiple Choice<br/>
-					<p><input type='radio' name='questiontype' value='severalanswer'>Several Answers</p>
-					<p><input type='radio' name='questiontype' value='freeform'>Free Form Text</p>
-					<p><input type='radio' name='questiontype' value='rating'>Rating</p>
+					<p><input type='radio' name='questionType' value='trueFalse'>True / False</p>
+					<p><input type='radio' name='questionType' value='multipleChoice'>Multiple Choice<br/>
+					<p><input type='radio' name='questionType' value='severalAnswer'>Several Answers</p>
+					<p><input type='radio' name='questionType' value='freeForm'>Free Form Text</p>
+					<p><input type='radio' name='questionType' value='rating'>Rating</p>
 		";
 
-		echo "<p><input type='checkbox' name='everyquestion' value='everyquestion'";
+		echo "<p><input type='checkbox' name='everyQuestion' value='everyQuestion'";
 
-		if ($everyquestion == "everyquestion")
+		if ($everyQuestion == "everyQuestion")
 		{
 			echo " checked";
 		}
@@ -475,8 +504,8 @@
 					<p><input type='button' value='Include Existing Question'></p>
 					<p><input type='button' value='Start Over' onclick='startOver();'></p>
 					<p><input type='button' value='Exit'></p>
-					<input type='hidden' name='surveyname' value='".$surveyname."'>
-					<input type='hidden' name='createtype' value='selecttype'>
+					<input type='hidden' name='surveyName' value='".$surveyName."'>
+					<input type='hidden' name='createType' value='selectType'>
 					<input type='text' name='questionNumber' value='$questionNumber'>
 				</form>
 			</div>
@@ -484,21 +513,21 @@
 	}
 
 	// Add the survey name to the Database.
-	function addSurveyToDB($surveyname, $districtid)
+	function addSurveyToDB($surveyName, $districtId)
 	{
 		// Connect to the database.
 		include("connectToDB.php");
 
 		// Insert the values into the database.
-		$query = "INSERT INTO survey(surveyname, districtid, dateopen) VALUES (?, ?, now())"; 
+		$query = "INSERT INTO survey(surveyName, districtId, dateopen) VALUES (?, ?, now())"; 
 
 		if ($stmt = $conn->prepare($query))
 		{
-			$stmt->bind_param('si', $surveyname, $districtid);
+			$stmt->bind_param('si', $surveyName, $districtId);
 
 			if ($stmt->execute())
 			{
-				echo "Success ".$stmt->insert_id."<br/>";
+				//echo "Success ".$stmt->insert_id."<br/>";
 			}
 			else
 			{
@@ -516,42 +545,42 @@
 	function enterSurveyName()
 	{
 		echo "
-			<div id='surveynamepart'>
+			<div id='surveyNamepart'>
 				<form action='createsurvey.php' method='POST'>
-					<label>Survey Name: </label><input type='text' name='surveyname'>
+					<label>Survey Name: </label><input type='text' name='surveyName'>
 					<br/>
 					<input type='submit' value='Create Survey'>
-					<input type='hidden' name='entername' value='entername'>
+					<input type='hidden' name='enterName' value='enterName'>
 				</form>
 			</div>
 		";		
 	}
 
-	// Create a truefalse question.
-	function createTrueFalse($surveyname, $questionNumber, $everyquestion)
+	// Create a trueFalse question.
+	function createTrueFalse($surveyName, $questionNumber, $everyQuestion)
 	{
 		echo "
-			<div id='truefalse'>
+			<div id='trueFalse'>
 				<form action='createsurvey.php' method='POST'>
 					<p>Question $questionNumber</p>
 					<p>Create True / False Question</p>
 					<p>Please enter the question:</p>
-					<p><textarea name='questiontext' rows='3' cols='30' required></textarea></p>
+					<p><textarea name='questionText' rows='3' cols='30' required></textarea></p>
 					<p>Answer type:</p>
 					<p>
-					<input type='radio' name='truefalsetype' value='truefalse'>True / False<br/>
-					<input type='radio' name='truefalsetype' value='ab'>A / B<br/>
-					<input type='radio' name='truefalsetype' value='yesno'>Yes / No<br/>
-					<input type='radio' name='truefalsetype' value='custom'>Custom<br/>
-					<input type='text' id='truefalsecustom1'>&nbsp;/&nbsp;
-					<input type='text' id='truefalsecustom2'><br/>
+					<input type='radio' name='trueFalsetype' value='trueFalse'>True / False<br/>
+					<input type='radio' name='trueFalsetype' value='ab'>A / B<br/>
+					<input type='radio' name='trueFalsetype' value='yesno'>Yes / No<br/>
+					<input type='radio' name='trueFalsetype' value='custom'>Custom<br/>
+					<input type='text' name='trueFalsecustom1'>&nbsp;/&nbsp;
+					<input type='text' name='trueFalsecustom2'><br/>
 					</p>
 		";
 
-		// Check the "everyquestion" checkbox if it was checked already.
-		echo "<p><input type='checkbox' name='everyquestion' value='everyquestion'";
+		// Check the "everyQuestion" checkbox if it was checked already.
+		echo "<p><input type='checkbox' name='everyQuestion' value='everyQuestion'";
 
-		if ($everyquestion == "everyquestion")
+		if ($everyQuestion == "everyQuestion")
 		{
 			echo " checked";
 		}
@@ -564,9 +593,9 @@
 					&nbsp;&nbsp;
 					<input type='button' value='Cancel'>
 					</p>
-					<input type='hidden' name='createdquestion' value='truefalse'>
-					<input type='hidden' name='surveyname' value='$surveyname'>
-					<input type='hidden' name='createtype' value='truefalse'>
+					<input type='hidden' name='createdQuestion' value='trueFalse'>
+					<input type='hidden' name='surveyName' value='$surveyName'>
+					<input type='hidden' name='createType' value='trueFalse'>
 					<input type='hidden' name='questionNumber' value='$questionNumber'>
 				</form>
 			</div>
@@ -574,15 +603,15 @@
 	}
 
 	// Create a multiple choice question.
-	function createMultipleChoice($surveyname, $answers, $questionNumber, $everyquestion)
+	function createMultipleChoice($surveyName, $questionNumber, $everyQuestion)
 	{
 		echo "
-			<div id='multiplechoice'>
+			<div id='multipleChoice'>
 				<form action='createsurvey.php' method='POST'>
 					<p>Question $questionNumber</p>
 					<p>Create Multiple Choice Question</p>
 					<p>Please enter the question:</p>
-					<p><textarea name='questiontext' rows='3' cols='30'></textarea></p>
+					<p><textarea name='questionText' rows='3' cols='30'></textarea></p>
 					<p>
 		";
 
@@ -592,7 +621,7 @@
 		";
 
 		echo "
-			<select id='mchoice' name='mchoice' required='required'>
+			<select id='mChoice' name='mChoice' required='required'>
 		";
 
 		for ($i = 1; $i <= 20; $i++)
@@ -603,15 +632,15 @@
 		echo "</select><br/>";
 		echo "<p><input type='button' value='Create Answers' onclick='loadMultipleChoice();'></p>";
 
-		echo "<div id='mcanswers'></div>";
+		echo "<div id='mcAnswers'></div>";
 		echo "
 			</p>
 		";
 
-		// Check the "everyquestion" checkbox if it was checked already.
-		echo "<p><input type='checkbox' name='everyquestion' value='everyquestion'";
+		// Check the "everyQuestion" checkbox if it was checked already.
+		echo "<p><input type='checkbox' name='everyQuestion' value='everyQuestion'";
 
-		if ($everyquestion == "everyquestion")
+		if ($everyQuestion == "everyQuestion")
 		{
 			echo " checked";
 		}
@@ -624,25 +653,25 @@
 						&nbsp;&nbsp;
 						<input type='button' value='Cancel'>
 					</p>
-					<input type='hidden' name='createdquestion' value='multiplechoice'>
-					<input type='hidden' name='surveyname' value='$surveyname'>
-					<input type='hidden' name='createtype' value='multiplechoice'>
-					<input type='hidden' name='questionNumber' value='$questionNumber'>
+					<input type='hidden' name='createdQuestion' value='multipleChoice'>
+					<input type='hidden' name='surveyName' value='$surveyName'>
+					<input type='hidden' name='createType' value='multipleChoice'>
+					<input type='text' name='questionNumber' value='$questionNumber'>
 				</form>
 			</div>
 		";
 	}
 
 	// Create a several answer question.
-	function createSeveralAnswer($surveyname, $questionNumber, $everyquestion)
+	function createSeveralAnswer($surveyName, $questionNumber, $everyQuestion)
 	{
 		echo "
-			<div id='severalanswer'>
+			<div id='severalAnswer'>
 				<form action='createsurvey.php' method='POST'>
 					<p>Question $questionNumber</p>
 					<p>Create Several Answer Question</p>
 					<p>Please enter the question:</p>
-					<p><textarea name='questiontext' rows='3' cols='30'></textarea></p>
+					<p><textarea name='questionText' rows='3' cols='30'></textarea></p>
 					<p>
 		";
 
@@ -652,7 +681,7 @@
 		";
 
 		echo "
-			<select id='severalanswers' name='severalanswers' required='required'>
+			<select id='severalAnswers' name='severalAnswers' required='required'>
 		";
 
 		for ($i = 1; $i <= 20; $i++)
@@ -663,15 +692,15 @@
 		echo "</select><br/>";
 		echo "<p><input type='button' value='Create Answers' onclick='loadSeveralAnswers();'></p>";
 
-		echo "<div id='saanswers'></div>";
+		echo "<div id='sevAnswers'></div>";
 		echo "
 			</p>
 		";
 
-		// Check the "everyquestion" checkbox if it was checked already.
-		echo "<p><input type='checkbox' name='everyquestion' value='everyquestion'";
+		// Check the "everyQuestion" checkbox if it was checked already.
+		echo "<p><input type='checkbox' name='everyQuestion' value='everyQuestion'";
 
-		if ($everyquestion == "everyquestion")
+		if ($everyQuestion == "everyQuestion")
 		{
 			echo " checked";
 		}
@@ -684,31 +713,31 @@
 						&nbsp;&nbsp;
 						<input type='button' value='Cancel'>
 					</p>
-					<input type='hidden' name='createdquestion' value='severalanswer'>
-					<input type='hidden' name='surveyname' value='$surveyname'>
-					<input type='hidden' name='createtype' value='severalanswer'>
-					<input type='hidden' name='questionNumber' value='$questionNumber'>
+					<input type='hidden' name='createdQuestion' value='severalAnswer'>
+					<input type='hidden' name='surveyName' value='$surveyName'>
+					<input type='hidden' name='createType' value='severalAnswer'>
+					<input type='text' name='questionNumber' value='$questionNumber'>
 				</form>
 			</div>
 		";
 	}
 
 	// Create a free form text question. 
-	function createFreeFormText($surveyname, $questionNumber, $everyquestion)
+	function createFreeFormText($surveyName, $questionNumber, $everyQuestion)
 	{
 		echo "
-			<div id='freeformtext'>
+			<div id='freeFormText'>
 				<form action='createsurvey.php' method='POST'>
 					<p>Question $questionNumber</p>
 					<p>Create Free Form Question</p>
 					<p>Please enter the question:</p>
-					<p><textarea name='questiontext' rows='3' cols='30'></textarea></p>
+					<p><textarea name='questionText' rows='3' cols='30'></textarea></p>
 		";
 
-		// Check the "everyquestion" checkbox if it was checked already.
-		echo "<p><input type='checkbox' name='everyquestion' value='everyquestion'";
+		// Check the "everyQuestion" checkbox if it was checked already.
+		echo "<p><input type='checkbox' name='everyQuestion' value='everyQuestion'";
 
-		if ($everyquestion == "everyquestion")
+		if ($everyQuestion == "everyQuestion")
 		{
 			echo " checked";
 		}
@@ -716,34 +745,33 @@
 		echo ">Every question is of this type</p>";
 
 		echo "
-					<p><input type='checkbox' name='everyquestion' value='everyquestion'>Every question is of this type</p>
 					<p>
 						<input type='submit' value='Create Question'>
 						&nbsp;&nbsp;
 						<input type='button' value='Cancel'>
 					</p>
-					<input type='hidden' name='createdquestion' value='freeform'>
-					<input type='hidden' name='surveyname' value='$surveyname'>
-					<input type='hidden' name='createtype' value='freeform'>
-					<input type='hidden' name='questionNumber' value='$questionNumber'>
+					<input type='hidden' name='createdQuestion' value='freeForm'>
+					<input type='hidden' name='surveyName' value='$surveyName'>
+					<input type='hidden' name='createType' value='freeForm'>
+					<input type='text' name='questionNumber' value='$questionNumber'>
 				</form>
 			</div>
 		";  
 	}
 
 	// Create a rating question.
-	function createRating($surveyname, $questionNumber, $everyquestion)
+	function createRating($surveyName, $questionNumber, $everyQuestion)
 	{
 		echo "
 			<div id='rating'>
 				<form action='createsurvey.php' method='POST'>
 					<p>Question $questionNumber</p>
-					<p>Create Rating Question</p>
+					<p>Create rating Question</p>
 					<p>Please enter the question:</p>
-					<p><textarea name='questiontext' rows='3' cols='30'></textarea></p>
+					<p><textarea name='questionText' rows='3' cols='30'></textarea></p>
 
 					<p>
-						Rating from 1 to 
+						rating from 1 to 
 						<select name='values'>
 		";
 
@@ -758,25 +786,25 @@
 
 					<p>
 						Is 1 the low value?
-						<input type='radio' name='rating1low' value='yes'>Yes
-						<input type='radio' name='rating1low' value='no'>No
+						<input type='radio' name='rating1Low' value='yes'>Yes
+						<input type='radio' name='rating1Low' value='no'>No
 					</p>
 
 					<p>
 						Enter the word to describe the lowest rating:
-						<input type='text' id='ratinglowvalue'>
+						<input type='text' id='ratingLowValue'>
 					</p>
 
 					<p>
 						Enter the word to describe the highest rating:
-						<input type='text' id='ratinghighvalue'>
+						<input type='text' id='ratingHighValue'>
 					</p>
 		";
 
-		// Check the "everyquestion" checkbox if it was checked already.
-		echo "<p><input type='checkbox' name='everyquestion' value='everyquestion'";
+		// Check the "everyQuestion" checkbox if it was checked already.
+		echo "<p><input type='checkbox' name='everyQuestion' value='everyQuestion'";
 
-		if ($everyquestion == "everyquestion")
+		if ($everyQuestion == "everyQuestion")
 		{
 			echo " checked";
 		}
@@ -789,17 +817,17 @@
 						&nbsp;&nbsp;
 						<input type='button' value='Cancel'>
 					</p>
-					<input type='hidden' name='createdquestion' value='rating'>
-					<input type='hidden' name='surveyname' value='$surveyname'>
-					<input type='hidden' name='createtype' value='rating'>
-					<input type='hidden' name='questionNumber' value='$questionNumber'>
+					<input type='hidden' name='createdQuestion' value='rating'>
+					<input type='hidden' name='surveyName' value='$surveyName'>
+					<input type='hidden' name='createType' value='rating'>
+					<input type='text' name='questionNumber' value='$questionNumber'>
 				</form>
 			</div>
 		";	
 	}
 
 	// Display the questions we have already created.
-	function displayQuestions($surveyname)
+	function displayQuestions($surveyName)
 	{
 		echo "<p>Questions go here</p>";
 	}
@@ -830,25 +858,25 @@
 		";
 	}
 
-	// Make a session variable of the surveyid we are in.
-	function getSurveyId($surveyname, $districtid)
+	// Make a session variable of the surveyId we are in.
+	function getSurveyId($surveyName, $districtId)
 	{
 		session_start();
 
 		// Connect to the databasse.
 		include("connectToDB.php");
 
-		$surveyidRS = $conn->query("SELECT surveyid FROM survey WHERE surveyname = '$surveyname' AND districtid = '$districtid';");
+		$surveyIdRS = $conn->query("SELECT surveyId FROM survey WHERE surveyName = '$surveyName' AND districtId = '$districtId';");
 
-		if ($surveyidRS === false)
+		if ($surveyIdRS === false)
 		{
-			trigger_error('A problem has occurred getting the surveyid: '.$conn->error, E_USER_ERROR);
+			trigger_error('A problem has occurred getting the surveyId: '.$conn->error, E_USER_ERROR);
 		}
 		else
 		{
-			$arr = $surveyidRS->fetch_array(MYSQLI_ASSOC);
+			$arr = $surveyIdRS->fetch_array(MYSQLI_ASSOC);
 
-			$_SESSION['surveyid'] = $arr['surveyid'];
+			$_SESSION['surveyId'] = $arr['surveyId'];
 		}
 
 		// Close the connection.
