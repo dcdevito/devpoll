@@ -84,7 +84,9 @@
 				$enterName = mysql_real_escape_string($_POST['enterName']);
 				$surveyName = mysql_real_escape_string($_POST['surveyName']);
 
+				// ----------------------------------------------------------------------
 				// Are we entering the name for the first time.
+				// ----------------------------------------------------------------------
 				if ($enterName == "enterName")
 				{
 					//-------------------------------------------
@@ -133,7 +135,9 @@
 				}
 				else
 				{
+					// ----------------------------------------------------------------------
 					// The survey name is valid, and we can enter a question.
+					// ----------------------------------------------------------------------
 					$canEnterQuestions = true;
 
 					// Check if we just created a question.
@@ -219,12 +223,34 @@
 					}
 					elseif ($createdQuestion == 'rating')
 					{
-						
-						addRating($questionNumber);
+						echo "Inside createdQuestion = rating<br/>";
+						echo "questionText = $questionText<br/>";
+
+						//$is1LowValue = mysql_real_escape_string($_POST['rating1Low']);
+						$value = mysql_real_escape_string($_POST['values']);
+
+						//if ($is1LowValue == 'no')
+						//{
+						//	$lowValue = $value;
+						//	$highValue = 1;
+						//}
+						//else
+						//{
+							$lowValue = 1;
+							$highValue= $value;
+						//}
+
+						$lowDescription = mysql_real_escape_string($_POST['ratingLowValue']);
+						$highDescription = mysql_real_escape_string($_POST['ratingHighValue']);
+
+						// Add the rating question to the database.
+						addRating($questionNumber, $questionType, $questionText, $lowValue, $highValue, $lowDescription, $highDescription);
 					}
 				}
 
-				// 
+				// ----------------------------------------------------------------------
+				// Create the question of the selected type.
+				// ----------------------------------------------------------------------
 				if ($canEnterQuestions == true)
 				{
 					// Get question number.
@@ -293,7 +319,9 @@
 </html>
 
 <?php
+	// ----------------------------------------------------------------------
 	// Add the trueFalse question to the database.
+	// ----------------------------------------------------------------------
 	function addTrueFalse($questionNumber, $questionType, $questionText, $trueFalseHeading1, $trueFalseHeading2)
 	{
 		// Connect to the database.
@@ -346,7 +374,9 @@
 		$conn->close();
 	}
 
+	// ----------------------------------------------------------------------
 	// Add the multiple choice question to the database.
+	// ----------------------------------------------------------------------
 	function addMultipleChoice($questionNumber, $questionType, $questionText, $numberOfAnswers, $answers)
 	{
 		// Connect to the database.
@@ -384,7 +414,9 @@
 		$conn->close();
 	}
 
+	// ----------------------------------------------------------------------
 	// Add the severalAnswer question to the database.
+	// ----------------------------------------------------------------------
 	function addSeveralAnswer($questionNumber, $questionType, $questionText, $numberOfAnswers, $answers)
 	{
 		// Connect to the database.
@@ -422,7 +454,9 @@
 		$conn->close();
 	}
 
+	// ----------------------------------------------------------------------
 	// Add the free form question to the database.
+	// ----------------------------------------------------------------------
 	function addFreeForm($questionNumber, $questionType, $questionText)
 	{
 		// Connect to the database.
@@ -448,8 +482,10 @@
 		$conn->close();
 	}
 
+	// ----------------------------------------------------------------------
 	// Add the rating question to the database.
-	function addRating($questionNumber, $questionType, $questionText, $lowvalue, $highvalue, $lowdescription, $highdescription)
+	// ----------------------------------------------------------------------
+	function addRating($questionNumber, $questionType, $questionText, $lowValue, $highValue, $lowDescription, $highDescription)
 	{
 		// Connect to the database.
 		include("connectToDB.php");
@@ -464,8 +500,8 @@
 		$conn->query("INSERT INTO questions(surveyId, questionNumber, questionText, questionType, lastmodified) 
 							VALUES ($surveyId, $questionNumber, '$questionText', 'rating', now());");
 
-		$conn->query("INSERT INTO answers(surveyId, questionNumber, answerNumber, lowvalue, highvalue, lowdescription, highdescription) 
-							VALUES($surveyId, $questionNumber, 0, $lowvalue, $highvalue, '$lowdescription', '$highdescription');");
+		$conn->query("INSERT INTO answers(surveyId, questionNumber, answerNumber, lowValue, highvalue, lowdescription, highdescription) 
+							VALUES($surveyId, $questionNumber, 0, $lowValue, $highValue, '$lowDescription', '$highDescription');");
 
 		// Commit the transaction.
 		$conn->commit();		
@@ -474,7 +510,9 @@
 		$conn->close();
 	}
 
+	// ----------------------------------------------------------------------
 	// Display the question type selection.
+	// ----------------------------------------------------------------------
 	function createQuestionDiv($surveyName, $questionNumber, $everyQuestion)
 	{
 		echo "
@@ -512,7 +550,9 @@
 		";
 	}
 
+	// ----------------------------------------------------------------------
 	// Add the survey name to the Database.
+	// ----------------------------------------------------------------------
 	function addSurveyToDB($surveyName, $districtId)
 	{
 		// Connect to the database.
@@ -542,6 +582,9 @@
 		$stmt -> close(); 
 	}
 
+	// ----------------------------------------------------------------------
+	// Enter the name of the survey.
+	// ----------------------------------------------------------------------
 	function enterSurveyName()
 	{
 		echo "
@@ -556,7 +599,9 @@
 		";		
 	}
 
+	// ----------------------------------------------------------------------
 	// Create a trueFalse question.
+	// ----------------------------------------------------------------------
 	function createTrueFalse($surveyName, $questionNumber, $everyQuestion)
 	{
 		echo "
@@ -602,7 +647,9 @@
 		";      
 	}
 
+	// ----------------------------------------------------------------------
 	// Create a multiple choice question.
+	// ----------------------------------------------------------------------
 	function createMultipleChoice($surveyName, $questionNumber, $everyQuestion)
 	{
 		echo "
@@ -662,7 +709,9 @@
 		";
 	}
 
+	// ----------------------------------------------------------------------
 	// Create a several answer question.
+	// ----------------------------------------------------------------------
 	function createSeveralAnswer($surveyName, $questionNumber, $everyQuestion)
 	{
 		echo "
@@ -722,7 +771,9 @@
 		";
 	}
 
+	// ----------------------------------------------------------------------
 	// Create a free form text question. 
+	// ----------------------------------------------------------------------
 	function createFreeFormText($surveyName, $questionNumber, $everyQuestion)
 	{
 		echo "
@@ -759,7 +810,9 @@
 		";  
 	}
 
+	// ----------------------------------------------------------------------
 	// Create a rating question.
+	// ----------------------------------------------------------------------
 	function createRating($surveyName, $questionNumber, $everyQuestion)
 	{
 		echo "
@@ -783,21 +836,23 @@
 		echo "
 						</select>
 					</p>
+		";
 
-					<p>
-						Is 1 the low value?
-						<input type='radio' name='rating1Low' value='yes'>Yes
-						<input type='radio' name='rating1Low' value='no'>No
-					</p>
+		//			<p>
+		//				Is 1 the low value?
+		//				<input type='radio' name='rating1Low' value='yes'>Yes
+		//				<input type='radio' name='rating1Low' value='no'>No
+		//			</p>
 
+		echo "
 					<p>
 						Enter the word to describe the lowest rating:
-						<input type='text' id='ratingLowValue'>
+						<input type='text' name='ratingLowValue'>
 					</p>
 
 					<p>
 						Enter the word to describe the highest rating:
-						<input type='text' id='ratingHighValue'>
+						<input type='text' name='ratingHighValue'>
 					</p>
 		";
 
@@ -826,13 +881,17 @@
 		";	
 	}
 
+	// ----------------------------------------------------------------------
 	// Display the questions we have already created.
+	// ----------------------------------------------------------------------
 	function displayQuestions($surveyName)
 	{
 		echo "<p>Questions go here</p>";
 	}
 
+	// ----------------------------------------------------------------------
 	// Choose an existing question from a list.
+	// ----------------------------------------------------------------------
 	function existingQuestionsList()
 	{
 		echo "
@@ -858,7 +917,9 @@
 		";
 	}
 
+	// ----------------------------------------------------------------------
 	// Make a session variable of the surveyId we are in.
+	// ----------------------------------------------------------------------
 	function getSurveyId($surveyName, $districtId)
 	{
 		session_start();
