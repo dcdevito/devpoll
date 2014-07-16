@@ -1,9 +1,13 @@
 <?php
+	session_start();
+
 	$questionNumber = mysql_real_escape_string($_POST['questionNumber']);
 	$questionType = mysql_real_escape_string($_POST['questionType']);
 	$questionText = mysql_real_escape_string($_POST['questionText']);
 	$numberOfAnswers = mysql_real_escape_string($_POST['numberOfAnswers']);
-	$sid = mysql_real_escape_string($_POST['surveyId']);
+	$surveyId = mysql_real_escape_string($_POST['surveyId']);
+	$surveyName = mysql_real_escape_string($_POST['surveyName']);
+	$everyQuestion = mysql_real_escape_string($_POST['everyQuestion']);
 
 	// Loop through the answers and create an array of the values.
 	$answers = array();
@@ -15,13 +19,20 @@
 		$answers[] = $answer;
 	}
 
-	addMultipleChoice($sid, $questionNumber, $questionType, $questionText, $numberOfAnswers, $answers);
+	addMultipleChoice($surveyId, $questionNumber, $questionType, $questionText, $numberOfAnswers, $answers);
+
+	$_SESSION['surveyInProgress'] = 'YES';
+	$_SESSION['surveyId'] = $surveyId;
+	$_SESSION['surveyName'] = $surveyName;
+	$_SESSION['questionNumber'] = $questionNumber;
+	$_SESSION['everyQuestion'] = $everyQuestion;
+
 	header('Location: createsurvey.php');
 
 	// ----------------------------------------------------------------------
 	// Add the multiple choice question to the database.
 	// ----------------------------------------------------------------------
-	function addMultipleChoice($sid, $questionNumber, $questionType, $questionText, $numberOfAnswers, $answers)
+	function addMultipleChoice($surveyId, $questionNumber, $questionType, $questionText, $numberOfAnswers, $answers)
 	{
 		// Connect to the database.
 		include("connectToDB.php");
@@ -34,7 +45,7 @@
 
 		// Insert the values into the database.
 		$questionQuery = "INSERT INTO questions(surveyId, questionNumber, questionText, questionType, lastmodified) 
-							VALUES ($sid, $questionNumber, '$questionText', 'multipleChoice', now());";
+							VALUES ($surveyId, $questionNumber, '$questionText', 'multipleChoice', now());";
 
 		$conn->query($questionQuery);
 
@@ -45,7 +56,7 @@
 				$answer = $answers[$i];
 
 				$answerQuery = "INSERT INTO answers(surveyId, questionNumber, answerNumber, answerText)
-									VALUES($sid, $questionNumber, $i, '$answer');";
+									VALUES($surveyId, $questionNumber, $i, '$answer');";
 
 				$conn->query($answerQuery);
 			}
