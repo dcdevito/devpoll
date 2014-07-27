@@ -1,0 +1,155 @@
+﻿<!doctype html>
+<html>
+
+<head>
+  <title>Devpoll with Polymer</title>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <script src="../components/platform/platform.js"></script>
+  <link rel="import" href="../components/font-roboto/roboto.html">
+    
+    <!--Added from tutorial-->
+    <link rel="import" href="../components/core-header-panel/core-header-panel.html">
+    <link rel="import" href="../components/core-toolbar/core-toolbar.html">
+    <link rel="import" href="../components/paper-tabs/paper-tabs.html">
+    <link rel="import" href="../components/core-icons/core-icons.html">
+    <link rel="import" href="../components/paper-input/paper-input.html">
+    <link rel="import" href="../components/paper-button/paper-button.html">
+      
+    <link rel="import" href="post-list.html">
+    <!--<link rel="import" href="post-card.html">-->
+    
+  <style>
+  html,body {
+    height: 100%;
+    margin: 0;
+    background-color: #E5E5E5;
+    font-family: 'RobotoDraft', sans-serif;
+  }
+  core-header-panel {
+    height: 100%;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch; 
+  }
+  core-toolbar {
+    background: #03a9f4;
+    color: white;
+  }
+  paper-tabs {
+    width: 100%;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+  .container {
+    width: 80%;
+    margin: 50px auto;
+  }
+  @media (min-width: 481px) {
+    paper-tabs {
+      width: 700px;
+    }
+    .container {
+      width: 500px;
+    }
+
+  }
+  </style>
+</head>
+
+<body unresolved touch-action="auto">
+  
+  <!--Toolbar added from tutorial-->
+  <core-header-panel>
+      
+    <core-toolbar>
+      <!--Tabs added from tutorial-->
+        <paper-tabs valueattr="name" selected="home" self-end>
+        <paper-tab name="home">HOME</paper-tab>
+        <paper-tab name="favorites">FAVORITES</paper-tab>
+        <paper-tab name="marketing">MARKETING</paper-tab>
+        <paper-tab name="support">SUPPORT</paper-tab>
+        <paper-tab name="dom"><img src="../images/Dom.png" height="42" width="42"></paper-tab>
+        <paper-tab name="mark"><img src="../images/Mark.png" height="42" width="42"></paper-tab>
+        <paper-tab name="sandy"><img src="../images/Sandy.png" height="42" width="42"></paper-tab>
+        
+        </paper-tabs>
+
+    </core-toolbar>
+
+    <!-- main page content will go here -->
+    
+    <div class="container" layout vertical center>
+      <post-card>
+      <img width="70" height="70" 
+        src="../images/Dom.png">
+        <h2>Dominick DeVito</h2>
+        <h3>Project Manager</h3>
+        <h6>Polymer Rocks!</h6>
+      </post-card>
+    </div>
+
+     <div class="container" layout vertical center>
+      <post-card>
+      <img width="70" height="70" 
+        src="../images/Mark.png">
+        <h2>Mark Pollard</h2>
+        <h3>Lead Programmer</h3>
+        <h6>Devpoll!</h6>
+      </post-card>
+    </div>
+     
+      <div class="container" layout vertical center>
+      <post-card>
+      <img width="70" height="70" 
+        src="../images/Sandy.png">
+        <h2>Sandy Cokeley</h2>
+        <h3>Project Sponsor</h3>
+        <h6>Scope!</h6>
+      </post-card>
+      <!--<post-list show="all"></post-list>-->
+    </div>
+      
+      <div class="container" layout vertical center>
+      <post-card>
+       <form method="post" action="<?php echo $_SERVER["PHP_SELF"];?>
+        <!--From: <input type="text" name="from"><br>-->
+        <h3>From:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input type="text" name="from"<br></h3>
+        <h3>Subject:&nbsp;&nbsp;&nbsp; <input type="text" name="subject"><br></h3>
+        <h3>Message: <textarea rows="10" cols="40" name="message"></textarea><br></h3>
+        <input type="submit" name="submit" value="Send Survey">
+      </form>
+      </post-card>
+      <!--<post-list show="all"></post-list>-->
+    </div>
+      
+  
+      <div class="container" layout vertical center>
+      <post-card>
+        <paper-dialog id="dialog" heading="Launch?" transition="paper-dialog-transition-bottom">
+          <paper-input floatingLabel label="From"></paper-input>
+          <paper-input floatingLabel label="Subject"></paper-input>
+          <paper-input floatingLabel multiline label="Message"></paper-input>
+          <br></br>
+          <paper-button name="MyButton" label="Send Survey" affirmative default raisedButton ></paper-button>
+        </paper-dialog>
+      </post-card>
+      
+      
+      <!--<post-list show="all"></post-list>-->
+    </div>
+  </core-header-panel>
+
+ <!--Script Added from Tutorial
+   <script>
+    var tabs = document.querySelector('paper-tabs');
+    var list = document.querySelector('post-list');
+
+    tabs.addEventListener('core-select', function() {
+  list.show = tabs.selected;
+  });
+  </script>-->
+  
+</body>
+
+</html>

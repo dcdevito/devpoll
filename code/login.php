@@ -33,6 +33,7 @@ header("location: $url" );
 }
 else 
 {
+//header("location: $url" );
 $error="Your Login Name or Password is invalid";
 }
 }
@@ -67,7 +68,7 @@ border:#666666 solid 1px;
 </style>
 </head>
 <body bgcolor="#FFFFFF">
-<div><h3>Cokely Communications School Survey Site <a href="http://www.devpoll.net/adminpage.html">Click Here</a></h3></div>
+<div><h3>Stokely LLC Communications School Survey Site <a href="http://www.devpoll.net/adminpage.html">Click Here</a></h3></div>
 
 <!--<div style="font-weight:bold; margin-bottom:10px">Login Details -> Username : <a href="#">test</a>  Password : <a href="#">test</a></div><-->
 

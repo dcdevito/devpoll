@@ -1,3 +1,4 @@
+
 <h2>Send Your Survey</h2>
 <?php
 // display form if user has not clicked submit
@@ -24,7 +25,7 @@ else
     // message lines should not exceed 70 characters (PHP rule), so wrap it
     $message = wordwrap($message, 70);
     // send mail
-    mail("plmgzm@gmail.com",$subject,$message,"From: $from\n");
+    mail("ddevito@gmail.com",$subject,$message,"From: $from\n");
     echo "Thank you for sending us feedback";
     }
   }
