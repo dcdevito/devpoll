@@ -82,7 +82,7 @@
 			{
 				if (XMLHttpRequestObject)
 				{
-					XMLHttpRequestObject.open("POST", "addRatingDescriptions.php");
+					XMLHttpRequestObject.open("POST", "loadRatingDescriptions.php");
 
 					XMLHttpRequestObject.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 
@@ -125,7 +125,40 @@
 				echo "Survey Name = $surveyName<br/>";
 				echo "Survey Id = $surveyId<br/>";
 
-				// ----------------------------------------------------------------------
+
+//*******************
+//*******************
+//*******************
+//*******************
+// Need to add isset to check that the values are entered correctly.
+//if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+//    if (!isset($_POST['name'])) {
+//        // at this point you know that `name` was not passed as part of the request
+//        // this could be treated as an error
+//    }
+//}
+
+//if ( isset ($_POST['fname']{0}) and isset( $_POST['lname']{0}) and isset( $_POST['mail']{0}) ){
+//   // Insert into db
+//}
+//else{
+//   echo "Please fill all the feilds";
+//}
+//What happens here is even if the user didnt enter any value into the fname feild, still the $_POST['fname'] will be set. So the isset ($_POST['fname']) will always return true if the form was submitted.
+
+//But when you check for isset ($_POST['fname']{0}) you are making sure that atleast one charater is entered and the feild is not empty. you can also use an is_empty but this is much better way.
+
+//Also The catch in using this is "{}" are going to be removed in php version 6. so if you are planning to upgrade your servers in the future then this might cause a small problem. But using "[]" instead of "{}" will solve that problem in php version 6.				// ----------------------------------------------------------------------
+
+//why not use isset in combination with empty? isset(...) && !empty(..)
+
+//*******************
+//*******************
+//*******************
+//*******************
+//*******************
+
+
 				// Are we entering the name for the first time.
 				// ----------------------------------------------------------------------
 				if ($enterName == "enterName")
@@ -256,6 +289,8 @@
 					$everyQuestion = $_SESSION['everyQuestion'];
 
 					// Clear the session variables.
+					// The bad thing about uncommenting these lines is it causes the user to have to 
+					// enter the survey name every time the grid is refreshed.
 					//$_SESSION['surveyInProgress'] = '';
 					//$_SESSION['surveyId'] = '';
 					//$_SESSION['surveyName'] = '';
@@ -329,7 +364,7 @@
 			</div>
 		";
 
-		displayQuestions($surveyId);
+		displayQuestions($surveyId, $surveyName);
 	}
 
 	// ----------------------------------------------------------------------

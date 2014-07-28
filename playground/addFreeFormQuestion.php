@@ -2,11 +2,13 @@
 	session_start();
 
 	$questionNumber = mysql_real_escape_string($_POST['questionNumber']);
-	$questionType = mysql_real_escape_string($_POST['questionType']);
+	$questionType = mysql_real_escape_string($_POST['createType']);
 	$questionText = mysql_real_escape_string($_POST['questionText']);
 	$surveyId = mysql_real_escape_string($_POST['surveyId']);
 	$surveyName = mysql_real_escape_string($_POST['surveyName']);
 	$everyQuestion = mysql_real_escape_string($_POST['everyQuestion']);
+
+	echo "Question Type = $questionType<br/>";
 
 	addFreeForm($surveyId, $questionNumber, $questionType, $questionText);
 

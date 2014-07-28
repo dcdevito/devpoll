@@ -2,12 +2,14 @@
 	session_start();
 
 	$questionNumber = mysql_real_escape_string($_POST['questionNumber']);
-	$questionType = mysql_real_escape_string($_POST['questionType']);
+	$questionType = mysql_real_escape_string($_POST['createType']);
 	$questionText = mysql_real_escape_string($_POST['questionText']);
 	$numberOfAnswers = mysql_real_escape_string($_POST['numberOfAnswers']);
 	$surveyId = mysql_real_escape_string($_POST['surveyId']);
 	$surveyName = mysql_real_escape_string($_POST['surveyName']);
 	$everyQuestion = mysql_real_escape_string($_POST['everyQuestion']);
+
+	echo "Question Type = $questionType<br/>";
 
 	// Loop through the answers and create an array of the values.
 	$answers = array();
