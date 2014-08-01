@@ -13,7 +13,7 @@
   <link rel="import" href="polymer/components/paper-button/paper-button.html">
 
    <script>
-      function discard()
+      function submitvalues()
       {
         var mytitle = document.getElementById('mytitle').value;
         var mytext = document.getElementById('mytext').value;
@@ -23,16 +23,6 @@
 
         document.forms['myform'].submit();
 
-      }
-
-      function messages()
-      {
-        alert("Messages");
-      }
-
-      function sending()
-      {
-        alert("sending");
       }
    </script>
   
@@ -68,11 +58,7 @@
     <paper-input floatinglabel multiline label="text" name="mytext" id="mytext"></paper-input>
     <br/>
     <br/>
-  <paper-button raisedButton onclick="discard();" label="Discard Draft"></paper-button>
-  
-  <paper-button raisedButton onclick="messages();" label="Get Messages"></paper-button>
-  
-  <paper-button raisedButton onclick="sending();" label="Send Message"></paper-button>
+  <paper-button raisedButton onclick="submitvalues();" label="Submit Values"></paper-button>
 
   <form name="myform" action="marktest3.php" method="post">
       <input type="hidden" id="number1" name="number1">
