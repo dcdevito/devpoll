@@ -110,7 +110,7 @@ $email = $_POST['email'];
 $password = $_POST['password'];
 $website = $_POST['website'];
 $comment = $_POST['comment'];
-$gender = $_POST['MyGender'];
+$gender = $_POST['gender'];
 
 echo "the results are $firstName $lastName $school $email $password $website $comment $gender";
 
