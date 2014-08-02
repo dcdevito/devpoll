@@ -1,13 +1,10 @@
 <!doctype html>
 <html>
-
 <head>
-  <title>Devpoll with Polymer</title>
-  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
-  <script src="../components/platform/platform.js"></script>
-  <link rel="import" href="../components/font-roboto/roboto.html">
-    
-    <!--Added from tutorial-->
+    <title>SCOPE - Send Survey</title>
+  
+    <script src="../components/platform/platform.js"></script>
+    <link rel="import" href="../components/font-roboto/roboto.html">  
     <link rel="import" href="../components/core-header-panel/core-header-panel.html">
     <link rel="import" href="../components/core-toolbar/core-toolbar.html">
     <link rel="import" href="../components/paper-tabs/paper-tabs.html">
@@ -16,8 +13,23 @@
     <link rel="import" href="../components/paper-button/paper-button.html">
       
     <link rel="import" href="post-list.html">
+
+   <script>
+      function submitvalues()
+      {
+        var myfrom = document.getElementById('myfrom').value;
+        var mysubject = document.getElementById('mysubject').value;
+        var mymessage = document.getElementById('mymessage').value;
+
+        document.getElementById('email1').value = myfrom;
+        document.getElementById('email2').value = mysubject;
+        document.getElementById('email3').value = mymessage;
+
+        document.forms['myform'].submit();
+
+      }
+   </script>
   
-    
   <style>
   html,body {
     height: 100%;
@@ -55,19 +67,11 @@
 
   }
   </style>
-</head>
-
-<?php
-// display form if user has not clicked submit
-if (!isset($_POST["submit"]))
-  {
-  ?>
-
-
-<body unresolved touch-action="auto">
   
-  <!--Toolbar added from tutorial-->
-  <core-header-panel>
+</head>
+<body unresolved touch-action="auto">
+    
+<core-header-panel>
       
     <core-toolbar>
       <!--Tabs added from tutorial-->
@@ -80,54 +84,36 @@ if (!isset($_POST["submit"]))
         </paper-tabs>
 
     </core-toolbar>
-
-    <!-- main page content will go here -->
-  
-      <div class="container" layout vertical center>
+    <div class="container" layout vertical center>
       <post-card>
         <paper-dialog id="dialog" heading="Launch?" transition="paper-dialog-transition-bottom">
-          <paper-input floatingLabel label="From" name="from"></paper-input>
-          <paper-input floatingLabel label="Subject" name="subject"></paper-input>
-          <paper-input floatingLabel multiline label="message"></paper-input>
+          <paper-input floatingLabel label="From" name="from" id="myfrom"></paper-input>
+          <paper-input floatingLabel label="Subject" name="subject" id="mysubject"></paper-input>
+          <paper-input floatingLabel multiline label="Message" name="message" id="mymessage"></paper-input>
           <br></br>
-          <paper-button name="MyButton" label="Send Survey" affirmative default raisedButton ></paper-button>
+          <paper-button  raisedButton onclick="submitvalues();" label="Send Survey"></paper-button>
         </paper-dialog>
       </post-card>
       
+    <form name="myform" action="sendSurvey.php" method="post">
+        <input type="hidden" id="email1" name="email1">
+        <input type="hidden" id="email2" name="email2">
+        <input type="hidden" id="email3" name="email3">
+    </form>
       
-      <!--<post-list show="all"></post-list>-->
+      
+     
     </div>
   </core-header-panel>
 
- <!--Script Added from Tutorial
-   <script>
-    var tabs = document.querySelector('paper-tabs');
-    var list = document.querySelector('post-list');
+    <!--<paper-input label="First Value" name="mytitle" id="mytitle" maxlength="255"></paper-input>
+    <br/>
+    <paper-input floatinglabel multiline label="Second Value" name="mytext" id="mytext"></paper-input>
+    <br/>
+    <br/>
+  <paper-button raisedButton onclick="submitvalues();" label="Submit Values"></paper-button>-->
 
-    tabs.addEventListener('core-select', function() {
-  list.show = tabs.selected;
-  });
-  </script>-->
+ 
   
 </body>
-
 </html>
-  <?php 
-  }
-else
-  // the user has submitted the form
-  {
-  // Check if the "from" input field is filled out
-  if (isset($_POST["from"]))
-    {
-    $from = $_POST["from"]; // sender
-    $subject = $_POST["subject"];
-    $message = $_POST["message"];
-    // message lines should not exceed 70 characters (PHP rule), so wrap it
-    $message = wordwrap($message, 70);
-    // send mail
-    mail("ddevito@gmail.com",$subject,$message,"From: $from\n");
-    echo "Thank you for sending us feedback";
-    }
-  }
-?>

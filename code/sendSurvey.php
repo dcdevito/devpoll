@@ -1,32 +1,29 @@
+<html>
+<head>
+</head>
+<body>
+	<?php
+			//if ($_SERVER["REQUEST_METHOD"] == "POST")
+			//{
+				//   ***********************************************************
+				//  *************************************************************
+				// **** WE NEED TO REPLACE districtId WITH A SESSION VARIABLE ****
+				//  *************************************************************
+				//   ***********************************************************
+				$districtId = 1;
 
-<h2>Send Your Survey</h2>
-<?php
-// display form if user has not clicked submit
-if (!isset($_POST["submit"]))
-  {
-  ?>
-  <form method="post" action="<?php echo $_SERVER["PHP_SELF"];?>">
-  From: <input type="text" name="from"><br>
-  Subject: <input type="text" name="subject"><br>
-  Message: <textarea rows="10" cols="40" name="message"></textarea><br>
-  <input type="submit" name="submit" value="Submit Feedback">
-  </form>
-  <?php 
-  }
-else
-  // the user has submitted the form
-  {
-  // Check if the "from" input field is filled out
-  if (isset($_POST["from"]))
-    {
-    $from = $_POST["from"]; // sender
-    $subject = $_POST["subject"];
-    $message = $_POST["message"];
-    // message lines should not exceed 70 characters (PHP rule), so wrap it
-    $message = wordwrap($message, 70);
-    // send mail
-    mail("ddevito@gmail.com",$subject,$message,"From: $from\n");
-    echo "Thank you for sending us feedback";
-    }
-  }
-?>
+				//$email1 = $_POST['email1'];
+				//$email2 = $_POST['email2'];
+				//$email3 = $_POST['email3'];
+				//
+				$from = $_POST['email1'];
+				$subject = $_POST['email2'];
+				$message = $_POST['email3'];
+				// message lines should not exceed 70 characters (PHP rule), so wrap it
+				$message = wordwrap($message, 70);
+				// send mail
+				mail("ddevito@gmail.com",$subject,$message,"From: $from\n");
+				echo "Thank you for sending us feedback";
+	?>
+</body>
+</html>
