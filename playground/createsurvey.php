@@ -101,7 +101,13 @@
 				var descriptions = document.getElementById('ratingValue').value;
 				
 				XMLHttpRequestObject.send('descriptions=' + descriptions);
-			}		
+			}
+
+			function includeQuestions()
+			{
+				// Launch the Include Questions page.
+				window.location = "includequestions.php";
+			}
 		</script>
 	</head>
 	<body>
@@ -353,7 +359,7 @@
 
 		echo "
 					<p><input type='submit' value='Create Question'></p>
-					<p><input type='button' value='Include Existing Question'></p>
+					<p><input type='button' value='Include Existing Question' onclick='includeQuestions();'></p>
 					<p><input type='button' value='Start Over' onclick='startOver();'></p>
 					<p><input type='button' value='Stop entering questions'></p>
 					<input type='hidden' name='surveyName' value='$surveyName'>
@@ -727,34 +733,6 @@
 	}
 
 	// ----------------------------------------------------------------------
-	// Choose an existing question from a list.
-	// ----------------------------------------------------------------------
-	function existingQuestionsList()
-	{
-		echo "
-			<div id='existingquestions'>
-				<table border='1'>
-					<tr>
-						<th>Select</th>
-						<th>Type</th>
-						<th>Question</th>
-					</tr>
-					<tr>
-						<td><input type='checkbox' name='select' value='selected'></td>
-						<td>multiple choice</td>
-						<td>What is the airspeed velocity of a migrating swallow?</td>
-					</tr>
-					<tr>
-						<td><input type='checkbox' name='select' value='selected'></td>
-						<td>free form</td>
-						<td>What is the meaning of life?</td>
-					</tr>
-				</table>
-			</div>
-		";
-	}
-
-	// ----------------------------------------------------------------------
 	// Make a session variable of the surveyId we are in.
 	// ----------------------------------------------------------------------
 	function getSurveyId($surveyName, $districtId)
@@ -779,6 +757,9 @@
 
 				// Close the connection.
 				$conn->close();
+
+							
+				$_SESSION['surveyId'] = $surveyId;
 
 				return $surveyId;
 			}			
