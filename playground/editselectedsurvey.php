@@ -92,7 +92,7 @@
 
 	function displayEditQuestionsAndAnswers($result, $surveyId)
 	{
-		echo "<form action='saveeditsurvey.php' method='POST'>";
+		echo "<form action='editselectedquestion.php' method='POST'>";
 		echo "<table border='1' cellspacing='0' cellpadding='0' width='80%' style='border-color:LightGrey'>";
 		echo "<tr>";
 		echo "<th>select</th>";
@@ -147,7 +147,7 @@
 
 				echo "<tr bgcolor='$backcolor'>";
 				echo "<td>
-						<input type='checkbox' name='includeSurveyQuestion[]' value='$questionid'>
+						<input type='radio' name='editQuestion' value='$questionid'>
 						<input type='hidden' name='surveyId' value='$surveyId'>
 						</td>";
 				echo "<td>$surveyName</td>";
@@ -249,7 +249,8 @@
 //		echo "</tr>";
 		echo "</table>";
 		echo "<input type='submit' value='Edit Question'>";
-		echo "<input type='button' onclick='includeQuestions();'>";
+		echo "<br/>";
+		echo "<input type='button' value='Include Existing Questions' onclick='includeQuestions();'>";
 		echo "</form>";
 	}
 ?>
