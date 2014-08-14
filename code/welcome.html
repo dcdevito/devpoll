@@ -1,0 +1,329 @@
+<!doctype html>
+<html>
+<head>
+    <title>SCOPE - Welcome</title>
+  
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <script src="../components/platform/platform.js"></script>
+    <link rel="import" href="../components/font-roboto/roboto.html">  
+    <link rel="import" href="../components/core-header-panel/core-header-panel.html">
+    <link rel="import" href="../components/core-toolbar/core-toolbar.html">
+    <link rel="import" href="../components/paper-tabs/paper-tabs.html">
+    <link rel="import" href="../components/core-icons/core-icons.html">
+    <link rel="import" href="../components/paper-input/paper-input.html">
+    <link rel="import" href="../components/paper-button/paper-button.html">
+    <link rel="import" href="../components/paper-radio-button/paper-radio-button.html">
+    <link rel="import" href="../components/paper-radio-group/paper-radio-group.html">
+    <link rel="import" href="../components/paper-item/paper-item.html">
+    <link rel="import" href="../components/paper-ripple/paper-ripple.html">
+      
+    <link rel="import" href="post-list.html">
+	
+<script>
+  var tabs = document.querySelector('paper-tabs');
+
+  tabs.addEventListener('core-select', function() {
+    console.log("Selected: " + tabs.selected);
+  });
+  
+  tabs.addEventListener('core-select',function(){
+  pages.selected = tabs.selected;
+});
+  
+  function myclickwelcome()
+  {
+	window.location = "welcome.html";
+  }
+  
+   function myclicklogout()
+  {
+	window.location = "login.html";
+  }
+</script>
+	
+	<style>
+  html,body {
+    height: 100%;
+    margin: 0;
+    background-color: #E5E5E5;
+    font-family: 'RobotoDraft', sans-serif;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+    -webkit-touch-callout: none;
+  }
+  core-header-panel {
+    height: 100%;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch; 
+  }
+  core-toolbar {
+    background: #03a9f4;
+    color: white;
+  }
+  paper-tabs {
+    width: 100%;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+  .container {
+    width: 80%;
+    margin: 50px auto;
+  }
+  @media (min-width: 481px) {
+    paper-tabs {
+      width: 700px;
+    }
+    .container {
+      width: 500px;
+    }
+
+  }
+  
+    paper-radio-button::shadow #ink[checked] {
+    color: #4285f4;
+    }
+    
+    paper-radio-button::shadow #onRadio {
+    background-color: #4285f4;
+    }
+    
+    paper-radio-button::shadow #ink {
+    color: #b5b5b5;
+    }
+    paper-radio-button::shadow #offRadio {
+    border-color: #b5b5b5;
+}
+  section {
+      xpadding: 20px;
+      xbackground-color: #f0f0f0;
+    }
+
+.icon-button.red > paper-ripple {
+      color: #db4437;
+    }
+    
+    .icon-button.blue > core-icon::shadow path {
+      fill: #4285f4;
+    }
+    
+    .icon-button.blue > paper-ripple {
+      color: #4285f4;
+    }
+/* FAB */
+    .fab {
+      position: relative;
+      display: inline-block;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      color: #fff;
+      overflow: hidden;
+      transition: box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      transition-delay: 0.2s;
+      box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
+    }
+    
+    .fab.red {
+      background-color: #d23f31;
+    }
+    
+    .fab.blue {
+      background-color: #4285f4;
+    }
+    
+    .fab.green {
+      background-color: #0f9d58;
+    }
+    
+    .fab:active {
+      box-shadow: 0 8px 17px 0 rgba(0, 0, 0, 0.2);
+      transition-delay: 0s;
+    }
+    
+    .fab > core-icon {
+      margin: 16px;
+    }
+    
+    .fab > core-icon::shadow path {
+      fill: #fff;
+    }
+    
+    /* Menu */
+    .menu {
+      display: inline-block;
+      width: 180px;
+      background-color: #fff;
+      box-shadow: 0 8px 17px 0 rgba(0, 0, 0, 0.2);
+    }
+    
+    .item {
+      position: relative;
+      height: 48px;
+      line-height: 48px;
+      color: #646464;
+      font-size: 0.9em;
+    }
+    
+    .menu.blue > .item {
+      color: #4285f4;
+    }
+    
+    /* Card, Dialog */
+    .card, .dialog {
+      position: relative;
+      display: inline-block;
+      width: 300px;
+      height: 240px;
+      vertical-align: top;
+      background-color: #fff;
+      box-shadow: 0 12px 15px 0 rgba(0, 0, 0, 0.24);
+    }
+    
+    .dialog {
+      box-sizing: border-box;
+      padding: 16px;
+    }
+    
+    .dialog > .content {
+      height: 170px;
+      font-size: 0.9em;
+    }
+    
+    .dialog > .content > .title {
+      font-size: 1.3em;
+    }
+    
+    .dialog > .button {
+      width: 90px;
+      float: right;
+    }
+    
+    .card.image {
+      background: url(http://lorempixel.com/300/240/nature/);
+      color: #fff;
+    }
+    
+    /* Misc */
+    .center {
+      text-align: center;
+    }
+    
+    .label {
+      padding: 0 16px;
+    }
+    
+    .label-blue {
+      color: #4285f4; 
+    }
+    
+    .label-red {
+      color: #d23f31; 
+    }
+
+    /* unvisited link */
+a:link {
+    color: #FF0000;
+}
+
+/* visited link */
+a:visited {
+    color: #00FF00;
+}
+
+/* mouse over link */
+a:hover {
+    color: #FF00FF;
+}
+
+/* selected link */
+a:active {
+    color: #0000FF;
+}
+  </style>
+  
+</head>
+<body unresolved touch-action="auto">
+
+<core-header-panel>
+      
+    <core-toolbar>
+        <paper-tabs valueattr="name" selected="home" self-end>
+        <paper-tab name="home" onclick="myclickwelcome();">HOME</paper-tab>
+        <paper-tab name="favorites">SUPPORT</paper-tab>
+        <paper-tab name="createSurvey">MARKETING</paper-tab>
+        <paper-tab name="sendSurvey">ABOUT</paper-tab>
+	<paper-tab name="logout" onclick="myclicklogout();">LOGOUT</paper-tab>
+        
+        </paper-tabs>
+        
+    </core-toolbar>
+    
+    
+    <div class="menu blue">   
+	
+      <div class="item">
+        <div class="label" fit>Create Survey</div><a href="createsurvey3.php" target="_self">
+        <paper-ripple fit></paper-ripple></a>
+      </div>
+       <div class="item">
+        <div class="label" fit>Create Account</div><a href="createAccount2.html" target="_self">
+        <paper-ripple fit></paper-ripple></a>
+      </div>
+      <div class="item">
+        <div class="label" fit>Edit Survey</div>
+        <paper-ripple fit></paper-ripple>
+      </div>
+      <div class="item">
+        <div class="label" fit>Delete Survey</div>
+        <paper-ripple fit></paper-ripple>
+      </div>
+      <div class="item">
+        <div class="label" fit>List Surveys</div>
+        <paper-ripple fit></paper-ripple>
+      </div>
+      <div class="item">
+        <div class="label" fit>Create Participant List</div>
+        <paper-ripple fit></paper-ripple>
+      </div>
+      <div class="item">
+        <div class="label" fit>Edit Participant List</div>
+        <paper-ripple fit></paper-ripple>
+      </div>
+      <div class="item">
+        <div class="label" fit>Delete Participant List</div>
+        <paper-ripple fit></paper-ripple>
+      </div>
+      <div class="item">
+        <div class="label" fit>List All Participants</div>
+        <paper-ripple fit></paper-ripple>
+      </div>
+      <div class="item">
+        <div class="label" fit>Send Survey</div><a href="sendSurvey.html" target="_self">
+        <paper-ripple fit></paper-ripple></a>
+      </div>
+      <div class="item">
+        <div class="label" fit>List Surveys</div>
+        <paper-ripple fit></paper-ripple>
+      </div>
+      <div class="item">
+        <div class="label" fit>Reports</div>
+        <paper-ripple fit></paper-ripple>
+      </div>
+      <div class="item">
+        <div class="label" fit>View Summary</div>
+        <paper-ripple fit></paper-ripple>
+      </div>
+      <div class="item">
+        <div class="label" fit>Logout</div><a href="login.html" target="_self">
+        <paper-ripple fit></paper-ripple>
+      </div>
+        
+   
+</body>
+</core-header-panel>
+      
+		
+	
+</html>
