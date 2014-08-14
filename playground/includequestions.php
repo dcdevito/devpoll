@@ -13,10 +13,6 @@
 	$surveyId = $_GET['si'];
 	$returnPage = $_GET['rp'];
 
-print "In include questions <br/>";
-print "Survey Id = $surveyId<br/>";
-print "Return Page = $returnPage<br/>";
-
 	$result = getDistrictQuestionsAndAnsers(1, $surveyId);
 
 	displayEditQuestionsAndAnswers($result, $surveyId, $returnPage);

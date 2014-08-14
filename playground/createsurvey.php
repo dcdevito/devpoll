@@ -127,9 +127,6 @@
 			{
 				$surveyId = $_GET['si'];
 
-				print "We can from EDIT screen<br/>";
-				print "SurveyId = $surveyId<br/>";
-
 				$questionNumber = getMaxQuestionNumber($surveyId);
 				$surveyName = getSurveyName($surveyId);
 				$enterName = "";

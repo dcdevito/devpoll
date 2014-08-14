@@ -144,7 +144,7 @@
 			if ($stmt->execute())
 			{
 				//echo "Success ".$stmt->insert_id."<br/>";
-				$_SESSION['surveyName'] = $surveyName;
+				//$_SESSION['surveyName'] = $surveyName;
 			}
 			else
 			{

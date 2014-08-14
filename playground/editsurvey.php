@@ -3,6 +3,16 @@
 	include("verifylogin.php");
 ?>
 
+<html>
+<head>
+	<script>
+		function goBack()
+		{
+			window.location = "welcome.php";
+		}
+	</script>
+</head>
+<body>
 <?php
 	/*
 		Load all of the questions from the database into a grid (i.e. a table).
@@ -97,6 +107,10 @@
 
 		echo "</table>";
 		echo "<input type='submit' value='Edit'>";
+		echo "<br/>";
+		echo "<input type='button' value='Main Menu' onclick='goBack();'>";
 		echo "</form>";
 	}
 ?>
+</body>
+</html>

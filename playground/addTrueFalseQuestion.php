@@ -27,8 +27,8 @@
 			$trueFalseHeading2 = mysql_real_escape_string($_POST['trueFalsecustom2']);
 			break;
 		default:
-			$trueFalseHeading1 = 'true';
-			$trueFalseHeading2 = 'false';
+			$trueFalseHeading1 = 'True';
+			$trueFalseHeading2 = 'False';
 			break;
 	}
 
