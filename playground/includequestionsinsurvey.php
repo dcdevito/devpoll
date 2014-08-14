@@ -7,6 +7,7 @@
 	try
 	{
 		$surveyId = $_POST['surveyId'];
+		$returnPage = $_POST['returnPage'];
 
 		if(!empty($_POST['includeSurveyQuestion']))
 		{		
@@ -22,11 +23,40 @@
 			}
 		}
 
-		header('Location: createsurvey.php');	
+		// The value for this is set in editselectedsurvey.php
+		if ($returnPage == 89267)
+		{
+			$location = "editsurvey.php";
+		}
+		else
+		{
+			$location = "createsurvey.php";
+		}
+
+		redirect($location);
 	}
 	catch(Exception $e)
 	{
 		echo "Error in includequestionsinsurvey ", $e->getMessage(), "<br/>";
+	}
+
+	// Redirect page to a different url.
+	function redirect($url)
+	{
+	    if (!headers_sent())
+	    {    
+	        header('Location: '.$url);
+	        exit;
+		}
+	    else
+		{  
+	        echo '<script type="text/javascript">';
+	        echo 'window.location.href="'.$url.'";';
+	        echo '</script>';
+	        echo '<noscript>';
+	        echo '<meta http-equiv="refresh" content="0;url='.$url.'" />';
+	        echo '</noscript>'; exit;
+	    }
 	}
 
 	function getMaxQuestionNumber($surveyId)
@@ -35,13 +65,16 @@
 		require("connectToDB.php");
 
 		$numberQuery = "
-						SELECT max(q.questionnumber) as questionnumber
+						SELECT max(questionnumber) as questionnumber
 						FROM devpoll.questions
 						WHERE surveyid = $surveyId;
 						";
 
 		// Get the questions and answers for this survey.
-		$max = $conn->query($questionQuery);
+		$maxRS = $conn->query($numberQuery);
+
+		$maxArray = $maxRS->fetch_array(MYSQLI_ASSOC);
+		$max = $maxArray['questionnumber'];
 
 		// If there are no questions - set max question to zero.
 		if ($max == null)

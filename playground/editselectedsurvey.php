@@ -6,10 +6,15 @@
 <html>
 	<head>
 		<script>
-			function includeQuestions()
+			function includeQuestions(surveyId)
 			{
 				// Launch the Include Questions page.
-				window.location = "includequestions.php";
+				window.location = "includequestions.php?si=" + surveyId + "&rp=89267";
+			}
+
+			function addQuestions(surveyId)
+			{
+				window.location = "createsurvey.php?si=" + surveyId;
 			}
 		</script>
 	</head>
@@ -28,9 +33,6 @@
 		The edit button will allow the person to change the question and the answers.
 		The delete button will remove the question from the survey.
 	*/
-	session_start();
-	$_SESSION['surveyId'] = $surveyId;
-
 	$result = getDistrictQuestionsAndAnsers(1, $surveyId);
 
 	displayEditQuestionsAndAnswers($result, $surveyId);
@@ -233,7 +235,9 @@
 		echo "</table>";
 		echo "<input type='submit' value='Edit Question'>";
 		echo "<br/>";
-		echo "<input type='button' value='Include Existing Questions' onclick='includeQuestions();'>";
+		echo "<input type='button' value='Include Existing Questions' onclick='includeQuestions($surveyId);'>";
+		echo "<br/>";
+		echo "<input type='button' value='Add Additional Questions' onclick='addQuestions($surveyId);'>";
 		echo "</form>";
 	}
 ?>

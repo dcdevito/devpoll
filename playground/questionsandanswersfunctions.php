@@ -37,6 +37,28 @@
 
 	function displaySurveyQuestions($result, $surveyName)
 	{
+		echo "<html>
+			<head>
+			<style>
+				#ratingList ul
+				{
+					margin: 0;
+					padding: 0;
+					list-style-type: none;
+					width: 100%;
+					text-align: center;
+				}
+
+				#ratingList ul li { display: inline; }
+
+				#ratingList ul li
+				{
+					text-decoration: none;
+					padding: .2em 1em;
+				}			
+			</style>
+			</head>
+			<body>";
 		echo "<table border='1' style='border-color: lightgrey;' width='50%'>";
 		echo "<tr><td colspan='2'>Survey $surveyName</td></tr>";
 
@@ -72,16 +94,18 @@
 						$lowDescription = $row['lowdescription'];
 						$highDescription = $row['highdescription'];
 
-						echo "<tr><td>$lowDescription</td><td>$highDescription</td></tr>";
+						echo "<tr><td style='text-align:left; width:50%'>$lowDescription</td><td style='text-align:right; width:50%;'>$highDescription</td></tr>";
 
 						echo "<tr><td colspan='2'>";
 
+						echo "<div id='ratingList'>";
 						echo "<ul>";
 						for ($i = 1; $i <= $highValue; $i++)
 						{
 							echo "<li><input type='radio' name='rate' value='$i'>$i</li>";
 						}	
 						echo "</ul>";
+						echo "</div>";
 
 						echo "</td></tr>";
 						break;
@@ -117,7 +141,10 @@
 			}
 		}
 
-		echo "</table>";
+		echo "</table>
+			</body>
+			</html>";
+
 	}
 
 ?>

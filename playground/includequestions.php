@@ -10,11 +10,16 @@
 		The edit button will allow the person to change the question and the answers.
 		The delete button will remove the question from the survey.
 	*/
-	$surveyId = $_SESSION['surveyId'];
+	$surveyId = $_GET['si'];
+	$returnPage = $_GET['rp'];
+
+print "In include questions <br/>";
+print "Survey Id = $surveyId<br/>";
+print "Return Page = $returnPage<br/>";
 
 	$result = getDistrictQuestionsAndAnsers(1, $surveyId);
 
-	displayEditQuestionsAndAnswers($result, $surveyId);
+	displayEditQuestionsAndAnswers($result, $surveyId, $returnPage);
 
 
 	function getDistrictQuestionsAndAnsers($districtId, $surveyId)
@@ -55,7 +60,7 @@
 	}
 
 
-	function displayEditQuestionsAndAnswers($result, $surveyId)
+	function displayEditQuestionsAndAnswers($result, $surveyId, $returnPage)
 	{
 		echo "<form action='includequestionsinsurvey.php' method='POST'>";
 		echo "<table border='1' cellspacing='0' cellpadding='0' width='80%' style='border-color:LightGrey'>";
@@ -113,7 +118,9 @@
 				echo "<tr bgcolor='$backcolor'>";
 				echo "<td>
 						<input type='checkbox' name='includeSurveyQuestion[]' value='$questionid'>
+						<input type='hidden' name='qid' value='$questionid'>
 						<input type='hidden' name='surveyId' value='$surveyId'>
+						<input type='hidden' name='returnPage' value='$returnPage'>
 						</td>";
 				echo "<td>$surveyName</td>";
 				echo "<td>$questionNumber</td>";

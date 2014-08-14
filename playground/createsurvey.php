@@ -107,15 +107,39 @@
 				XMLHttpRequestObject.send('descriptions=' + descriptions);
 			}
 
-			function includeQuestions()
+			function includeQuestions(surveyId)
 			{
 				// Launch the Include Questions page.
-				window.location = "includequestions.php";
+				window.location = "includequestions.php?si=" + surveyId + "&rp=99112";
+			}
+
+			function exitCreateSurvey()
+			{
+				window.location = "exitCreateSurvey.php";
 			}
 		</script>
 	</head>
 	<body>
-		<?php 
+		<?php 		
+			$sId = $_GET['si'];
+
+			if ($_SERVER["REQUEST_METHOD"] == "GET" && $sId != "")
+			{
+				$surveyId = $_GET['si'];
+
+				print "We can from EDIT screen<br/>";
+				print "SurveyId = $surveyId<br/>";
+
+				$questionNumber = getMaxQuestionNumber($surveyId);
+				$surveyName = getSurveyName($surveyId);
+				$enterName = "";
+				$everyQuestion = "";
+				$createType = "";
+				$questionType = "";
+
+				$valuesPassed = true;
+			}
+
 			if ($_SERVER["REQUEST_METHOD"] == "POST")
 			{
 				//   ***********************************************************
@@ -130,6 +154,18 @@
 				$surveyId = mysql_real_escape_string($_POST['surveyId']);
 
 				$questionNumber = mysql_real_escape_string($_POST['questionNumber']);
+
+				// See if every question is of the same type.
+				$everyQuestion = mysql_real_escape_string($_POST['everyQuestion']);
+
+				// The checkbox has been checked, so every question is of the same type.
+				$createType = mysql_real_escape_string($_POST['createType']);
+
+				// Check what type of question was chosen and load that box.
+				$questionType = mysql_real_escape_string($_POST['questionType']);
+
+				$valuesPassed = true;
+			}
 
 //*******************
 //*******************
@@ -163,7 +199,8 @@
 //*******************
 //*******************
 
-
+			if ($valuesPassed == true)
+			{
 				// Are we entering the name for the first time.
 				// ----------------------------------------------------------------------
 				if ($enterName == "enterName")
@@ -226,23 +263,12 @@
 				// ----------------------------------------------------------------------
 				if ($canEnterQuestions == true)
 				{
-					// See if every question is of the same type.
-					$everyQuestion = mysql_real_escape_string($_POST['everyQuestion']);
-
-					// The checkbox has been checked, so every question is of the same type.
-					$createType = mysql_real_escape_string($_POST['createType']);
-
 					if ($everyQuestion == "everyQuestion" && $createType != "selectType")
 					{
 						$questionNumber++;
 
 						// Every question is of the same type.
 						$questionType = $createType;
-					}
-					else
-					{
-						// Check what type of question was chosen and load that box.
-						$questionType = mysql_real_escape_string($_POST['questionType']);
 					}
 
 					// What question type was chosen.
@@ -338,9 +364,9 @@
 
 		echo "
 					<p><input type='submit' value='Create Question'></p>
-					<p><input type='button' value='Include Existing Question' onclick='includeQuestions();'></p>
+					<p><input type='button' value='Include Existing Question' onclick='includeQuestions($surveyId);'></p>
 					<p><input type='button' value='Start Over' onclick='startOver();'></p>
-					<p><input type='button' value='Stop entering questions'></p>
+					<p><input type='button' value='Stop entering questions' onclick='exitCreateSurvey();'></p>
 					<input type='hidden' name='surveyName' value='$surveyName'>
 					<input type='hidden' name='surveyId' value='$surveyId'>
 					<input type='hidden' name='createType' value='selectType'>
@@ -370,7 +396,7 @@
 			if ($stmt->execute())
 			{
 				//echo "Success ".$stmt->insert_id."<br/>";
-				$_SESSION['surveyName'] = $surveyName;
+				//$_SESSION['surveyName'] = $surveyName;
 			}
 			else
 			{
@@ -704,9 +730,8 @@
 
 				// Close the connection.
 				$conn->close();
-
-							
-				$_SESSION['surveyId'] = $surveyId;
+			
+				//$_SESSION['surveyId'] = $surveyId;
 
 				return $surveyId;
 			}			
@@ -716,4 +741,60 @@
 			trigger_error($e, E_USER_ERROR);
 		}
 	}
+
+	function getMaxQuestionNumber($surveyId)
+	{
+		// Connect to the database.
+		require("connectToDB.php");
+
+		$numberQuery = "
+						SELECT max(questionnumber) as questionnumber
+						FROM devpoll.questions
+						WHERE surveyid = $surveyId;
+						";
+
+		// Get the questions and answers for this survey.
+		$maxRS = $conn->query($numberQuery);
+
+		$maxArray = $maxRS->fetch_array(MYSQLI_ASSOC);
+		$max = $maxArray['questionnumber'];
+
+		// If there are no questions - set max question to zero.
+		if ($max == null)
+		{
+			$max = 0;
+		}
+
+		// Close the connection.
+		$conn->close();
+
+		// Return the result.
+		return $max;		
+
+	}	
+
+	function getSurveyName($surveyId)
+	{
+		// Connect to the database.
+		require("connectToDB.php");
+
+		$nameQuery = "
+						SELECT surveyname
+						FROM devpoll.survey
+						WHERE surveyid = $surveyId;
+						";
+
+		// Get the questions and answers for this survey.
+		$nameRS = $conn->query($nameQuery);
+
+		$nameArray = $nameRS->fetch_array(MYSQLI_ASSOC);
+		$name = $nameArray['surveyname'];
+
+		// Close the connection.
+		$conn->close();
+
+		// Return the result.
+		return $name;		
+
+	}	
 ?>

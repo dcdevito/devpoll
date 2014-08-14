@@ -9,12 +9,14 @@
 	$everyQuestion = mysql_real_escape_string($_POST['everyQuestion']);
 
 	$value = mysql_real_escape_string($_POST['numberOfDescriptions']);
+	$ratingValue = mysql_real_escape_string($_POST['ratingValue']);
 
 	$lowValue = 1;
-	$highValue= $value;
+	$highValue= $ratingValue;
 
 	$lowDescription = mysql_real_escape_string($_POST['ratingLowValue']);
 	$highDescription = mysql_real_escape_string($_POST['ratingHighValue']);
+
 
 	addRating($surveyId, $questionNumber, $questionType, $questionText, $lowValue, $highValue, $lowDescription, $highDescription);
 
@@ -34,9 +36,6 @@
 		// Connect to the database.
 		include("connectToDB.php");
 
-		// Get the surveyId.
-		$surveyId = $_SESSION['surveyId'];
-
 		// Start a transaction.
 		$conn->autocommit(false);
 
@@ -49,6 +48,11 @@
 
 		// Commit the transaction.
 		$conn->commit();		
+
+		if ($conn->errno != 0)
+		{
+			echo "error ".$conn->error."<br/>";
+		}
 
 		// Close the connetion.
 		$conn->close();
