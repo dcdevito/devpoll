@@ -182,9 +182,9 @@
     <core-toolbar>
         <paper-tabs valueattr="name" selected="home" self-end>
         <paper-tab name="home">HOME</paper-tab>
-        <paper-tab name="favorites">FAVORITES</paper-tab>
-        <paper-tab name="createSurvey">CREATE NEW SURVEY</paper-tab>
-        <paper-tab name="sendSurvey">SEND SURVEY</paper-tab>
+        <paper-tab name="favorites">SUPPORT</paper-tab>
+        <paper-tab name="createSurvey">MARKETING</paper-tab>
+        <paper-tab name="sendSurvey">ABOUT</paper-tab>
         
         </paper-tabs>
         

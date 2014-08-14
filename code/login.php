@@ -23,7 +23,7 @@ if($count==1)
 //session_register("myuserid");
 //$_SESSION['login_user']=$userid;
 
-header('location: createAccount2.html');
+header('location: welcome.html');
 }
 else 
 {
