@@ -10,23 +10,15 @@
 		The edit button will allow the person to change the question and the answers.
 		The delete button will remove the question from the survey.
 	*/
-	echo "We are in editSurvey<br/>";
 	$result = getSurveys(1);
 
-	echo "The number of rows we got is ".$result->num_rows;
-
-	echo "About to call displayEditQuestionsAndAnswers<br/>";
-
 	displaySurveys($result);
-
-	echo "Called it<br/>";
 
 	function getSurveys($districtId)
 	{
 		// Connect to the database.
 		require("connectToDB.php");
 
-		echo "In display questions and districtId = $districtId<br/>";
 		$questionQuery = "
 			SELECT
 				s.surveyid,

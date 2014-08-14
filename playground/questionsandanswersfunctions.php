@@ -4,7 +4,6 @@
 		// Connect to the database.
 		require("connectToDB.php");
 
-		echo "In display questions and surveyId = $surveyId<br/>";
 		$questionQuery = "
 						SELECT
 						s.surveyname,
@@ -38,7 +37,7 @@
 
 	function displaySurveyQuestions($result, $surveyName)
 	{
-		echo "<table border='2'>";
+		echo "<table border='1' style='border-color: lightgrey;' width='50%'>";
 		echo "<tr><td colspan='2'>Survey $surveyName</td></tr>";
 
 		// Initialize the value of $questionNumber.

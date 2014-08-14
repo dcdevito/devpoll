@@ -9,8 +9,6 @@
 	$surveyName = mysql_real_escape_string($_POST['surveyName']);
 	$everyQuestion = mysql_real_escape_string($_POST['everyQuestion']);
 
-	echo "Question Type = $questionType<br/>";
-
 	// Loop through the answers and create an array of the values.
 	$answers = array();
 	for ($i = 1; $i <= $numberOfAnswers; $i++)
@@ -38,9 +36,6 @@
 	{
 		// Connect to the database.
 		include("connectToDB.php");
-
-		// Get the surveyId.
-		//$surveyId = $_SESSION['surveyId'];
 
 		// Start a transaction.
 		$conn->autocommit(false);

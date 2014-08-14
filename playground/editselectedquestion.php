@@ -118,20 +118,10 @@
 				$surveyId = $_POST['surveyId'];
 				$questionId = $_POST['editQuestion'];
 
-				echo "Survey Id = $surveyId<br/>";
-				echo "Question Id = $questionId<br/>";
-
-				echo "About to call getSelectedQuestion<br/>";
-				echo "District Id = $districtId<br/>";
-				echo "SurveyId  = $surveyId<br/>";
-				echo "Question Id = $questionId<br/>";
-
 				$result = getSelectedQuestion($districtId, $surveyId, $questionId);
 
 				$rows = $result->num_rows;
 
-				echo "We got back $rows rows<br/>";
-				echo "Calling displayQuestion<br/>";
 				// Display the selected question to edit.
 				displayQuestion($districtId, $surveyId, $result);
 			//}
@@ -174,14 +164,6 @@
 	// ----------------------------------------------------------------------
 	function editTrueFalse($districtId, $surveyId, $questionId, $questionNumber, $questionText, $trueAnswer, $falseAnswer)
 	{
-					echo "In editTrueFalse...<br/>";
-					echo "surveyId = $surveyId<br/>";
-					echo "questionId = $questionId<br/>";
-					echo "questionNumber = $questionNumber<br/>";
-					echo "questionText = $questionText<br/>";
-					echo "trueAnswer = $trueAnswer<br/>";
-					echo "falseAnswer = $falseAnswer<br/>";
-
 		echo "
 			<div id='trueFalse'>
 				<form action='editTrueFalseQuestion.php' method='POST'>
@@ -212,11 +194,6 @@
 		{
 			$customSelected = "checked";
 		}
-
-		echo "yesNoSelected = $yesNoSelected<br/>";
-		echo "abSelected = $abSelected<br/>";
-		echo "trueFalseSelected = $trueFalseSelected<br/>";
-		echo "customSelected = $customSelected<br/>";
 
 		echo "
 					<p>Answer type:</p>
@@ -264,12 +241,6 @@
 	// ----------------------------------------------------------------------
 	function editMultipleChoice($districtId, $surveyId, $questionId, $questionNumber, $questionText, $answers)
 	{
-					echo "In createMultipleChoice...<br/>";
-					echo "surveyId = $surveyId<br/>";
-					echo "questionId = $questionId<br/>";
-					echo "questionNumber = $questionNumber<br/>";
-					echo "questionText = $questionText<br/>";
-
 		// Get how many answers we have.
 		$answerCount = count($answers);
 
@@ -308,13 +279,9 @@
 
 		echo "<div id='mcAnswers'>";
 
-		echo "Count = ".count($answers)."<br/>";
 		for ($i = 0; $i < count($answers); $i++)
 		{
-			echo "We are in $i ";
 			$value = $answers[$i];
-
-			echo "Value = $value<br/>";
 
 			$answerNumber = $i + 1;
 			echo "Answer $answerNumber: <input type='text' name='mcanswer$answerNumber' value='$value'><br/>";
@@ -346,12 +313,6 @@
 	// ----------------------------------------------------------------------
 	function editSeveralAnswer($surveyId, $surveyName, $questionNumber, $everyQuestion)
 	{
-					echo "In createSeveralAnswer...<br/>";
-					echo "surveyId = $surveyId<br/>";
-					echo "surveyName = $surveyName<br/>";
-					echo "questionNumber = $questionNumber<br/>";
-					echo "everyQuestion = $everyQuestion<br/>";
-
 		echo "
 			<div id='severalAnswer'>
 				<form action='editSeveralAnswerQuestion.php' method='POST'>
@@ -410,12 +371,6 @@
 	// ----------------------------------------------------------------------
 	function editFreeFormText($districtId, $surveyId, $questionId, $questionNumber, $questionText)
 	{
-					echo "In editFreeFormText...<br/>";
-					echo "surveyId = $surveyId<br/>";
-					echo "questionId = $questionId<br/>";
-					echo "questionNumber = $questionNumber<br/>";
-					echo "questionText = $questionText<br/>";
-
 		echo "
 			<div id='freeFormText'>
 				<form action='editFreeFormQuestion.php' method='POST'>
@@ -447,16 +402,6 @@
 	// ----------------------------------------------------------------------
 	function editRating($districtId, $surveyId, $questionId, $questionNumber, $questionText, $lowValue, $highValue, $lowDescription, $highDescription)
 	{
-					echo "In createRating...<br/>";
-					echo "surveyId = $surveyId<br/>";
-					echo "questionId = $questionId<br/>";
-					echo "questionNumber = $questionNumber<br/>";
-					echo "questionText = $questionText<br/>";
-					echo "lowValue = $lowValue<br/>";
-					echo "highValue = $highValue<br/>";
-					echo "lowDescription = $lowDescription<br/>";
-					echo "highDescription = $highDescription<br/>";
-
 		echo "
 			<div id='rating'>
 				<form action='editRatingQuestion.php' method='POST'>
@@ -566,8 +511,6 @@
 		$answers = array();
 		$answerLoop = 0;
 
-		echo "In the display questions <br/>";
-
 		// Loop through the result and create the question.
 		while($row = $result->fetch_assoc()) 
 		{
@@ -578,35 +521,13 @@
 
 			$answerNumber = $row['answernumber'];
 
-				echo "Answer number = $answerNumber<br/>";
 			$answerText = $row['answertext'];
-				echo "Answer text = $answerText<br/>";	
 			$answers[] = $answerText;
 
 			$lowValue = $row['lowvalue'];
 			$highValue = $row['highvalue'];
 			$lowDescription = $row['lowdescription'];
 			$highDescription = $row['highdescription'];
-		}
-
-		echo "Out of the loop<br/>";
-		echo "questionId = $questionId<br/>";
-		echo "questionNumber = $questionNumber<br/>";
-		echo "questionText = $questionText<br/>";
-		echo "lowValue = $lowValue<br/>";
-		echo "highValue = $highValue<br/>";
-		echo "lowDescription = $lowDescription<br/>";
-		echo "highDescription = $highDescription<br/>";
-		echo "<br/>";
-		echo "questionType = $questionType<br/>";
-		echo "<br/>";
-		echo "answers: <br/>";
-
-		$i = 0;
-		foreach ($answers as $value) 
-		{
-			echo "answers[$i] = $value<br/>";
-			$i++;
 		}
 
 		// Redirect to edit the question.
@@ -621,9 +542,6 @@
 			case "trueFalse":
 				$trueAnswer = $answers[0];
 				$falseAnswer = $answers[1];
-
-				echo "True Answer = $trueAnswer<br/>";
-				echo "False Answer = $falseAnswer<br/>";
 
 				editTrueFalse($districtId, $surveyId, $questionId, $questionNumber, $questionText, $trueAnswer, $falseAnswer);
 				break;

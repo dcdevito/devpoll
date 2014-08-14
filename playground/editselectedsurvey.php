@@ -8,8 +8,6 @@
 		<script>
 			function includeQuestions()
 			{
-				alert("Include questions in survey");
-
 				// Launch the Include Questions page.
 				window.location = "includequestions.php";
 			}
@@ -17,14 +15,9 @@
 	</head>
 	<body>
 <?php
-
-		echo "We are in editselectedsurvey<br/>";
-
 		//if(!empty($_POST['editSurveyQuestion']))
 		//{	
 			$surveyId = $_POST['editsurvey'];
-
-			echo "We will be editing survey $surveyId<br/>";
 		//}
 ?>
 
@@ -35,28 +28,19 @@
 		The edit button will allow the person to change the question and the answers.
 		The delete button will remove the question from the survey.
 	*/
-	echo "We are in editselectedsurvey.php<br/>";
-	echo "SurveyId = $surveyId<br/>";
-	
 	session_start();
 	$_SESSION['surveyId'] = $surveyId;
 
 	$result = getDistrictQuestionsAndAnsers(1, $surveyId);
 
-	echo "The number of rows we got is ".$result->num_rows;
-
-	echo "About to call displayEditQuestionsAndAnswers<br/>";
-
 	displayEditQuestionsAndAnswers($result, $surveyId);
 
-	echo "Called it<br/>";
 
 	function getDistrictQuestionsAndAnsers($districtId, $surveyId)
 	{
 		// Connect to the database.
 		require("connectToDB.php");
 
-		echo "In display questions and districtId = $districtId<br/>";
 		$questionQuery = "
 						SELECT
 						q.questionid,
@@ -246,7 +230,6 @@
 			$loop++;
 		}
 
-//		echo "</tr>";
 		echo "</table>";
 		echo "<input type='submit' value='Edit Question'>";
 		echo "<br/>";

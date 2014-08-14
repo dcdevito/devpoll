@@ -4,29 +4,19 @@
 ?>
 
 <?php
-	echo "Inside includequestionsinsurvey.php<br/>";
-
 	try
 	{
 		$surveyId = $_POST['surveyId'];
-
-		//echo "The surveyId is $surveyId<br/>";
 
 		if(!empty($_POST['includeSurveyQuestion']))
 		{		
 			// Get the maximum question number for this survey.
 			$questionNumber = getMaxQuestionNumber($surveyId);
 
-			//echo "The max question was $questionNumber<br/>";
-
 			foreach($_POST['includeSurveyQuestion'] as $questionId)
 			{
-				//echo "Question Id = $questionId<br/>";
 				$questionResult = getQuestionForId($questionId);
 				$answerResult = getAnswersForId($questionId);
-
-				//echo "Number of questions = ".$questionResult->num_rows;
-				//echo "Number of answers = ".$answerResult->num_rows;
 
 				insertQuestionToSurvey($surveyId, ++$questionNumber, $questionResult, $answerResult);
 			}
@@ -72,8 +62,6 @@
 		// Connect to the database.
 		require("connectToDB.php");
 
-		//echo "In getQuestionForId = $questionId<br/>";
-		
 		$questionQuery = "
 						SELECT
 						q.surveyid,
@@ -86,12 +74,8 @@
 						WHERE q.questionid = $questionId;
 		";
 
-		//echo "Question query = $questionQuery<br/>";
-
 		// Get the questions and answers for this survey.
 		$result = $conn->query($questionQuery);
-
-		//echo $conn->errno." ".$conn->error;
 
 		// Close the connection.
 		$conn->close();
@@ -105,8 +89,6 @@
 		// Connect to the database.
 		require("connectToDB.php");
 
-		echo "In getAnswersForId = $questionId<br/>";
-		
 		$questionQuery = "
 						SELECT
 						a.surveyid,
@@ -136,8 +118,6 @@
 
 	function insertQuestionToSurvey($surveyId, $questionNumber, $questionResult, $answerResult)
 	{
-		echo "Question number = $questionNumber<br/>";
-
 		// Connect to the database.
 		require("connectToDB.php");
 
@@ -146,8 +126,6 @@
 
 		try 
 		{
-	    	echo "We are inserting the question<br/>";
-
 	    	while ($row = $questionResult->fetch_assoc())
 	    	{
 	    		$questionText = $row['questiontext'];
@@ -157,14 +135,8 @@
 	    		$sql = "INSERT INTO devpoll.questions(surveyid, questionnumber, questiontext, questiontype, datecreated, lastmodified) 
 	    				VALUES($surveyId, $questionNumber, '$questionText', '$questionType', '$dateCreated', 'now()');";
 
-	    		echo "sql = $sql<br/>";
-
 	    		$conn->query($sql);
-
-	    		echo "Insert done: ".$conn->errno." ".$conn->error."<br/>";
 	    	}
-
-	    	echo "We are inserting the answer<br/>";
 
 	    	while ($row = $answerResult->fetch_assoc())
 	    	{
@@ -181,11 +153,7 @@
 	    				VALUES($surveyId, $questionNumber, $answerNumber, '$answerText', 
 	    						$lowValue, $highValue, '$lowDescription', '$highDescription', '$dateCreated');";
 
-	    		echo "sql = $sql<br/>";
-
 	    		$conn->query($sql);
-
-	    		echo "Insert done: ".$conn->errno." ".$conn->error."<br/>";   		
 	    	}
 	
 			// Commit the SQL queries and go back to non-transaction mode.

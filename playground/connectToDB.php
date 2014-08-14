@@ -12,12 +12,4 @@
 		echo "<br/>Failed to connect to database.";
 		echo $conn->connect_errno." ".$conn->connect_error;
 	}
-	//else
-	//{
-	//	echo "Connection successful ".$conn->host_info;
-	//}
-
-	// These are depreciated methods of connecting.
-	//mysql_connect("localhost:8888", "devpoll", "devpoll") or die(mysql_error());
-	//mysql_select_db("devpoll") or die("Cannot connect to Database");
 ?>

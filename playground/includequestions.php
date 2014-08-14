@@ -12,26 +12,16 @@
 	*/
 	$surveyId = $_SESSION['surveyId'];
 
-
-	echo "We are in includequestions.php<br/>";
-	echo "SurveyId = $surveyId<br/>";
-	
 	$result = getDistrictQuestionsAndAnsers(1, $surveyId);
-
-	echo "The number of rows we got is ".$result->num_rows;
-
-	echo "About to call displayEditQuestionsAndAnswers<br/>";
 
 	displayEditQuestionsAndAnswers($result, $surveyId);
 
-	echo "Called it<br/>";
 
 	function getDistrictQuestionsAndAnsers($districtId, $surveyId)
 	{
 		// Connect to the database.
 		require("connectToDB.php");
 
-		echo "In display questions and districtId = $districtId<br/>";
 		$questionQuery = "
 						SELECT
 						q.questionid,
@@ -221,7 +211,6 @@
 			$loop++;
 		}
 
-//		echo "</tr>";
 		echo "</table>";
 		echo "<input type='submit' value='Include Questions'>";
 		echo "</form>";

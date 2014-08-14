@@ -11,8 +11,6 @@
 	$surveyName = mysql_real_escape_string($_POST['surveyName']);
 	$everyQuestion = mysql_real_escape_string($_POST['everyQuestion']);
 
-	echo "Question Type = $questionType<br/>";
-	
 	// Get the type of headings for the true/false question. 
 	switch ($trueFalseType)
 	{

@@ -1,7 +1,11 @@
-// Need a couple of checkbox that say:
-// 1) Add a message at the top.
-// 2) Add rating headings - For a rating question.
-// We need another question type which is a rating grid...like Sandy wants for DevPoll.
+<?php
+/***
+	Need a couple of checkbox that say:
+	1) Add a message at the top.
+	2) Add rating headings - For a rating question.
+	We need another question type which is a rating grid...like Sandy wants for DevPoll.
+***/
+?>
 
 
 <?php
@@ -127,11 +131,6 @@
 
 				$questionNumber = mysql_real_escape_string($_POST['questionNumber']);
 
-				echo "Question Number = $questionNumber<br/>";
-				echo "Survey Name = $surveyName<br/>";
-				echo "Survey Id = $surveyId<br/>";
-
-
 //*******************
 //*******************
 //*******************
@@ -169,10 +168,6 @@
 				// ----------------------------------------------------------------------
 				if ($enterName == "enterName")
 				{
-					//-------------------------------------------
-					echo "We are entering the survey name<br/>";
-					//-------------------------------------------
-
 					$canEnterQuestions = false;
 
 					// Connect to the database.
@@ -221,8 +216,6 @@
 					if (empty($surveyId) or is_null($surveyId))
 					{
 						$surveyId = getSurveyId($surveyName, $districtId);
-
-						echo "surveyId = $surveyId<br/>";
 					}
 
 					$canEnterQuestions = true;
@@ -233,8 +226,6 @@
 				// ----------------------------------------------------------------------
 				if ($canEnterQuestions == true)
 				{
-					echo "In canEnterQuestions and surveyId = $surveyId<br/>";
-
 					// See if every question is of the same type.
 					$everyQuestion = mysql_real_escape_string($_POST['everyQuestion']);
 
@@ -303,12 +294,6 @@
 					//$_SESSION['questionNumber'] = '';
 					//$_SESSION['everyQuestion'] = '';
 
-					echo "In the else NOT POST...<br/>";
-					echo "surveyId = $surveyId<br/>";
-					echo "surveyName = $surveyName<br/>";
-					echo "questionNumber = $questionNumber<br/>";
-					echo "everyQuestion = $everyQuestion<br/>";
-
 					// Next question number.
 					$questionNumber++;
 
@@ -329,12 +314,6 @@
 	// ----------------------------------------------------------------------
 	function createQuestionDiv($surveyId, $surveyName, $questionNumber, $everyQuestion)
 	{
-					echo "In createQuestionDiv...<br/>";
-					echo "surveyId = $surveyId<br/>";
-					echo "surveyName = $surveyName<br/>";
-					echo "questionNumber = $questionNumber<br/>";
-					echo "everyQuestion = $everyQuestion<br/>";
-
 		echo "
 			<div id='questions'>
 				<form action='createsurvey.php' method='POST'>
@@ -365,7 +344,7 @@
 					<input type='hidden' name='surveyName' value='$surveyName'>
 					<input type='hidden' name='surveyId' value='$surveyId'>
 					<input type='hidden' name='createType' value='selectType'>
-					<input type='text' name='questionNumber' value='$questionNumber'>
+					<input type='hidden' name='questionNumber' value='$questionNumber'>
 				</form>
 			</div>
 		";
@@ -428,12 +407,6 @@
 	// ----------------------------------------------------------------------
 	function createTrueFalse($surveyId, $surveyName, $questionNumber, $everyQuestion)
 	{
-					echo "In createTrueFalse...<br/>";
-					echo "surveyId = $surveyId<br/>";
-					echo "surveyName = $surveyName<br/>";
-					echo "questionNumber = $questionNumber<br/>";
-					echo "everyQuestion = $everyQuestion<br/>";
-
 		echo "
 			<div id='trueFalse'>
 				<form action='addTrueFalseQuestion.php' method='POST'>
@@ -483,12 +456,6 @@
 	// ----------------------------------------------------------------------
 	function createMultipleChoice($surveyId, $surveyName, $questionNumber, $everyQuestion)
 	{
-					echo "In createMultipleChoice...<br/>";
-					echo "surveyId = $surveyId<br/>";
-					echo "surveyName = $surveyName<br/>";
-					echo "questionNumber = $questionNumber<br/>";
-					echo "everyQuestion = $everyQuestion<br/>";
-
 		echo "
 			<div id='multipleChoice'>
 				<form action='addMultipleChoiceQuestion.php' method='POST'>
@@ -535,7 +502,7 @@
 					<input type='hidden' name='surveyName' value='$surveyName'>
 					<input type='hidden' name='surveyId' value='$surveyId'>
 					<input type='hidden' name='createType' value='multipleChoice'>
-					<input type='text' name='questionNumber' value='$questionNumber'>
+					<input type='hidden' name='questionNumber' value='$questionNumber'>
 				</form>
 			</div>
 		";
@@ -546,12 +513,6 @@
 	// ----------------------------------------------------------------------
 	function createSeveralAnswer($surveyId, $surveyName, $questionNumber, $everyQuestion)
 	{
-					echo "In createSeveralAnswer...<br/>";
-					echo "surveyId = $surveyId<br/>";
-					echo "surveyName = $surveyName<br/>";
-					echo "questionNumber = $questionNumber<br/>";
-					echo "everyQuestion = $everyQuestion<br/>";
-
 		echo "
 			<div id='severalAnswer'>
 				<form action='addSeveralAnswerQuestion.php' method='POST'>
@@ -598,7 +559,7 @@
 					<input type='hidden' name='surveyName' value='$surveyName'>
 					<input type='hidden' name='surveyId' value='$surveyId'>
 					<input type='hidden' name='createType' value='severalAnswer'>
-					<input type='text' name='questionNumber' value='$questionNumber'>
+					<input type='hidden' name='questionNumber' value='$questionNumber'>
 				</form>
 			</div>
 		";
@@ -609,12 +570,6 @@
 	// ----------------------------------------------------------------------
 	function createFreeFormText($surveyId, $surveyName, $questionNumber, $everyQuestion)
 	{
-					echo "In createFreeFormText...<br/>";
-					echo "surveyId = $surveyId<br/>";
-					echo "surveyName = $surveyName<br/>";
-					echo "questionNumber = $questionNumber<br/>";
-					echo "everyQuestion = $everyQuestion<br/>";
-
 		echo "
 			<div id='freeFormText'>
 				<form action='addFreeFormQuestion.php' method='POST'>
@@ -644,7 +599,7 @@
 					<input type='hidden' name='surveyId' value='$surveyId'>
 					<input type='hidden' name='surveyName' value='$surveyName'>
 					<input type='hidden' name='createType' value='freeForm'>
-					<input type='text' name='questionNumber' value='$questionNumber'>
+					<input type='hidden' name='questionNumber' value='$questionNumber'>
 				</form>
 			</div>
 		";
@@ -655,12 +610,6 @@
 	// ----------------------------------------------------------------------
 	function createRating($surveyId, $surveyName, $questionNumber, $everyQuestion)
 	{
-					echo "In createRating...<br/>";
-					echo "surveyId = $surveyId<br/>";
-					echo "surveyName = $surveyName<br/>";
-					echo "questionNumber = $questionNumber<br/>";
-					echo "everyQuestion = $everyQuestion<br/>";
-
 		echo "
 			<div id='rating'>
 				<form action='addRatingQuestion.php' method='POST'>
@@ -717,7 +666,7 @@
 					<input type='hidden' name='surveyName' value='$surveyName'>
 					<input type='hidden' name='surveyId' value='$surveyId'>
 					<input type='hidden' name='createType' value='rating'>
-					<input type='text' name='questionNumber' value='$questionNumber'>
+					<input type='hidden' name='questionNumber' value='$questionNumber'>
 				</form>
 			</div>
 		";
@@ -726,10 +675,10 @@
 	// ----------------------------------------------------------------------
 	// Display the questions we have already created.
 	// ----------------------------------------------------------------------
-	function displayQuestions($surveyId)
+	function displayQuestions($surveyId, $surveyName)
 	{
 		include("displaysurvey.php");
-		drawQuestions($surveyId);
+		drawQuestions($surveyId, $surveyName);
 	}
 
 	// ----------------------------------------------------------------------
@@ -752,8 +701,6 @@
 			{
 				$arr = $surveyIdRS->fetch_array(MYSQLI_ASSOC);
 				$surveyId = $arr['surveyId'];
-
-				echo "Just read the survey id and it is $surveyId</br>";
 
 				// Close the connection.
 				$conn->close();

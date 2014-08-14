@@ -8,8 +8,6 @@
 	$surveyName = mysql_real_escape_string($_POST['surveyName']);
 	$everyQuestion = mysql_real_escape_string($_POST['everyQuestion']);
 
-	echo "Question Type = $questionType<br/>";
-
 	addFreeForm($surveyId, $questionNumber, $questionType, $questionText);
 
 	$_SESSION['surveyInProgress'] = 'YES';
@@ -27,9 +25,6 @@
 	{
 		// Connect to the database.
 		include("connectToDB.php");
-
-		// Get the surveyId.
-		//$surveyId = $_SESSION['surveyId'];
 
 		// Start a transaction.
 		$conn->autocommit(false);

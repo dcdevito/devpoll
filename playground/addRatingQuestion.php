@@ -8,7 +8,6 @@
 	$surveyName = mysql_real_escape_string($_POST['surveyName']);
 	$everyQuestion = mysql_real_escape_string($_POST['everyQuestion']);
 
-	//$is1LowValue = mysql_real_escape_string($_POST['rating1Low']);
 	$value = mysql_real_escape_string($_POST['numberOfDescriptions']);
 
 	$lowValue = 1;
@@ -16,21 +15,6 @@
 
 	$lowDescription = mysql_real_escape_string($_POST['ratingLowValue']);
 	$highDescription = mysql_real_escape_string($_POST['ratingHighValue']);
-
-	echo "Inside addRating<br/>";
-	echo "questionNumber = $questionNumber<br/>";
-	echo "questionType = $questionType<br/>";
-	echo "questionText = $questionText<br/>";
-	echo "surveyId = $surveyId<br/>";
-	echo "surveyName = $surveyName<br/>";
-	echo "everyQuestion = $everyQuestion<br/>";
-	echo "value = $value<br/>";
-
-	echo "lowValue = $lowValue<br/>";
-	echo "highValue = $highValue<br/>";
-
-	echo "lowDescription = $lowDescription<br/>";
-	echo "highDescription = $highDescription<br/>";
 
 	addRating($surveyId, $questionNumber, $questionType, $questionText, $lowValue, $highValue, $lowDescription, $highDescription);
 
@@ -40,8 +24,6 @@
 	$_SESSION['questionNumber'] = $questionNumber;
 	$_SESSION['everyQuestion'] = $everyQuestion;
 
-	echo "Returning to createsurvey page<br/>";
-
 	header('Location: createsurvey.php');
 
 	// ----------------------------------------------------------------------
@@ -49,15 +31,11 @@
 	// ----------------------------------------------------------------------
 	function addRating($surveyId, $questionNumber, $questionType, $questionText, $lowValue, $highValue, $lowDescription, $highDescription)
 	{
-		echo "Adding Rating to DB<br/>";
-
 		// Connect to the database.
 		include("connectToDB.php");
 
 		// Get the surveyId.
 		$surveyId = $_SESSION['surveyId'];
-
-		echo "surveyId = $surveyId<br/>";
 
 		// Start a transaction.
 		$conn->autocommit(false);
@@ -74,7 +52,5 @@
 
 		// Close the connetion.
 		$conn->close();
-
-		echo "End of adding rating<br/>";
 	}
 ?>
