@@ -23,6 +23,8 @@
 		//if(!empty($_POST['editSurveyQuestion']))
 		//{	
 			$surveyId = $_POST['editsurvey'];
+
+			echo "SurveyId = $surveyId<br/>";
 		//}
 ?>
 
@@ -54,8 +56,16 @@
 						a.answertext,
 						a.lowvalue,
 						a.highvalue,
-						a.lowdescription,
-						a.highdescription
+						a.description1,
+						a.description2,
+						a.description3,
+						a.description4,
+						a.description5,
+						a.description6,
+						a.description7,
+						a.description8,
+						a.description9,
+						a.description10
 						FROM devpoll.questions q
 						JOIN devpoll.answers a
 						ON q.surveyid = a.surveyid
@@ -150,8 +160,8 @@
 					case "rating":
 						echo "<td>Rating</td>";
 
-						$lowDescription = $row['lowdescription'];
-						$highDescription = $row['highdescription'];
+						$lowDescription = $row['description1'];
+						$highDescription = $row['description10'];
 						$lowValue = $row['lowvalue'];
 						$highValue = $row['highvalue'];
 

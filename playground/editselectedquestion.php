@@ -22,8 +22,10 @@
 				XMLHttpRequestObject = new ActiveXObject("Microsoft.XMLHTTP");
 			}
 
-			function loadMultipleChoice(answerArray)
+			function loadMultipleChoice()
 			{
+				alert("In load");
+
 				if (XMLHttpRequestObject)
 				{
 					XMLHttpRequestObject.open("POST", "loadMultipleChoice.php");
@@ -42,9 +44,29 @@
 					}
 				}
 
+				alert("Get Values");
+
 				var answers = document.getElementById('mChoice').value;
-				
-				XMLHttpRequestObject.send('answers=' + answers + "&answerArray=" + answerArray);
+				var answerCount = document.getElementById('answerCount').value;
+
+				alert("Answers = " + answers);
+				alert("Answer Count = " + answerCount);
+
+				var mcanswer;
+				var mcanswerNumber;
+				var sendstring = "answers=" + answers;
+				for (var i = 1; i <= answerCount; i++)
+				{
+					mcanswerNumber = 'mcanswer' + i;
+
+					mcanswer = document.getElementById(mcanswerNumber).value;
+
+					sendstring = sendstring + '&' + mcanswerNumber + '=' + mcanswer;
+				}
+
+				alert("Send string = " + sendstring);
+
+				XMLHttpRequestObject.send(sendstring);
 			}
 
 			function loadSeveralAnswers()
@@ -247,7 +269,7 @@
 		echo "
 			<div id='multipleChoice'>
 				<form action='editMultipleChoiceQuestion.php' method='POST'>
-					<p>Question $questionNumber</p>
+					<p>XQuestion $questionNumber</p>
 					<p>Create Multiple Choice Question</p>
 					<p>Please enter the question:</p>
 					<p><textarea name='questionText' rows='3' cols='30'>$questionText</textarea></p>
@@ -274,7 +296,7 @@
 		}
 
 		echo "</select><br/>";
-		echo "<p><input type='button' value='Create Answers' onclick='loadMultipleChoice($answers);'></p>";
+		echo "<p><input type='button' value='Create Answers' onclick='loadMultipleChoice();'></p>";
 
 
 		echo "<div id='mcAnswers'>";
@@ -284,7 +306,13 @@
 			$value = $answers[$i];
 
 			$answerNumber = $i + 1;
-			echo "Answer $answerNumber: <input type='text' name='mcanswer$answerNumber' value='$value'><br/>";
+			$name = 'mcanswer'.$answerNumber;
+
+			echo "answernumber = $answerNumber<br/>";
+			echo "name = $name<br/>";
+			echo "value = $value<br/>";
+
+			echo "Answer $answerNumber: <input type='text' name='$name' id='$name' value='$value'><br/>";
 		}
 		echo "<br/>";
 
@@ -298,11 +326,12 @@
 						<input type='button' value='Cancel'>
 					</p>
 					<input type='hidden' name='districtId' value='$districtId'>
-					<input type='hidden' name='createdQuestion' value='trueFalse'>
+					<input type='hidden' name='createdQuestion' value='multipleChoice'>
 					<input type='hidden' name='surveyId' value='$surveyId'>
-					<input type='hidden' name='createType' value='trueFalse'>
+					<input type='hidden' name='createType' value='multipleChoice'>
 					<input type='hidden' name='questionNumber' value='$questionNumber'>
 					<input type='hidden' name='questionId' value='$questionId'>
+					<input type='hidden' name='answerCount' id='answerCount' value='$answerCount'>
 				</form>
 			</div>
 		";
@@ -311,15 +340,18 @@
 	// ----------------------------------------------------------------------
 	// Create a several answer question.
 	// ----------------------------------------------------------------------
-	function editSeveralAnswer($surveyId, $surveyName, $questionNumber, $everyQuestion)
+	function editSeveralAnswer($districtId, $surveyId, $questionId, $questionNumber, $questionText, $answers)
 	{
+		// Get how many answers we have.
+		$answerCount = count($answers);
+
 		echo "
 			<div id='severalAnswer'>
 				<form action='editSeveralAnswerQuestion.php' method='POST'>
 					<p>Question $questionNumber</p>
 					<p>Create Several Answer Question</p>
 					<p>Please enter the question:</p>
-					<p><textarea name='questionText' rows='3' cols='30'></textarea></p>
+					<p><textarea name='questionText' rows='3' cols='30'>$questionText</textarea></p>
 					<p>
 		";
 
@@ -330,24 +362,35 @@
 
 		for ($i = 1; $i <= MAX_ANSWERS; $i++)
 		{
-			echo "<option value='$i'>$i</option>";
+			echo "<option value='$i'";
+
+			if ($i == $answerCount)
+			{
+				echo "selected";
+			}
+
+			echo ">";
+			echo $i;
+			echo "</option>";
 		}
+
 
 		echo "</select><br/>";
-		echo "<p><input type='button' value='Create Answers' onclick='loadSeveralAnswers();'></p>";
+		echo "<p><input type='button' value='Create Answers' onclick='loadSeveralAnswers($answers);'></p>";
 
-		echo "<div id='sevAnswers'></div>";
-		echo "</p>";
+		echo "<div id='sevAnswers'>";
 
-		// Check the "everyQuestion" checkbox if it was checked already.
-		echo "<p><input type='checkbox' name='everyQuestion' value='everyQuestion'";
-
-		if ($everyQuestion == "everyQuestion")
+		for ($i = 0; $i < count($answers); $i++)
 		{
-			echo " checked";
-		}
+			$value = $answers[$i];
 
-		echo ">Every question is of this type</p>";
+			$answerNumber = $i + 1;
+			echo "Answer $answerNumber: <input type='text' name='saanswer$answerNumber' value='$value'><br/>";
+		}
+		echo "<br/>";
+
+		echo "</div>";
+		echo "</p>";
 
 		echo "
 					<p>
@@ -356,9 +399,9 @@
 						<input type='button' value='Cancel'>
 					</p>
 					<input type='hidden' name='districtId' value='$districtId'>
-					<input type='hidden' name='createdQuestion' value='trueFalse'>
+					<input type='hidden' name='createdQuestion' value='severalAnswer'>
 					<input type='hidden' name='surveyId' value='$surveyId'>
-					<input type='hidden' name='createType' value='trueFalse'>
+					<input type='hidden' name='createType' value='severalAnswer'>
 					<input type='hidden' name='questionNumber' value='$questionNumber'>
 					<input type='hidden' name='questionId' value='$questionId'>
 				</form>
@@ -387,9 +430,9 @@
 						<input type='button' value='Cancel'>
 					</p>
 					<input type='hidden' name='districtId' value='$districtId'>
-					<input type='hidden' name='createdQuestion' value='trueFalse'>
+					<input type='hidden' name='createdQuestion' value='freeFormText'>
 					<input type='hidden' name='surveyId' value='$surveyId'>
-					<input type='hidden' name='createType' value='trueFalse'>
+					<input type='hidden' name='createType' value='freeFormText'>
 					<input type='hidden' name='questionNumber' value='$questionNumber'>
 					<input type='hidden' name='questionId' value='$questionId'>
 				</form>
@@ -400,7 +443,7 @@
 	// ----------------------------------------------------------------------
 	// Create a rating question.
 	// ----------------------------------------------------------------------
-	function editRating($districtId, $surveyId, $questionId, $questionNumber, $questionText, $lowValue, $highValue, $lowDescription, $highDescription)
+	function editRating($districtId, $surveyId, $questionId, $questionNumber, $questionText, $lowValue, $highValue, $descriptions)
 	{
 		echo "
 			<div id='rating'>
@@ -433,19 +476,22 @@
 						</select>
 						<br/>
 						
-						<p><input type='button' value='Add Rating Descriptions' onclick='addRatingDescriptions();'></p>
-						<div id='ratingDescriptions'></div>
-					</p>
-					<p>
-						Enter the word to describe the lowest rating:
-						<input type='text' name='ratingLowValue' value='$lowDescription'>
-					</p>
-
-					<p>
-						Enter the word to describe the highest rating:
-						<input type='text' name='ratingHighValue' value='$highDescription'>
-					</p>
+						<p><input type='button' value='Add Rating Descriptions' onclick='addRatingDescriptions($descriptions);'></p>
 		";
+
+		echo "<div id='ratingDescriptions'>";
+
+		for ($i = 0; $i < count($descriptions); $i++)
+		{
+			$value = $descriptions[$i];
+
+			$descriptionNumber = $i + 1;
+			echo "Description $answerNumber: <input type='text' name='rating$descriptionNumber' value='$value'><br/>";
+		}
+		echo "<br/>";
+
+		echo "</div>";
+		echo "</p>";
 
 		echo "
 					<p>
@@ -454,9 +500,9 @@
 						<input type='button' value='Cancel'>
 					</p>
 					<input type='hidden' name='districtId' value='$districtId'>
-					<input type='hidden' name='createdQuestion' value='trueFalse'>
+					<input type='hidden' name='createdQuestion' value='rating'>
 					<input type='hidden' name='surveyId' value='$surveyId'>
-					<input type='hidden' name='createType' value='trueFalse'>
+					<input type='hidden' name='createType' value='e=rating'>
 					<input type='hidden' name='questionNumber' value='$questionNumber'>
 					<input type='hidden' name='questionId' value='$questionId'>
 				</form>
@@ -481,8 +527,16 @@
 						a.answertext,
 						a.lowvalue,
 						a.highvalue,
-						a.lowdescription,
-						a.highdescription
+						a.description1,
+						a.description2,
+						a.description3,
+						a.description4,
+						a.description5,
+						a.description6,
+						a.description7,
+						a.description8,
+						a.description9,
+						a.description10
 						FROM devpoll.questions q
 						JOIN devpoll.answers a
 						ON q.surveyid = a.surveyid
@@ -509,6 +563,7 @@
 	function displayQuestion($districtId, $surveyId, $result)
 	{
 		$answers = array();
+		$descriptions = array();
 		$answerLoop = 0;
 
 		// Loop through the result and create the question.
@@ -526,8 +581,17 @@
 
 			$lowValue = $row['lowvalue'];
 			$highValue = $row['highvalue'];
-			$lowDescription = $row['lowdescription'];
-			$highDescription = $row['highdescription'];
+
+			$descriptions[0] = $row['description1'];
+			$descriptions[1] = $row['description2'];
+			$descriptions[2] = $row['description3'];
+			$descriptions[3] = $row['description4'];
+			$descriptions[4] = $row['description5'];
+			$descriptions[5] = $row['description6'];
+			$descriptions[6] = $row['description7'];
+			$descriptions[7] = $row['description8'];
+			$descriptions[8] = $row['description9'];
+			$descriptions[9] = $row['description10'];
 		}
 
 		// Redirect to edit the question.
@@ -537,7 +601,7 @@
 				editFreeFormText($districtId, $surveyId, $questionId, $questionNumber, $questionText);
 				break;
 			case "rating":
-				editRating($districtId, $surveyId, $questionId, $questionNumber, $questionText, $lowValue, $highValue, $lowDescription, $highDescription);
+				editRating($districtId, $surveyId, $questionId, $questionNumber, $questionText, $lowValue, $highValue, $descriptions);
 				break;
 			case "trueFalse":
 				$trueAnswer = $answers[0];
@@ -549,7 +613,7 @@
 				editMultipleChoice($districtId, $surveyId, $questionId, $questionNumber, $questionText, $answers);
 				break;
 			case "severalAnswer":
-				//editSeveralAnswer($districtId, $surveyId, $questionId, $questionNumber, $questionText, $answers);
+				editSeveralAnswer($districtId, $surveyId, $questionId, $questionNumber, $questionText, $answers);
 				break;
 		}
 	}

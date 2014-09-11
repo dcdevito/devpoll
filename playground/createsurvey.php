@@ -372,6 +372,7 @@
 			</div>
 		";
 
+		echo "About to display the questions<br/>";
 		displayQuestions($surveyId, $surveyName);
 	}
 
@@ -516,11 +517,6 @@
 		echo ">Every question is of this type</p>";
 
 		echo "
-					<p>
-						<input type='submit' value='Create Question'>
-						&nbsp;&nbsp;
-						<input type='button' value='Cancel'>
-					</p>
 					<input type='hidden' name='createdQuestion' value='multipleChoice'>
 					<input type='hidden' name='surveyName' value='$surveyName'>
 					<input type='hidden' name='surveyId' value='$surveyId'>
@@ -573,11 +569,6 @@
 		echo ">Every question is of this type</p>";
 
 		echo "
-					<p>
-						<input type='submit' value='Create Question'>
-						&nbsp;&nbsp;
-						<input type='button' value='Cancel'>
-					</p>
 					<input type='hidden' name='createdQuestion' value='severalAnswer'>
 					<input type='hidden' name='surveyName' value='$surveyName'>
 					<input type='hidden' name='surveyId' value='$surveyId'>
@@ -658,6 +649,9 @@
 						<p><input type='button' value='Add Rating Descriptions' onclick='addRatingDescriptions();'></p>
 						<div id='ratingDescriptions'></div>
 					</p>
+		";
+		
+		/****
 					<p>
 						Enter the word to describe the lowest rating:
 						<input type='text' name='ratingLowValue'>
@@ -668,6 +662,7 @@
 						<input type='text' name='ratingHighValue'>
 					</p>
 		";
+		****/
 
 		// Check the "everyQuestion" checkbox if it was checked already.
 		echo "<p><input type='checkbox' name='everyQuestion' value='everyQuestion'";

@@ -1,6 +1,50 @@
 <?php
+	function getMaxRatingValue($surveyId)
+	{
+		echo "Beginning of getMaxRatingValue<br/>";
+
+		// Connect to the database.
+		require("connectToDB.php");
+
+		$numberQuery = "
+						SELECT
+						max(a.highvalue) as maxhighvalue
+						from devpoll.answers a
+						where surveyid = $surveyId;
+						";
+
+		echo "Query = $numberQuery<br/>";
+
+		// Get the questions and answers for this survey.
+		$maxRS = $conn->query($numberQuery);
+
+		echo "Errors = ".$conn->error;
+		echo "<br/>";
+
+		$maxArray = $maxRS->fetch_array(MYSQLI_ASSOC);
+		$max = $maxArray['maxhighvalue'];
+
+		// If there are no questions - set max question to zero.
+		if ($max == null)
+		{
+			$max = 0;
+		}
+
+		echo "Max = $max<br/>";		
+
+		// Close the connection.
+		$conn->close();
+
+		echo "The end of getMaxRatingValue max = $max<br/>";
+
+		// Return the result.
+		return $max;
+	}	
+
 	function getSurveyQuestionsAndAnsers($surveyId)
 	{
+		echo "Surveyid = $surveyId<br/>";
+
 		// Connect to the database.
 		require("connectToDB.php");
 
@@ -14,8 +58,16 @@
 						a.answertext,
 						a.lowvalue,
 						a.highvalue,
-						a.lowdescription,
-						a.highdescription
+						a.description1,
+						a.description2,
+						a.description3,
+						a.description4,
+						a.description5,
+						a.description6,
+						a.description7,
+						a.description8,
+						a.description9,
+						a.description10
 						FROM devpoll.questions q
 						JOIN devpoll.answers a
 						ON q.surveyid = a.surveyid
@@ -28,15 +80,30 @@
 		// Get the questions and answers for this survey.
 		$result = $conn->query($questionQuery);
 		
+		echo "errors = ".$conn->errors;
+
 		// Close the connection.
 		$conn->close();
+
+		echo "End of getSurveyQuestionsAndAnsers<br/>";
+		echo "We have ".$result->num_rows;
 
 		// Return the result.
 		return $result;
 	}
 
-	function displaySurveyQuestions($result, $surveyName)
+	function displaySurveyQuestions($result, $surveyName, $surveyId)
 	{
+		echo "Beginning of displaySurveyQuestions<br/>";
+
+		$maxhighvalue = getMaxRatingValue($surveyId);
+		if ($maxhighvalue == 0)
+		{
+			$maxhighvalue = 2;
+		}
+
+		echo "maxhighvalue = $maxhighvalue<br/>";
+
 		echo "<html>
 			<head>
 			<style>
@@ -59,11 +126,14 @@
 			</style>
 			</head>
 			<body>";
-		echo "<table border='1' style='border-color: lightgrey;' width='50%'>";
-		echo "<tr><td colspan='2'>Survey $surveyName</td></tr>";
+		echo "<table border='1' style='border-color: lightgrey;' width='80%'>";
+		echo "<tr><td colspan='$maxhighvalue'>Survey $surveyName</td></tr>";
 
 		// Initialize the value of $questionNumber.
 		$questionNumber = -1;
+
+		$numrows = $result->num_rows;
+		echo "We got $numrows rows in the result<br/>";
 
 		while($row = $result->fetch_assoc()) 
 		{
@@ -75,25 +145,38 @@
 
 			$qn = $row['questionnumber'];
 
+
 			if ($questionNumber != $qn)
 			{
 				$questionNumber = $qn;
 
-				echo "<tr><td colspan='2'>&nbsp;</td></tr>";
-				echo "<tr><td colspan='2'>Question $questionNumber</td></tr>";
-				echo "<tr><td colspan='2'>$questionText</td></tr>";
+				echo "<tr><td colspan='$maxhighvalue'>&nbsp;</td></tr>";
+				echo "<tr><td colspan='$maxhighvalue'>Question $questionNumber</td></tr>";
+				echo "<tr><td colspan='$maxhighvalue'>$questionText</td></tr>";
 
 				switch($questionType)
 				{
 					case "freeForm":
-						echo "<tr><td colspan='2'><textarea name='freeText' rows='5' cols='5'></textarea></td></tr>";
+						$cols = $maxhighvalue * 10;
+						echo "<tr><td colspan='$maxhighvalue'><textarea name='freeText' rows='5' cols='$cols'></textarea></td></tr>";
 						break;
 					case "rating":
 						$lowValue = $row['lowvalue'];
 						$highValue = $row['highvalue'];
-						$lowDescription = $row['lowdescription'];
-						$highDescription = $row['highdescription'];
+						$description = array(
+										$row['description1'],
+										$row['description2'],
+										$row['description3'],
+										$row['description4'],
+										$row['description5'],
+										$row['description6'],
+										$row['description7'],
+										$row['description8'],
+										$row['description9'],
+										$row['description10']
+									);
 
+						/*****
 						echo "<tr><td style='text-align:left; width:50%'>$lowDescription</td><td style='text-align:right; width:50%;'>$highDescription</td></tr>";
 
 						echo "<tr><td colspan='2'>";
@@ -108,15 +191,36 @@
 						echo "</div>";
 
 						echo "</td></tr>";
+						*****/
+
+						$columnWidth = 100 / $maxhighvalue;
+						echo "columnWidth = $columnWidth<br/>";
+
+						$columnValue = "";
+
+						echo "<tr>";
+						for ($i = 0; $i < $highValue; $i++)
+						{
+							$columnValue = $description[$i];
+							echo "<td width='$columnWidth%'>$columnValue</td>";
+						}
+						echo "</tr>";
+
+						echo "<tr>";
+						for ($i = 1; $i <= $highValue; $i++)
+						{
+							echo "<td width='$columnWidth%'><input type='radio' name='rate' value='$i'>$i</td>";
+						}
+						echo "</tr>";
 						break;
 					case "trueFalse":
-						echo "<tr><td colspan='2'><input type='radio' name='tf' value='$answerText'>$answerText</td></tr>";
+						echo "<tr><td colspan='$maxhighvalue'><input type='radio' name='tf' value='$answerText'>$answerText</td></tr>";
 						break;
 					case "multipleChoice":
-						echo "<tr><td colspan='2'><input type='radio' name='mc' value='$answerText'>$answerText</td></tr>";
+						echo "<tr><td colspan='$maxhighvalue'><input type='radio' name='mc' value='$answerText'>$answerText</td></tr>";
 						break;
 					case "severalAnswer":
-						echo "<tr><td colspan='2'><input type='checkbox' name='sa' value='$answerText'>$answerText</td></tr>";
+						echo "<tr><td colspan='$maxhighvalue'><input type='checkbox' name='sa' value='$answerText'>$answerText</td></tr>";
 						break;
 				}
 			}
@@ -129,13 +233,13 @@
 					case "rating":
 						break;
 					case "trueFalse":
-						echo "<tr><td colspan='2'><input type='radio' name='tf' value='$answerText'>$answerText</td></tr>";
+						echo "<tr><td colspan='$maxhighvalue'><input type='radio' name='tf' value='$answerText'>$answerText</td></tr>";
 						break;
 					case "multipleChoice":
-						echo "<tr><td colspan='2'><input type='radio' name='mc' value='$answerText'>$answerText</td></tr>";
+						echo "<tr><td colspan='$maxhighvalue'><input type='radio' name='mc' value='$answerText'>$answerText</td></tr>";
 						break;
 					case "severalAnswer":
-						echo "<tr><td colspan='2'><input type='checkbox' name='sa' value='$answerText'>$answerText</td></tr>";
+						echo "<tr><td colspan='$maxhighvalue'><input type='checkbox' name='sa' value='$answerText'>$answerText</td></tr>";
 						break;
 				}			
 			}

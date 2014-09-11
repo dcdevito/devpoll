@@ -14,11 +14,35 @@
 	$lowValue = 1;
 	$highValue= $ratingValue;
 
-	$lowDescription = mysql_real_escape_string($_POST['ratingLowValue']);
-	$highDescription = mysql_real_escape_string($_POST['ratingHighValue']);
+	$description1 = mysql_real_escape_string($_POST['ratingdescription1']);
+	$description2 = mysql_real_escape_string($_POST['ratingdescription2']);
+	$description3 = mysql_real_escape_string($_POST['ratingdescription3']);
+	$description4 = mysql_real_escape_string($_POST['ratingdescription4']);
+	$description5 = mysql_real_escape_string($_POST['ratingdescription5']);
+	$description6 = mysql_real_escape_string($_POST['ratingdescription6']);
+	$description7 = mysql_real_escape_string($_POST['ratingdescription7']);
+	$description8 = mysql_real_escape_string($_POST['ratingdescription8']);
+	$description9 = mysql_real_escape_string($_POST['ratingdescription9']);
+	$description10 = mysql_real_escape_string($_POST['ratingdescription10']);
 
 
-	addRating($surveyId, $questionNumber, $questionType, $questionText, $lowValue, $highValue, $lowDescription, $highDescription);
+	addRating(	$surveyId, 
+				$questionNumber, 
+				$questionType, 
+				$questionText, 
+				$lowValue, 
+				$highValue, 
+				$description1,
+				$description2,
+				$description3,
+				$description4,
+				$description5,
+				$description6,
+				$description7,
+				$description8,
+				$description9,
+				$description10
+			);
 
 	$_SESSION['surveyInProgress'] = 'YES';
 	$_SESSION['surveyId'] = $surveyId;
@@ -31,7 +55,23 @@
 	// ----------------------------------------------------------------------
 	// Add the rating question to the database.
 	// ----------------------------------------------------------------------
-	function addRating($surveyId, $questionNumber, $questionType, $questionText, $lowValue, $highValue, $lowDescription, $highDescription)
+	function addRating(	$surveyId, 
+						$questionNumber, 
+						$questionType, 
+						$questionText, 
+						$lowValue, 
+						$highValue, 
+						$description1,
+						$description2,
+						$description3,
+						$description4,
+						$description5,
+						$description6,
+						$description7,
+						$description8,
+						$description9,
+						$description10 
+					)
 	{
 		// Connect to the database.
 		include("connectToDB.php");
@@ -43,8 +83,44 @@
 		$conn->query("INSERT INTO questions(surveyId, questionNumber, questionText, questionType, lastmodified) 
 							VALUES ($surveyId, $questionNumber, '$questionText', 'rating', now());");
 
-		$conn->query("INSERT INTO answers(surveyId, questionNumber, answerNumber, lowValue, highvalue, lowdescription, highdescription) 
-							VALUES($surveyId, $questionNumber, 0, $lowValue, $highValue, '$lowDescription', '$highDescription');");
+		$conn->query("INSERT INTO 
+								answers
+								(
+									surveyId, 
+									questionNumber, 
+									answerNumber, 
+									lowValue, 
+									highvalue, 
+									description1, 
+									description2,
+									description3,
+									description4,
+									description5,
+									description6,
+									description7,
+									description8,
+									description9,
+									description10
+								) 
+							VALUES
+								(	
+									$surveyId, 
+									$questionNumber, 
+									0, 
+									$lowValue, 
+									$highValue, 
+									'$description1', 
+									'$description2', 
+									'$description3', 
+									'$description4', 
+									'$description5', 
+									'$description6', 
+									'$description7', 
+									'$description8', 
+									'$description9', 
+									'$description10' 
+								);
+				");
 
 		// Commit the transaction.
 		$conn->commit();		
