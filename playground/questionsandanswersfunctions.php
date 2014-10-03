@@ -1,4 +1,14 @@
 <?php
+	/*****************************************************************
+		A collection of functions used in the creation of a survey
+	*****************************************************************/
+?>
+
+<?php
+	/***********************************************************************
+		Get the maximum rating value for any rating question in a survey,
+		for formatting the answers across the page properly
+	***********************************************************************/		
 	function getMaxRatingValue($surveyId)
 	{
 		echo "Beginning of getMaxRatingValue<br/>";
@@ -41,6 +51,9 @@
 		return $max;
 	}	
 
+	/*************************************************************
+		Return the questions and answers for a given survey id 
+	*************************************************************/	
 	function getSurveyQuestionsAndAnsers($surveyId)
 	{
 		echo "Surveyid = $surveyId<br/>";
@@ -92,6 +105,9 @@
 		return $result;
 	}
 
+	/***************************************************
+		Display the questions and answers in a table
+	***************************************************/
 	function displaySurveyQuestions($result, $surveyName, $surveyId)
 	{
 		echo "Beginning of displaySurveyQuestions<br/>";

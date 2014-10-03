@@ -1,6 +1,15 @@
 <?php
+	/*********************************************
+		List the surveys so they can be edited
+	*********************************************/
+?>
+
+<?php
 	// Make sure the person is logged in.
 	include("verifylogin.php");
+
+	// Constant values.
+	include("constants.php");
 ?>
 
 <html>
@@ -20,10 +29,17 @@
 		The edit button will allow the person to change the question and the answers.
 		The delete button will remove the question from the survey.
 	*/
-	$result = getSurveys(1);
+	$districtid = 1;
 
+	// Get the surveys for the given district id.
+	$result = getSurveys($districtid);
+
+	// Display the surveys.
 	displaySurveys($result);
 
+	/*******************************************************
+		Get all of the surveys for the given district id
+	*******************************************************/
 	function getSurveys($districtId)
 	{
 		// Connect to the database.
@@ -59,7 +75,9 @@
 		return $result;
 	}
 
-
+	/********************************************
+		Display the survey results in a table
+	********************************************/
 	function displaySurveys($result)
 	{
 		echo "<form action='editselectedsurvey.php' method='POST'>";
@@ -73,26 +91,29 @@
 
 		// Initialize the value of $questionNumber.
 		$loop = 0;
-		$backcolorflag = 0;
+		$backcolorflag = LIGHT;
 		$backcolor = "lightblue";
 		$answercount = 0;
 
+		// Loop through the results.
 		while($row = $result->fetch_assoc()) 
 		{
+			// Get the fields from the results.
 			$surveyId = $row['surveyid'];
 			$surveyName = $row['surveyname'];
 			$numberOfQuestions = $row['numberofquestions'];
 			$dateOpen = $row['dateopen'];
 
-			if ($backcolorflag == 0)
+			// Alternate the row colors.
+			if ($backcolorflag == LIGHT)
 			{
 				$backcolor = "white";
-				$backcolorflag = 1;
+				$backcolorflag = DARK;
 			}
 			else
 			{
 				$backcolor = "lightblue";
-				$backcolorflag = 0;
+				$backcolorflag = LIGHT;
 			}	
 
 			echo "<tr bgcolor='$backcolor'>";

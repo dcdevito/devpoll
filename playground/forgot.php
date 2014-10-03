@@ -1,3 +1,9 @@
+<?php
+	/******************************************************
+		If the user forgets the username and/or password
+	******************************************************/
+?>
+
 <html>
 	<head>
 		<title>DevPoll Forgot Login</title>
@@ -15,8 +21,10 @@
 </html>
 
 <?php
+	// Start the sessions that hold the page information for the user.
 	session_start();
 
+	// If the page has come from a Post submission.
 	if ($_SERVER["REQUEST_METHOD"] == "POST")
 	{
 		// Get the information submitted by the form.
@@ -43,6 +51,7 @@
 			}
 			else
 			{
+				// Create the email to send to the user with the login information.
 				require("class.phpmailer.php");
 				$mail = new PHPMailer();
 
@@ -66,15 +75,19 @@
 
 				$mail->Body = "Your password is <br/> password";
 
+				// Send the mail.
 				if (!$mail->Send())
 				{
+					// The send was not successful.
 					echo "Message was not sent <br/>The error was ".$mail->ErrorInfo;
 				}
 				else
 				{
+					// The mail was sent successfully.
 					echo "Message sent successfully";
 				}
 
+				// Link back the login page.
 				echo '<a href="login.php">Return to Login page"</a>';
 			}
 		}		

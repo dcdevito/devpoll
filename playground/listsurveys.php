@@ -1,4 +1,10 @@
 <?php
+	/**************************************************************
+		Display a list of the surveys that this user can access
+	**************************************************************/
+?>
+
+<?php
 	// Make sure the person is logged in.
 	include("verifylogin.php");
 ?>
@@ -6,6 +12,7 @@
 <html>
 <head>
 	<script>
+		// Go back to the welcome page.
 		function goBack()
 		{
 			window.location = "welcome.php";
@@ -20,10 +27,20 @@
 		The edit button will allow the person to change the question and the answers.
 		The delete button will remove the question from the survey.
 	*/
-	$result = getSurveys(1);
 
+	// The district Id will be read in for the user.
+	// *** For testing we will assume DISTRICT ID = 1 ***
+	$districtId = 1;
+
+	// Get the surveys for the district.
+	$result = getSurveys($districtId);
+
+	// Display the surveys for the district.
 	displaySurveys($result);
 
+	/**************************************************
+		Get all of the surveys for this District Id
+	**************************************************/
 	function getSurveys($districtId)
 	{
 		// Connect to the database.
@@ -59,7 +76,9 @@
 		return $result;
 	}
 
-
+	/*************************************
+		Display the surveys in a table
+	*************************************/
 	function displaySurveys($result)
 	{
 		echo "<form action='editselectedsurvey.php' method='POST'>";

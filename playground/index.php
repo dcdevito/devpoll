@@ -1,3 +1,9 @@
 <?php
-	header("location: login.php");		// Redirect to the login page
+	/******************************************************************************
+		By default (when http://devpoll is launched) redirect to the login page
+	******************************************************************************/
+?>
+
+<?php	
+	header("location: login.php");
 ?>

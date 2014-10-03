@@ -1,14 +1,6 @@
 <?php
-	/******************************************************
-		Add the multiple choice question to the database
-	******************************************************/
-?>
-
-<?php
-	// Start the session values.
 	session_start();
 
-	// Get the variables posted to the page.
 	$questionNumber = mysql_real_escape_string($_POST['questionNumber']);
 	$questionType = mysql_real_escape_string($_POST['createType']);
 	$questionText = mysql_real_escape_string($_POST['questionText']);
@@ -27,23 +19,20 @@
 		$answers[] = $answer;
 	}
 
-	// Add the multiple choice question to the database.
-	addMultipleChoice($surveyId, $questionNumber, $questionType, $questionText, $numberOfAnswers, $answers);
+	editMultipleChoice($surveyId, $questionNumber, $questionType, $questionText, $numberOfAnswers, $answers);
 
-	// Set the session values.
 	$_SESSION['surveyInProgress'] = 'YES';
 	$_SESSION['surveyId'] = $surveyId;
 	$_SESSION['surveyName'] = $surveyName;
 	$_SESSION['questionNumber'] = $questionNumber;
 	$_SESSION['everyQuestion'] = $everyQuestion;
 
-	// Return to the create survey page.
-	header('Location: createsurvey.php');
+	header('Location: editselectedsurvey.php');
 
-	/******************************************************
-		Add the multiple choice question to the database
-	******************************************************/
-	function addMultipleChoice($surveyId, $questionNumber, $questionType, $questionText, $numberOfAnswers, $answers)
+	// ----------------------------------------------------------------------
+	// Add the multiple choice question to the database.
+	// ----------------------------------------------------------------------
+	function editMultipleChoice($surveyId, $questionNumber, $questionType, $questionText, $numberOfAnswers, $answers)
 	{
 		// Connect to the database.
 		include("connectToDB.php");
@@ -51,13 +40,12 @@
 		// Start a transaction.
 		$conn->autocommit(false);
 
-		// Insert the multiple choice question to the database.
+		// Insert the values into the database.
 		$questionQuery = "INSERT INTO questions(surveyId, questionNumber, questionText, questionType, lastmodified) 
 							VALUES ($surveyId, $questionNumber, '$questionText', 'multipleChoice', now());";
 
 		$conn->query($questionQuery);
 
-		// Loop through the answers entered and insert them to the database.
 		if ($numberOfAnswers > 0)
 		{
 			for ($i = 0; $i < $numberOfAnswers; $i++)

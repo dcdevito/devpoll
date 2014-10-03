@@ -1,17 +1,33 @@
 <?php
+	/***************************************************
+		Display the answers for the selected survey,
+		so they can be edited
+	***************************************************/
+?>
+
+<?php
 	// Make sure the person is logged in.
 	include("verifylogin.php");
+
+	// Constant values.
+	include("constants.php");
 ?>
 
 <html>
 	<head>
 		<script>
+			/**************************************
+				Call the include questions page
+			**************************************/
 			function includeQuestions(surveyId)
 			{
 				// Launch the Include Questions page.
 				window.location = "includequestions.php?si=" + surveyId + "&rp=89267";
 			}
 
+			/**********************************
+				Call the create survey page 
+			**********************************/
 			function addQuestions(surveyId)
 			{
 				window.location = "createsurvey.php?si=" + surveyId;
@@ -35,11 +51,17 @@
 		The edit button will allow the person to change the question and the answers.
 		The delete button will remove the question from the survey.
 	*/
-	$result = getDistrictQuestionsAndAnsers(1, $surveyId);
+	$districtid = 1;
 
+	// Get the questions and answers for the given district id and survey id.
+	$result = getDistrictQuestionsAndAnsers($districtid, $surveyId);
+
+	// Display the questions and answers in a table.
 	displayEditQuestionsAndAnswers($result, $surveyId);
 
-
+	/************************************************************
+		Get the questions and answers for the given survey id
+	************************************************************/
 	function getDistrictQuestionsAndAnsers($districtId, $surveyId)
 	{
 		// Connect to the database.
@@ -48,6 +70,7 @@
 		$questionQuery = "
 						SELECT
 						q.questionid,
+						a.answerid,
 						s.surveyname,
 						q.questionnumber,
 						q.questiontext,
@@ -86,6 +109,9 @@
 	}
 
 
+	/***************************************************
+		Display the questions and answers in a table
+	***************************************************/
 	function displayEditQuestionsAndAnswers($result, $surveyId)
 	{
 		echo "<form action='editselectedquestion.php' method='POST'>";
@@ -102,40 +128,50 @@
 		// Initialize the value of $questionNumber.
 		$questionNumber = -1;
 		$loop = 0;
-		$backcolorflag = 0;
+		$backcolorflag = LIGHT;
 		$backcolor = "WhiteSmoke";
 		$answercount = 0;
 
+		// Loop through the results.
 		while($row = $result->fetch_assoc()) 
 		{
+			// Take the fields from the query.
 			$surveyName = $row['surveyname'];
 			$questionText = $row['questiontext'];
 			$questionType = $row['questiontype'];
 			$answerNumber = $row['answernumber'] + 1;
 			$answerText = $row['answertext'];
+			$answerId = $row['answerid'];
 
 			$qn = $row['questionnumber'];
 			
+			// Because each answer is on a different row in the query results,
+			// we keep looping until the question number changes, which means it's a different question.
 			if ($questionNumber != $qn)
 			{
-				if ($backcolorflag == 0)
+				// This is the start of a new question.
+
+				// Alternate the row color.
+				if ($backcolorflag == LIGHT)
 				{
 					$backcolor = "white";
-					$backcolorflag = 1;
+					$backcolorflag = DARK;
 				}
 				else
 				{
 					$backcolor = "WhiteSmoke";
-					$backcolorflag = 0;
+					$backcolorflag = LIGHT;
 				}	
 
-				if ($answercount > 0 && $answercount < 5)
+				// We only want to display a certain number of answers in one row.
+				if ($answercount > 0 && $answercount < MAX_COLSPAN)
 				{
-					$colspanAmount = 5 - $answercount;
+					$colspanAmount = MAX_COLSPAN - $answercount;
 
 					echo "<td colspan='$colspanAmount'>$nbsp</td>";
 					echo "</tr>";
 				}
+
 				$answercount = 0;
 
 				$questionNumber = $qn;
@@ -150,11 +186,12 @@
 				echo "<td>$questionNumber</td>";
 				echo "<td>$questionText</td>";
 
+				// Display different information based on the question type.
 				switch($questionType)
 				{
 					case "freeForm":
 						echo "<td>Free Form Text</td>";
-						echo "<td colspan='5'>&nbsp;</td>";
+						echo "<td colspan='".MAX_COLSPAN."'>&nbsp;</td>";
 						echo "</tr>";
 						break;
 					case "rating":
@@ -170,7 +207,7 @@
 						echo "<td>&nbsp;</td>";
 						echo "</tr>";
 						echo "<tr bgcolor='$backcolor'>";
-						echo "<td colspan='5'>&nbsp;</td>";
+						echo "<td colspan='".MAX_COLSPAN."'>&nbsp;</td>";
 						echo "<td colspan='2'>$lowValue</td>";
 						echo "<td colspan='2'>$highValue</td>";
 						echo "<td>&nbsp;</td>";
@@ -197,25 +234,28 @@
 			}
 			else
 			{
+				// We are continuing different answers from the same question.
+
+				// Display different information based on the question type.
 				switch($questionType)
 				{
 					case "freeForm":
-						$answercount = 5;
+						$answercount = MAX_COLSPAN;
 						break;
 					case "rating":
-						$answercount = 5;
+						$answercount = MAX_COLSPAN;
 						break;
 					case "trueFalse":
 						echo "<td colspan='3'>$answerText</td>";
 						echo "</tr>";
-						$answercount = 5;
+						$answercount = MAX_COLSPAN;
 						break;
 					case "multipleChoice":
-						if ($loop == 5)
+						if ($loop == MAX_COLSPAN)
 						{
 							echo "</tr>";
 							echo "<tr bgcolor='$backcolor'>";
-							echo "<td colspan='5'>&nbsp;</td>";
+							echo "<td colspan='".MAX_COLSPAN."'>&nbsp;</td>";
 
 							$answercount = 0;
 						}
@@ -224,11 +264,11 @@
 						$answercount++;
 						break;
 					case "severalAnswer":
-						if ($loop == 5)
+						if ($loop == MAX_COLSPAN)
 						{
 							echo "</tr>";
 							echo "<tr bgcolor='$backcolor'>";
-							echo "<td colspan='5'>&nbsp;</td>";
+							echo "<td colspan='".MAX_COLSPAN."'>&nbsp;</td>";
 
 							$answercount = 0;
 						}

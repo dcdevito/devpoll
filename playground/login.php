@@ -1,3 +1,9 @@
+<?php
+	/****************************
+		Display the login page
+	****************************/
+?>
+
 <html>
 	<head>
 		<title>DevPoll Sign In</title>

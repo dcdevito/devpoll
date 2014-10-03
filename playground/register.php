@@ -1,3 +1,9 @@
+<?php
+	/***************************************************
+		Register a username and password for the User
+	***************************************************/
+?>
+
 <html>
 	<head>
 		<title>DevPoll Registration</title>
@@ -19,8 +25,10 @@
 </html>
 
 <?php
+	// Start the sessions that hold the user information for the pages.
 	session_start();
 
+	// If the page has come from a Post submission.
 	if ($_SERVER["REQUEST_METHOD"] == "POST")
 	{
 		// Get the information submitted by the form.
@@ -37,6 +45,7 @@
 		// Make sure the email address isn't already in the database.
 		$emailQuery = "SELECT email FROM devpoll.users WHERE email = '$email'";
 
+		// If the email query is successful.
 		if ($emailRS = $conn->query($emailQuery))
 		{
 			// No problem - Check if the email exists.

@@ -1,6 +1,14 @@
 <?php
+	/******************************************************
+		Add the true/false question to the database
+	******************************************************/
+?>
+
+<?php
+	// Start the session values.
 	session_start();
 
+	// Get the variables posted to the page.
 	$questionNumber = mysql_real_escape_string($_POST['questionNumber']);
 	$questionType = mysql_real_escape_string($_POST['createType']);
 	$questionText = mysql_real_escape_string($_POST['questionText']);
@@ -32,19 +40,22 @@
 			break;
 	}
 
+	// Add the true/false question to the database.
 	addTrueFalse($surveyId, $questionNumber, $questionType, $questionText, $trueFalseHeading1, $trueFalseHeading2);
 
+	// Set the session values.
 	$_SESSION['surveyInProgress'] = 'YES';
 	$_SESSION['surveyId'] = $surveyId;
 	$_SESSION['surveyName'] = $surveyName;
 	$_SESSION['questionNumber'] = $questionNumber;
 	$_SESSION['everyQuestion'] = $everyQuestion;
 
+	// Return to the create survey page.
 	header('Location: createsurvey.php');
 
-	// ----------------------------------------------------------------------
-	// Add the trueFalse question to the database.
-	// ----------------------------------------------------------------------
+	/******************************************************
+		Add the true/false question to the database
+	******************************************************/
 	function addTrueFalse($surveyId, $questionNumber, $questionType, $questionText, $trueFalseHeading1, $trueFalseHeading2)
 	{
 		// Connect to the database.

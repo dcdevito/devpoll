@@ -1,4 +1,8 @@
 <?php
+	/************************
+		Create the survey
+	************************/
+
 /***
 	Need a couple of checkbox that say:
 	1) Add a message at the top.
@@ -12,8 +16,8 @@
 	// Make sure the person is logged in.
 	include("verifylogin.php");
 
-	define("MAX_ANSWERS", 10);
-	define("MAX_RATING", 10);
+	// Constant values.
+	include("constants.php");
 ?>
 
 <html>
@@ -21,6 +25,11 @@
 		<title>DevPoll</title>
 
 		<script type="text/javascript">
+			// AJAX calls to save the edited questions.
+
+			/*****************************
+				Default AJAX call stuff
+			*****************************/
 			var XMLHttpRequestObject = false;
 
 			if (window.XMLHttpRequest)
@@ -32,6 +41,9 @@
 				XMLHttpRequestObject = new ActiveXObject("Microsoft.XMLHTTP");
 			}
 
+			/*************************************************************
+				Load the answer boxes for the multiple choice question
+			*************************************************************/
 			function loadMultipleChoice()
 			{
 				if (XMLHttpRequestObject)
@@ -57,6 +69,9 @@
 				XMLHttpRequestObject.send('answers=' + answers);
 			}
 
+			/************************************************************
+				Load the answer boxes for the several answer question
+			************************************************************/
 			function loadSeveralAnswers()
 			{
 				if (XMLHttpRequestObject)
@@ -82,6 +97,9 @@
 				XMLHttpRequestObject.send('answers=' + answers);
 			}
 
+			/*************************************************
+				Load the boxes for the rating descriptions
+			*************************************************/
 			function addRatingDescriptions()
 			{
 				if (XMLHttpRequestObject)
@@ -107,12 +125,18 @@
 				XMLHttpRequestObject.send('descriptions=' + descriptions);
 			}
 
+			/***************************************
+				Launch the includequestions page
+			***************************************/
 			function includeQuestions(surveyId)
 			{
 				// Launch the Include Questions page.
 				window.location = "includequestions.php?si=" + surveyId + "&rp=99112";
 			}
 
+			/*******************************
+				Stop creating the survey
+			*******************************/
 			function exitCreateSurvey()
 			{
 				window.location = "exitCreateSurvey.php";
@@ -121,14 +145,22 @@
 	</head>
 	<body>
 		<?php 		
+			// Get the survey id of the survey we will be creating.
 			$sId = $_GET['si'];
 
+			// If the page was submitted and we have a survey id
+			// we have the values we need to create the survey.
 			if ($_SERVER["REQUEST_METHOD"] == "GET" && $sId != "")
 			{
 				$surveyId = $_GET['si'];
 
+				// Get the maximum question number - so we can add a new question on the end.
 				$questionNumber = getMaxQuestionNumber($surveyId);
+
+				// Get the name of the survey the user entered.
 				$surveyName = getSurveyName($surveyId);
+
+				// Initialize the values.
 				$enterName = "";
 				$everyQuestion = "";
 				$createType = "";
@@ -137,6 +169,7 @@
 				$valuesPassed = true;
 			}
 
+			// The page calls itself when the form is submitted.
 			if ($_SERVER["REQUEST_METHOD"] == "POST")
 			{
 				//   ***********************************************************
@@ -196,10 +229,10 @@
 //*******************
 //*******************
 
+			// The form was submitted and values were passed to it.
 			if ($valuesPassed == true)
 			{
 				// Are we entering the name for the first time.
-				// ----------------------------------------------------------------------
 				if ($enterName == "enterName")
 				{
 					$canEnterQuestions = false;
@@ -210,6 +243,7 @@
 					// Check if the name is taken for this district.
 					$result = $conn->query("SELECT surveyName FROM survey WHERE districtId = $districtId");
 
+					// Find the name of the survey we entered.
 					$nameOK = true;
 					while($row = $result->fetch_assoc()) 
 					{
@@ -223,6 +257,7 @@
 					// Close the connection.
 					$conn->close();
 
+					// If the name has not been found add it to the database.
 					if ($nameOK == true)
 					{
 						// Write the name to the database.
@@ -244,22 +279,20 @@
 				}
 				else
 				{
-					// ----------------------------------------------------------------------
 					// The survey name is valid, and we can enter a question.
-					// ----------------------------------------------------------------------
 					if (empty($surveyId) or is_null($surveyId))
 					{
+						// Get the survey id for the name entered.
 						$surveyId = getSurveyId($surveyName, $districtId);
 					}
 
 					$canEnterQuestions = true;
 				}
 
-				// ----------------------------------------------------------------------
 				// Create the question of the selected type.
-				// ----------------------------------------------------------------------
 				if ($canEnterQuestions == true)
 				{
+					// Check that the "every question" checkbox was checked.
 					if ($everyQuestion == "everyQuestion" && $createType != "selectType")
 					{
 						$questionNumber++;
@@ -294,12 +327,15 @@
 						// Next question number.
 						$questionNumber++;
 
+						// Display the create question selection page.
 						createQuestionDiv($surveyId, $surveyName, $questionNumber, $everyQuestion);
 					}
 				}
 			}
 			else
 			{
+				// If the form was not submitted but the survey is still in progress,
+				// display the create question selection page.
 				$surveyInProgress = $_SESSION['surveyInProgress'];
 				if ($surveyInProgress == 'YES')
 				{
@@ -324,6 +360,7 @@
 				}
 				else
 				{
+					// No survey is active - create a new survey.
 					enterSurveyName();
 				}
 			}
@@ -332,9 +369,9 @@
 </html>
 
 <?php
-	// ----------------------------------------------------------------------
-	// Display the question type selection.
-	// ----------------------------------------------------------------------
+	/******************************************
+		Display the question type selection
+	******************************************/
 	function createQuestionDiv($surveyId, $surveyName, $questionNumber, $everyQuestion)
 	{
 		echo "
@@ -376,9 +413,9 @@
 		displayQuestions($surveyId, $surveyName);
 	}
 
-	// ----------------------------------------------------------------------
-	// Add the survey name to the Database.
-	// ----------------------------------------------------------------------
+	/******************************************
+		Add the survey name to the Database
+	******************************************/
 	function addSurveyToDB($surveyName, $districtId)
 	{
 		// Connect to the database.
@@ -409,9 +446,9 @@
 		$stmt -> close(); 
 	}
 
-	// ----------------------------------------------------------------------
-	// Enter the name of the survey.
-	// ----------------------------------------------------------------------
+	/**********************************
+		Enter the name of the survey
+	**********************************/
 	function enterSurveyName()
 	{
 		echo "
@@ -426,9 +463,9 @@
 		";		
 	}
 
-	// ----------------------------------------------------------------------
-	// Create a trueFalse question.
-	// ----------------------------------------------------------------------
+	/***********************************
+		Create a trueFalse question
+	***********************************/
 	function createTrueFalse($surveyId, $surveyName, $questionNumber, $everyQuestion)
 	{
 		echo "
@@ -475,9 +512,9 @@
 		";
 	}
 
-	// ----------------------------------------------------------------------
-	// Create a multiple choice question.
-	// ----------------------------------------------------------------------
+	/***************************************
+		Create a multiple choice question
+	***************************************/
 	function createMultipleChoice($surveyId, $surveyName, $questionNumber, $everyQuestion)
 	{
 		echo "
@@ -490,7 +527,7 @@
 					<p>
 		";
 
-		// Answer 1 and 2
+		// Create the drop down box to hold the number of answers we want.
 		echo "How many answers?";
 
 		echo "<select id='mChoice' name='mChoice' required='required'>";
@@ -503,6 +540,7 @@
 		echo "</select><br/>";
 		echo "<p><input type='button' value='Create Answers' onclick='loadMultipleChoice();'></p>";
 
+		// div to hold the results of the AJAX call.
 		echo "<div id='mcAnswers'></div>";
 		echo "</p>";
 
@@ -527,9 +565,9 @@
 		";
 	}
 
-	// ----------------------------------------------------------------------
-	// Create a several answer question.
-	// ----------------------------------------------------------------------
+	/***************************************
+		Create a several answer question
+	***************************************/
 	function createSeveralAnswer($surveyId, $surveyName, $questionNumber, $everyQuestion)
 	{
 		echo "
@@ -542,7 +580,7 @@
 					<p>
 		";
 
-		// Answer 1 and 2
+		// Create the drop down box to hold the number of answers we want.
 		echo "How many answers?";
 
 		echo "<select id='severalAnswers' name='severalAnswers' required='required'>";
@@ -555,6 +593,7 @@
 		echo "</select><br/>";
 		echo "<p><input type='button' value='Create Answers' onclick='loadSeveralAnswers();'></p>";
 
+		// div to hold the results of the AJAX call.
 		echo "<div id='sevAnswers'></div>";
 		echo "</p>";
 
@@ -579,9 +618,9 @@
 		";
 	}
 
-	// ----------------------------------------------------------------------
-	// Create a free form text question. 
-	// ----------------------------------------------------------------------
+	/***************************************
+		Create a free form text question
+	***************************************/
 	function createFreeFormText($surveyId, $surveyName, $questionNumber, $everyQuestion)
 	{
 		echo "
@@ -619,9 +658,9 @@
 		";
 	}
 
-	// ----------------------------------------------------------------------
-	// Create a rating question.
-	// ----------------------------------------------------------------------
+	/*******************************
+		Create a rating question
+	*******************************/
 	function createRating($surveyId, $surveyName, $questionNumber, $everyQuestion)
 	{
 		echo "
@@ -637,6 +676,7 @@
 						<select id='ratingValue' name='ratingValue' required='required'>
 		";
 
+		// Create the drop down box to hold the number of ratings we want.
 		for ($i = MAX_RATING; $i >= 1; $i--)
 		{
 			echo "<option value='$i'>$i</option>";
@@ -690,18 +730,18 @@
 		";
 	}
 
-	// ----------------------------------------------------------------------
-	// Display the questions we have already created.
-	// ----------------------------------------------------------------------
+	/***************************************************
+		Display the questions we have already created
+	***************************************************/
 	function displayQuestions($surveyId, $surveyName)
 	{
 		include("displaysurvey.php");
 		drawQuestions($surveyId, $surveyName);
 	}
 
-	// ----------------------------------------------------------------------
-	// Make a session variable of the surveyId we are in.
-	// ----------------------------------------------------------------------
+	/***************************************************
+		Get the survey id for the given survey name
+	***************************************************/
 	function getSurveyId($surveyName, $districtId)
 	{
 		try
@@ -734,6 +774,10 @@
 		}
 	}
 
+	/**************************************************************
+		Get the maximum question number for the given survey id,
+		so we can add any new questions to the end of the survey
+	**************************************************************/
 	function getMaxQuestionNumber($surveyId)
 	{
 		// Connect to the database.
@@ -765,6 +809,9 @@
 
 	}	
 
+	/**************************************************
+		Get the survey name for the given survey id
+	**************************************************/
 	function getSurveyName($surveyId)
 	{
 		// Connect to the database.

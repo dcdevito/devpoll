@@ -1,6 +1,14 @@
 <?php
+	/**********************************************
+		Add the rating question to the database
+	**********************************************/
+?>
+
+<?php
+	// Start the session values.
 	session_start();
 
+	// Get the variables posted to the page.
 	$questionNumber = mysql_real_escape_string($_POST['questionNumber']);
 	$questionType = mysql_real_escape_string($_POST['createType']);
 	$questionText = mysql_real_escape_string($_POST['questionText']);
@@ -14,6 +22,7 @@
 	$lowValue = 1;
 	$highValue= $ratingValue;
 
+	// Rating descriptions.
 	$description1 = mysql_real_escape_string($_POST['ratingdescription1']);
 	$description2 = mysql_real_escape_string($_POST['ratingdescription2']);
 	$description3 = mysql_real_escape_string($_POST['ratingdescription3']);
@@ -25,7 +34,7 @@
 	$description9 = mysql_real_escape_string($_POST['ratingdescription9']);
 	$description10 = mysql_real_escape_string($_POST['ratingdescription10']);
 
-
+	// Add a rating question to the database.
 	addRating(	$surveyId, 
 				$questionNumber, 
 				$questionType, 
@@ -44,17 +53,19 @@
 				$description10
 			);
 
+	// Set the session values.
 	$_SESSION['surveyInProgress'] = 'YES';
 	$_SESSION['surveyId'] = $surveyId;
 	$_SESSION['surveyName'] = $surveyName;
 	$_SESSION['questionNumber'] = $questionNumber;
 	$_SESSION['everyQuestion'] = $everyQuestion;
 
+	// Return to the create survey page.
 	header('Location: createsurvey.php');
 
-	// ----------------------------------------------------------------------
-	// Add the rating question to the database.
-	// ----------------------------------------------------------------------
+	/**********************************************
+		Add the rating question to the database
+	**********************************************/
 	function addRating(	$surveyId, 
 						$questionNumber, 
 						$questionType, 
@@ -79,10 +90,11 @@
 		// Start a transaction.
 		$conn->autocommit(false);
 
-		// Insert the values into the database.
+		// Insert the rating question to the database.
 		$conn->query("INSERT INTO questions(surveyId, questionNumber, questionText, questionType, lastmodified) 
 							VALUES ($surveyId, $questionNumber, '$questionText', 'rating', now());");
 
+		// Insert the rating descriptions to the database.
 		$conn->query("INSERT INTO 
 								answers
 								(

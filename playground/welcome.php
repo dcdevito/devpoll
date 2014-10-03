@@ -1,6 +1,12 @@
 <?php
+	/********************************************
+		Show the main menu for the application
+	********************************************/
+?>
+
+<?php
 	// Make sure the person is logged in.
-	include("verifylogin.php");	
+	include("verifylogin.php");
 ?>
 
 <html>

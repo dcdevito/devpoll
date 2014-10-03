@@ -1,9 +1,15 @@
 <?php
+	/*********************************************************
+		Display the selected question so it can be edited
+	*********************************************************/
+?>
+
+<?php
 	// Make sure the person is logged in.
 	include("verifylogin.php");
 
-	define("MAX_ANSWERS", 10);
-	define("MAX_RATING", 10);
+	// Constant values.
+	include("constants.php");
 ?>
 
 <html>
@@ -11,6 +17,11 @@
 		<title>DevPoll</title>
 
 		<script type="text/javascript">
+			// AJAX calls to save the edited questions.
+
+			/*****************************
+				Default AJAX call stuff
+			*****************************/
 			var XMLHttpRequestObject = false;
 
 			if (window.XMLHttpRequest)
@@ -22,10 +33,11 @@
 				XMLHttpRequestObject = new ActiveXObject("Microsoft.XMLHTTP");
 			}
 
+			/*************************************************************
+				Load the answer boxes for the multiple choice question
+			*************************************************************/
 			function loadMultipleChoice()
 			{
-				alert("In load");
-
 				if (XMLHttpRequestObject)
 				{
 					XMLHttpRequestObject.open("POST", "loadMultipleChoice.php");
@@ -44,31 +56,39 @@
 					}
 				}
 
-				alert("Get Values");
-
 				var answers = document.getElementById('mChoice').value;
-				var answerCount = document.getElementById('answerCount').value;
+				var answerCount = document.getElementById('mcAnswerCount').value;
 
-				alert("Answers = " + answers);
-				alert("Answer Count = " + answerCount);
+//				alert("answers = " + answers);
+//				alert("answerCount = " + answerCount);
 
-				var mcanswer;
-				var mcanswerNumber;
-				var sendstring = "answers=" + answers;
+				var mcAnswer;
+				var mcAnswerNumber;
+				var sendstring = "answers=" + answers + "&answercount=" + answerCount;
+
 				for (var i = 1; i <= answerCount; i++)
 				{
-					mcanswerNumber = 'mcanswer' + i;
+					mcAnswerNumber = 'mcanswer' + i;
 
-					mcanswer = document.getElementById(mcanswerNumber).value;
+//					alert("mcAnswerNumber = " + mcAnswerNumber);
 
-					sendstring = sendstring + '&' + mcanswerNumber + '=' + mcanswer;
+					mcAnswer = document.getElementById(mcAnswerNumber).value;
+
+//					alert("mcAnswer = " + mcAnswer);
+
+					sendstring = sendstring + '&' + mcAnswerNumber + '=' + mcAnswer;
+
+//					alert("final sendstring = " + sendstring);
 				}
 
-				alert("Send string = " + sendstring);
+//				alert("sendstring = " + sendstring);
 
 				XMLHttpRequestObject.send(sendstring);
 			}
 
+			/************************************************************
+				Load the answer boxes for the several answer question
+			************************************************************/
 			function loadSeveralAnswers()
 			{
 				if (XMLHttpRequestObject)
@@ -90,10 +110,27 @@
 				}
 
 				var answers = document.getElementById('severalAnswers').value;
+				var answerCount = document.getElementById('sevAnswerCount').value;
+
+				var sevAnswer;
+				var sevAnswerNumber;
+				var sendstring = "answers=" + answers + "&answercount=" + answerCount;
 				
-				XMLHttpRequestObject.send('answers=' + answers);
+				for (var i = 1; i <= answerCount; i++)
+				{
+					sevAnswerNumber = 'sevanswer' + i;
+
+					sevAnswer = document.getElementById(sevAnswerNumber).value;
+
+					sendstring = sendstring + '&' + sevAnswerNumber + '=' + sevAnswer;
+				}
+
+				XMLHttpRequestObject.send(sendstring);				
 			}
 
+			/*************************************************
+				Load the boxes for the rating descriptions
+			*************************************************/
 			function addRatingDescriptions()
 			{
 				if (XMLHttpRequestObject)
@@ -119,6 +156,86 @@
 				XMLHttpRequestObject.send('descriptions=' + descriptions);
 			}
 
+			/*******************************************
+				Save the edited true/false question 
+			*******************************************/
+			function saveTrueFalse()
+			{
+				if (XMLHttpRequestObject)
+				{
+					XMLHttpRequestObject.open("POST", "editTrueFalseQuestion.php");
+
+					XMLHttpRequestObject.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+					XMLHttpRequestObject.onreadystatechange = function()
+					{
+						if (XMLHttpRequestObject.readyState == 4 && XMLHttpRequestObject.status == 200)
+						{
+							var returnedData = XMLHttpRequestObject.responseText;
+
+							var truefalseDiv = document.getElementById('truefalseDiv');
+							truefalseDiv.innerHTML = returnedData;
+						}
+					}
+				}
+
+				var truefalseId = document.getElementById('truefalseId').checked;
+				var abId = document.getElementById('abId').checked;
+				var yesnoId = document.getElementById('yesnoId').checked;
+				var customId = document.getElementById('customId').checked;
+
+				alert("truefalseId = " + truefalseId);
+				alert("ab = " + abId);
+				alert("yesnoId = " + yesnoId);
+				alert("customId = " + customId);
+
+				var answer1;
+				var answer2;
+
+				if (truefalseId == true)
+				{
+					answer1 = "True";
+					answer2 = "False";
+				}
+				else if (abId == true)
+				{
+					answer1 = "A";
+					answer2 = "B";
+				}
+				else if (yesnoId == true)
+				{
+					answer1 = "Yes";
+					answer2 = "No";
+				}
+				else if (customId == true)
+				{
+					answer1 = document.getElementById('customHeader1').value;
+					answer2 = document.getElementById('customHeader2').value;
+				}
+				else
+				{
+					return;
+				}
+
+				alert("answer1 = " + answer1);
+				alert("answer2 = " + answer2);
+
+				districtId = document.getElementById('districtId').value;
+				surveyId = document.getElementById('surveyId').value;
+				questionNumber = document.getElementById('questionNumber').value;
+				questionId = document.getElementById('questionId').value;
+
+
+				sendstring = sendstring + '&' + mcAnswerNumber + '=' + mcAnswer;
+
+				alert("sendstring = " + sendstring);
+
+				XMLHttpRequestObject.send(sendstring);
+			}
+
+			/***************************************
+				Launch the includequestions page
+			***************************************/
 			function includeQuestions()
 			{
 				// Launch the Include Questions page.
@@ -140,17 +257,19 @@
 				$surveyId = $_POST['surveyId'];
 				$questionId = $_POST['editQuestion'];
 
+				// Get the question for the given question id for the given survey id.
 				$result = getSelectedQuestion($districtId, $surveyId, $questionId);
 
+				// Get the number of rows returned by the query.
 				$rows = $result->num_rows;
 
 				// Display the selected question to edit.
 				displayQuestion($districtId, $surveyId, $result);
 			//}
 
-	// ----------------------------------------------------------------------
-	// Add the survey name to the Database.
-	// ----------------------------------------------------------------------
+	/******************************************
+		Add the survey name to the Database
+	******************************************/
 	function addSurveyToDB($surveyName, $districtId)
 	{
 		// Connect to the database.
@@ -159,10 +278,13 @@
 		// Insert the values into the database.
 		$query = "INSERT INTO survey(surveyName, districtId, dateopen) VALUES (?, ?, now())"; 
 
+		// Prepare the prepared statement.
 		if ($stmt = $conn->prepare($query))
 		{
+			// Populate the prepared statement.
 			$stmt->bind_param('si', $surveyName, $districtId);
 
+			// Run the query.
 			if ($stmt->execute())
 			{
 				//echo "Success ".$stmt->insert_id."<br/>";
@@ -178,12 +300,14 @@
 			echo "False<br/>";
 		}
 
-		$stmt -> close(); 
+		// Close the database connection.
+		$stmt->close(); 
+		$conn->close();
 	}
 
-	// ----------------------------------------------------------------------
-	// Create a trueFalse question.
-	// ----------------------------------------------------------------------
+	/**********************************
+		Create a trueFalse question
+	**********************************/
 	function editTrueFalse($districtId, $surveyId, $questionId, $questionNumber, $questionText, $trueAnswer, $falseAnswer)
 	{
 		echo "
@@ -192,7 +316,7 @@
 					<p>Question $questionNumber</p>
 					<p>Edit True / False Question</p>
 					<p>Please enter the question:</p>
-					<p><textarea name='questionText' rows='3' cols='30' required>$questionText</textarea></p>
+					<p><textarea name='questionText' id='truefalseQuestionText' rows='3' cols='30' required>$questionText</textarea></p>
 		";
 
 		$yesNoSelected = "";
@@ -200,6 +324,8 @@
 		$trueFalseSelected = "";
 		$yesNoSelected = "";
 		$customSelected = "";
+
+		// Get which choice should be selected when they are displayed.
 		if ($trueAnswer == "Yes" && $falseAnswer == "No")
 		{
 			$yesNoSelected = "checked";			
@@ -217,50 +343,55 @@
 			$customSelected = "checked";
 		}
 
+		// Display the different choices.
 		echo "
 					<p>Answer type:</p>
 					<p>
-					<input type='radio' name='trueFalsetype' value='trueFalse' $trueFalseSelected>True / False<br/>
-					<input type='radio' name='trueFalsetype' value='ab' $abSelected>A / B<br/>
-					<input type='radio' name='trueFalsetype' value='yesno' $yesNoSelected>Yes / No<br/>
-					<input type='radio' name='trueFalsetype' value='custom' $customSelected>Custom<br/>
+					<input type='radio' name='trueFalsetype' id='truefalseId' value='trueFalse' $trueFalseSelected>True / False<br/>
+					<input type='radio' name='trueFalsetype' id='abId' value='ab' $abSelected>A / B<br/>
+					<input type='radio' name='trueFalsetype' id='yesnoId' value='yesno' $yesNoSelected>Yes / No<br/>
+					<input type='radio' name='trueFalsetype' id='customId' value='custom' $customSelected>Custom<br/>
 		";
 
+		// If the custom option is chosen - populate the custom headers.
 		if ($customSelected == "selected")
 		{
 			echo "
-					<input type='text' name='trueFalsecustom1' value='$trueAnswer'>&nbsp;/&nbsp;
-					<input type='text' name='trueFalsecustom2' value='$falseAnswer'><br/>
+					<input type='text' name='trueFalsecustom1' id='customHeader1' value='$trueAnswer'>&nbsp;/&nbsp;
+					<input type='text' name='trueFalsecustom2' id='customHeader2' value='$falseAnswer'><br/>
 			";
 		}
 		else
 		{			
 			echo "
-					<input type='text' name='trueFalsecustom1' value=''>&nbsp;/&nbsp;
-					<input type='text' name='trueFalsecustom2' value=''><br/>
+					<input type='text' name='trueFalsecustom1' id='customHeader1' value=''>&nbsp;/&nbsp;
+					<input type='text' name='trueFalsecustom2' id='customHeader2' value=''><br/>
 			";
 		}
 
+		// Hidden fields hold the information needed to save the question in the database.
 		echo "
 					</p>
-					<input type='submit' value='Save'>
+					<input type='button' value='Save' onclick='saveTrueFalse();'>
 					&nbsp;&nbsp;
-					<input type='button' value='Cancel'>
-					</p>
-					<input type='hidden' name='districtId' value='$districtId'>
-					<input type='hidden' name='createdQuestion' value='trueFalse'>
-					<input type='hidden' name='surveyId' value='$surveyId'>
-					<input type='hidden' name='createType' value='trueFalse'>
-					<input type='hidden' name='questionNumber' value='$questionNumber'>
-					<input type='hidden' name='questionId' value='$questionId'>
+					<input type='button' value='Cancel' onclick='cancel();'>
+
+					<p><div id='truefalseDiv'></div></p>
+
+					<input type='hidden' name='districtId' id='districtId' value='$districtId'>
+					<input type='hidden' name='createdQuestion' id='createdQuestion' value='trueFalse'>
+					<input type='hidden' name='surveyId' id='surveyId' value='$surveyId'>
+					<input type='hidden' name='createType' id='createType' value='trueFalse'>
+					<input type='hidden' name='questionNumber' id='questionNumber' value='$questionNumber'>
+					<input type='hidden' name='questionId' id='questionId' value='$questionId'>
 				</form>
 			</div>
 		";
 	}
 
-	// ----------------------------------------------------------------------
-	// Create a multiple choice question.
-	// ----------------------------------------------------------------------
+	/****************************************
+		Create a multiple choice question
+	****************************************/
 	function editMultipleChoice($districtId, $surveyId, $questionId, $questionNumber, $questionText, $answers)
 	{
 		// Get how many answers we have.
@@ -269,16 +400,17 @@
 		echo "
 			<div id='multipleChoice'>
 				<form action='editMultipleChoiceQuestion.php' method='POST'>
-					<p>XQuestion $questionNumber</p>
+					<p>Question $questionNumber</p>
 					<p>Create Multiple Choice Question</p>
 					<p>Please enter the question:</p>
 					<p><textarea name='questionText' rows='3' cols='30'>$questionText</textarea></p>
 					<p>
 		";
 
-		// Answer 1 and 2
+		// How many possible answers are required for this multiple choice question.
 		echo "How many answers?";
 
+		// Display the drop down box with the number of answers.
 		echo "<select id='mChoice' name='mChoice' required='required'>";
 
 		for ($i = 1; $i <= MAX_ANSWERS; $i++)
@@ -296,21 +428,20 @@
 		}
 
 		echo "</select><br/>";
+
+		// Perform the AJAX call to display the answer boxes for the mutliple choice answers.
 		echo "<p><input type='button' value='Create Answers' onclick='loadMultipleChoice();'></p>";
 
-
+		// A div to hold the results of the AJAX call.
 		echo "<div id='mcAnswers'>";
 
+		// Display the answers that have already been filled in.
 		for ($i = 0; $i < count($answers); $i++)
 		{
 			$value = $answers[$i];
 
 			$answerNumber = $i + 1;
 			$name = 'mcanswer'.$answerNumber;
-
-			echo "answernumber = $answerNumber<br/>";
-			echo "name = $name<br/>";
-			echo "value = $value<br/>";
 
 			echo "Answer $answerNumber: <input type='text' name='$name' id='$name' value='$value'><br/>";
 		}
@@ -319,6 +450,7 @@
 		echo "</div>";
 		echo "</p>";
 
+		// Hidden fields hold the information needed to save the question in the database.
 		echo "
 					<p>
 						<input type='submit' value='Save'>
@@ -331,15 +463,15 @@
 					<input type='hidden' name='createType' value='multipleChoice'>
 					<input type='hidden' name='questionNumber' value='$questionNumber'>
 					<input type='hidden' name='questionId' value='$questionId'>
-					<input type='hidden' name='answerCount' id='answerCount' value='$answerCount'>
+					<input type='hidden' name='answerCount' id='mcAnswerCount' value='$answerCount'>
 				</form>
 			</div>
 		";
 	}
 
-	// ----------------------------------------------------------------------
-	// Create a several answer question.
-	// ----------------------------------------------------------------------
+	/***************************************
+		Create a several answer question
+	***************************************/
 	function editSeveralAnswer($districtId, $surveyId, $questionId, $questionNumber, $questionText, $answers)
 	{
 		// Get how many answers we have.
@@ -355,9 +487,10 @@
 					<p>
 		";
 
-		// Answer 1 and 2
+		// How many possible answers are required for this several answer question.
 		echo "How many answers?";
 
+		// Display the drop down box with the number of answers.
 		echo "<select id='severalAnswers' name='severalAnswers' required='required'>";
 
 		for ($i = 1; $i <= MAX_ANSWERS; $i++)
@@ -376,22 +509,30 @@
 
 
 		echo "</select><br/>";
-		echo "<p><input type='button' value='Create Answers' onclick='loadSeveralAnswers($answers);'></p>";
 
+
+		// Perform the AJAX call to display the answer boxes for the several answer answers.
+		echo "<p><input type='button' value='Create Answers' onclick='loadSeveralAnswers();'></p>";
+
+		// A div to hold the results of the AJAX call.
 		echo "<div id='sevAnswers'>";
 
+		// Display the answers that have already been filled in.
 		for ($i = 0; $i < count($answers); $i++)
 		{
 			$value = $answers[$i];
 
 			$answerNumber = $i + 1;
-			echo "Answer $answerNumber: <input type='text' name='saanswer$answerNumber' value='$value'><br/>";
+			$name = 'sevanswer'.$answerNumber;
+
+			echo "Answer $answerNumber: <input type='text' name='$name' id='$name' value='$value'><br/>";
 		}
 		echo "<br/>";
 
 		echo "</div>";
 		echo "</p>";
 
+		// Hidden fields hold the information needed to save the question in the database.
 		echo "
 					<p>
 						<input type='submit' value='Save'>
@@ -404,14 +545,15 @@
 					<input type='hidden' name='createType' value='severalAnswer'>
 					<input type='hidden' name='questionNumber' value='$questionNumber'>
 					<input type='hidden' name='questionId' value='$questionId'>
+					<input type='hidden' name='answerCount' id='sevAnswerCount' value='$answerCount'>
 				</form>
 			</div>
 		";
 	}
 
-	// ----------------------------------------------------------------------
-	// Create a free form text question. 
-	// ----------------------------------------------------------------------
+	/***************************************
+		Create a free form text question
+	***************************************/
 	function editFreeFormText($districtId, $surveyId, $questionId, $questionNumber, $questionText)
 	{
 		echo "
@@ -423,6 +565,7 @@
 					<p><textarea name='questionText' rows='3' cols='30'>$questionText</textarea></p>
 		";
 
+		// Hidden fields hold the information needed to save the question in the database.
 		echo "
 					<p>
 						<input type='submit' value='Save'>
@@ -440,9 +583,9 @@
 		";
 	}
 
-	// ----------------------------------------------------------------------
-	// Create a rating question.
-	// ----------------------------------------------------------------------
+	/*******************************
+		Create a rating question
+	*******************************/
 	function editRating($districtId, $surveyId, $questionId, $questionNumber, $questionText, $lowValue, $highValue, $descriptions)
 	{
 		echo "
@@ -493,6 +636,7 @@
 		echo "</div>";
 		echo "</p>";
 
+		// Hidden fields hold the information needed to save the question in the database.
 		echo "
 					<p>
 						<input type='submit' value='Save'>
@@ -511,12 +655,14 @@
 	}
 
 
+	/************************************************************************
+		Get the question for the given question id in the given survey id
+	************************************************************************/
 	function getSelectedQuestion($districtId, $surveyId, $questionId)
 	{
 		// Connect to the database.
 		require("connectToDB.php");
 
-		echo "In getSelectedQuestion($districtId, $surveyId, $questionId)<br/>";
 		$questionQuery = "
 						SELECT
 						q.questionid,
@@ -557,9 +703,9 @@
 		return $result;
 	}
 
-	// ----------------------------------------------------------------------
-	// Display the questions we have already created.
-	// ----------------------------------------------------------------------
+	/****************************************************
+		Display the questions we have already created
+	****************************************************/
 	function displayQuestion($districtId, $surveyId, $result)
 	{
 		$answers = array();
@@ -579,9 +725,11 @@
 			$answerText = $row['answertext'];
 			$answers[] = $answerText;
 
+			// The high and low rating values.
 			$lowValue = $row['lowvalue'];
 			$highValue = $row['highvalue'];
 
+			// The rating descriptions.
 			$descriptions[0] = $row['description1'];
 			$descriptions[1] = $row['description2'];
 			$descriptions[2] = $row['description3'];

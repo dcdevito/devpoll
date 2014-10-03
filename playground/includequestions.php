@@ -1,6 +1,15 @@
 <?php
+	/********************************************************************
+		Display the list of existing questions to include in a survey
+	********************************************************************/
+?>
+
+<?php
 	// Make sure the person is logged in.
 	include("verifylogin.php");
+
+	// Constant values.
+	include("constants.php");
 ?>
 
 <?php
@@ -10,14 +19,24 @@
 		The edit button will allow the person to change the question and the answers.
 		The delete button will remove the question from the survey.
 	*/
+
+	// Get the variables passed via a Get call to the page.
 	$surveyId = $_GET['si'];
 	$returnPage = $_GET['rp'];
 
-	$result = getDistrictQuestionsAndAnsers(1, $surveyId);
+	// The district Id will be read in for the user.
+	// *** For testing we will assume DISTRICT ID = 1 ***
+	$districtId = 1;
 
+	// Get the question and answers for this survey Id.
+	$result = getDistrictQuestionsAndAnsers($districtId, $surveyId);
+
+	// Display the questions and answers for this survey Id.
 	displayEditQuestionsAndAnswers($result, $surveyId, $returnPage);
 
-
+	/************************************************************
+		Retrieve the questions and answers for this survey Id
+	************************************************************/
 	function getDistrictQuestionsAndAnsers($districtId, $surveyId)
 	{
 		// Connect to the database.
@@ -64,6 +83,9 @@
 	}
 
 
+	/*******************************************************************
+		Display the questions and answers for this survey in a table
+	*******************************************************************/
 	function displayEditQuestionsAndAnswers($result, $surveyId, $returnPage)
 	{
 		echo "<form action='includequestionsinsurvey.php' method='POST'>";
@@ -80,7 +102,7 @@
 		// Initialize the value of $questionNumber.
 		$questionNumber = -1;
 		$loop = 0;
-		$backcolorflag = 0;
+		$backcolorflag = LIGHT;
 		$backcolor = "WhiteSmoke";
 		$answercount = 0;
 
@@ -96,20 +118,20 @@
 			
 			if ($questionNumber != $qn)
 			{
-				if ($backcolorflag == 0)
+				if ($backcolorflag == LIGHT)
 				{
 					$backcolor = "white";
-					$backcolorflag = 1;
+					$backcolorflag = DARK;
 				}
 				else
 				{
 					$backcolor = "WhiteSmoke";
-					$backcolorflag = 0;
+					$backcolorflag = LIGHT;
 				}	
 
-				if ($answercount > 0 && $answercount < 5)
+				if ($answercount > 0 && $answercount < MAX_COLSPAN)
 				{
-					$colspanAmount = 5 - $answercount;
+					$colspanAmount = MAX_COLSPAN - $answercount;
 
 					echo "<td colspan='$colspanAmount'>$nbsp</td>";
 					echo "</tr>";
@@ -134,7 +156,7 @@
 				{
 					case "freeForm":
 						echo "<td>Free Form Text</td>";
-						echo "<td colspan='5'>&nbsp;</td>";
+						echo "<td colspan='".MAX_COLSPAN."'>&nbsp;</td>";
 						echo "</tr>";
 						break;
 					case "rating":
@@ -180,22 +202,22 @@
 				switch($questionType)
 				{
 					case "freeForm":
-						$answercount = 5;
+						$answercount = MAX_COLSPAN;
 						break;
 					case "rating":
-						$answercount = 5;
+						$answercount = MAX_COLSPAN;
 						break;
 					case "trueFalse":
 						echo "<td colspan='3'>$answerText</td>";
 						echo "</tr>";
-						$answercount = 5;
+						$answercount = MAX_COLSPAN;
 						break;
 					case "multipleChoice":
-						if ($loop == 5)
+						if ($loop == MAX_COLSPAN)
 						{
 							echo "</tr>";
 							echo "<tr bgcolor='$backcolor'>";
-							echo "<td colspan='5'>&nbsp;</td>";
+							echo "<td colspan='".MAX_COLSPAN."'>&nbsp;</td>";
 
 							$answercount = 0;
 						}
@@ -204,11 +226,11 @@
 						$answercount++;
 						break;
 					case "severalAnswer":
-						if ($loop == 5)
+						if ($loop == MAX_COLSPAN)
 						{
 							echo "</tr>";
 							echo "<tr bgcolor='$backcolor'>";
-							echo "<td colspan='5'>&nbsp;</td>";
+							echo "<td colspan='".MAX_COLSPAN."'>&nbsp;</td>";
 
 							$answercount = 0;
 						}

@@ -1,4 +1,10 @@
 <?php
+	/*****************************************************************************
+		Create the textboxes returned by the AJAX call for rating descriptions
+	*****************************************************************************/
+?>
+
+<?php
 	$descriptions = $_POST['descriptions'];
 
 

@@ -1,30 +1,44 @@
 <?php
+	/**************************************************
+		Include the selected questions in the survey
+	**************************************************/
+?>
+
+<?php
 	// Make sure the person is logged in.
 	include("verifylogin.php");
+
+	// Constant values.
+	include("constants.php");
 ?>
 
 <?php
 	try
 	{
+		// The variables past to the page.
 		$surveyId = $_POST['surveyId'];
 		$returnPage = $_POST['returnPage'];
 
+		// If at least one question has been selected to be included in a survey. 
 		if(!empty($_POST['includeSurveyQuestion']))
 		{		
 			// Get the maximum question number for this survey.
 			$questionNumber = getMaxQuestionNumber($surveyId);
 
+			// Loop through the selected questions.
 			foreach($_POST['includeSurveyQuestion'] as $questionId)
 			{
+				// Get the questions and answers for this survey.
 				$questionResult = getQuestionForId($questionId);
 				$answerResult = getAnswersForId($questionId);
 
+				// Include the selected question in the survey.
 				insertQuestionToSurvey($surveyId, ++$questionNumber, $questionResult, $answerResult);
 			}
 		}
 
 		// The value for this is set in editselectedsurvey.php
-		if ($returnPage == 89267)
+		if ($returnPage == EDIT_SURVEY)
 		{
 			$location = "editsurvey.php";
 		}
@@ -33,6 +47,7 @@
 			$location = "createsurvey.php";
 		}
 
+		// Return to the previous page.
 		redirect($location);
 	}
 	catch(Exception $e)
@@ -40,7 +55,9 @@
 		echo "Error in includequestionsinsurvey ", $e->getMessage(), "<br/>";
 	}
 
-	// Redirect page to a different url.
+	/**************************************
+		Redirect page to a different url
+	**************************************/
 	function redirect($url)
 	{
 	    if (!headers_sent())
@@ -59,6 +76,10 @@
 	    }
 	}
 
+	/*****************************************************
+		Get the maximum question number for the survey, 
+		so we just add the question on the end
+	*****************************************************/
 	function getMaxQuestionNumber($surveyId)
 	{
 		// Connect to the database.
@@ -73,6 +94,7 @@
 		// Get the questions and answers for this survey.
 		$maxRS = $conn->query($numberQuery);
 
+		// Load the array with the maximum question number.
 		$maxArray = $maxRS->fetch_array(MYSQLI_ASSOC);
 		$max = $maxArray['questionnumber'];
 
@@ -90,6 +112,9 @@
 
 	}
 
+	/*************************************************
+		Get the question for the given question id
+	*************************************************/
 	function getQuestionForId($questionId)
 	{
 		// Connect to the database.
@@ -117,6 +142,9 @@
 		return $result;		
 	}
 
+	/************************************************
+		Get the answers for the given question id
+	************************************************/
 	function getAnswersForId($questionId)
 	{
 		// Connect to the database.
@@ -149,6 +177,9 @@
 		return $result;		
 	}
 
+	/***********************************************
+		Insert the given question into the survey 
+	***********************************************/
 	function insertQuestionToSurvey($surveyId, $questionNumber, $questionResult, $answerResult)
 	{
 		// Connect to the database.
@@ -159,8 +190,10 @@
 
 		try 
 		{
+			// Loop through the questions - Insert them into the database.
 	    	while ($row = $questionResult->fetch_assoc())
 	    	{
+	    		// Get the fields from the results.
 	    		$questionText = $row['questiontext'];
 	    		$questionType = $row['questiontype'];
 	    		$dateCreated = $row['datecreated'];
@@ -168,11 +201,14 @@
 	    		$sql = "INSERT INTO devpoll.questions(surveyid, questionnumber, questiontext, questiontype, datecreated, lastmodified) 
 	    				VALUES($surveyId, $questionNumber, '$questionText', '$questionType', '$dateCreated', 'now()');";
 
+	    		// Execute the query.
 	    		$conn->query($sql);
 	    	}
 
+	    	// Loop through the answers - Insert them into the database.
 	    	while ($row = $answerResult->fetch_assoc())
 	    	{
+	    		// Get the fields from the results.
 	    		$answerNumber = $row['answernumber'];
 	    		$answerText = $row['answertext'];
 	    		$lowValue = $row['lowvalue'];
@@ -186,6 +222,7 @@
 	    				VALUES($surveyId, $questionNumber, $answerNumber, '$answerText', 
 	    						$lowValue, $highValue, '$lowDescription', '$highDescription', '$dateCreated');";
 
+				// Execute the query.
 	    		$conn->query($sql);
 	    	}
 	
