@@ -13,8 +13,8 @@
 		require("connectToDB.php");
 
 		$numberQuery = "SELECT 	max(a.highvalue) as maxhighvalue
-						FROM 	devpoll.answers a
-						WHERE 	surveyid = $surveyId;";
+						FROM  devpoll.answers a
+						WHERE surveyid = $surveyId;";
 
 		echo "Query = $numberQuery<br/>";
 
@@ -72,13 +72,13 @@
 									a.ratingdescription8,
 									a.ratingdescription9,
 									a.ratingdescription10
-						FROM 		devpoll.questions q
-						JOIN 		devpoll.answers a
-						ON 			q.surveyid = a.surveyid
-						AND 		q.questionnumber = a.questionnumber
-						JOIN 		devpoll.survey s
-						ON 			q.surveyid = s.surveyid
-						WHERE 		q.surveyid = $surveyId;";
+						FROM  devpoll.questions q
+						JOIN  devpoll.answers a
+						ON    q.surveyid = a.surveyid
+						AND   q.questionnumber = a.questionnumber
+						JOIN  devpoll.survey s
+						ON    q.surveyid = s.surveyid
+						WHERE q.surveyid = $surveyId;";
 
 		// Get the questions and answers for this survey.
 		$result = $conn->query($questionQuery);

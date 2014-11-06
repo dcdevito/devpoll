@@ -46,14 +46,14 @@
 									s.districtid,
 									coalesce(q.numberofquestions, 0) as numberofquestions,
 									s.dateopen
-						FROM 		devpoll.survey s
+						FROM devpoll.survey s
 						LEFT JOIN (SELECT 	surveyid,
 											max(questionnumber) as numberofquestions
-									FROM 	devpoll.questions
+									FROM devpoll.questions
 									GROUP BY surveyid) as q
-						ON 			s.surveyid = q.surveyid
-						WHERE 		s.dateclosed is null
-						AND 		s.districtid = $districtId;";
+						ON    s.surveyid = q.surveyid
+						WHERE s.dateclosed is null
+						AND   s.districtid = $districtId;";
 
 		// Get the questions and answers for this survey.
 		$result = $conn->query($questionQuery);

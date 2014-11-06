@@ -1067,8 +1067,8 @@
 		require("connectToDB.php");
 
 		$numberQuery = "SELECT 	max(questionnumber) as questionnumber
-						FROM 	devpoll.questions
-						WHERE 	surveyid = $surveyId;";
+						FROM  devpoll.questions
+						WHERE surveyid = $surveyId;";
 
 		// Get the questions and answers for this survey.
 		$maxRS = $conn->query($numberQuery);
@@ -1099,8 +1099,8 @@
 		require("connectToDB.php");
 
 		$nameQuery = "SELECT 	surveyname
-						FROM 	devpoll.survey
-						WHERE 	surveyid = $surveyId;";
+						FROM  devpoll.survey
+						WHERE surveyid = $surveyId;";
 
 		// Get the questions and answers for this survey.
 		$nameRS = $conn->query($nameQuery);

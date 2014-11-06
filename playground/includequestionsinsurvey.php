@@ -79,11 +79,9 @@
 		// Connect to the database.
 		require("connectToDB.php");
 
-		$numberQuery = "
-						SELECT max(questionnumber) as questionnumber
-						FROM devpoll.questions
-						WHERE surveyid = $surveyId;
-						";
+		$numberQuery = "SELECT 	max(questionnumber) as questionnumber
+						FROM  devpoll.questions
+						WHERE surveyid = $surveyId;";
 
 		// Get the questions and answers for this survey.
 		$maxRS = $conn->query($numberQuery);
@@ -114,15 +112,13 @@
 		// Connect to the database.
 		require("connectToDB.php");
 
-		$questionQuery = "
-						SELECT
-						q.surveyid,
-						q.questionid,
-						q.questionnumber,
-						q.questiontext,
-						q.questiontype,
-						q.datecreated
-						FROM devpoll.questions q
+		$questionQuery = "SELECT 	q.surveyid,
+									q.questionid,
+									q.questionnumber,
+									q.questiontext,
+									q.questiontype,
+									q.datecreated
+						FROM  devpoll.questions q
 						WHERE q.questionid = $questionId;
 		";
 
@@ -144,30 +140,27 @@
 		// Connect to the database.
 		require("connectToDB.php");
 
-		$questionQuery = "
-						SELECT
-						a.surveyid,
-						a.answernumber,
-						a.answertext,
-						coalesce(a.lowvalue, 0) as lowvalue,
-						coalesce(a.highvalue, 0) as highvalue,
-						a.ratingdescription1,
-						a.ratingdescription2,
-						a.ratingdescription3,
-						a.ratingdescription4,
-						a.ratingdescription5,
-						a.ratingdescription6,
-						a.ratingdescription7,
-						a.ratingdescription8,
-						a.ratingdescription9,
-						a.ratingdescription10,
-						a.datecreated
-						FROM devpoll.questions q
-						JOIN devpoll.answers a
-						ON q.surveyid = a.surveyid
-						AND q.questionnumber = a.questionnumber
-						WHERE q.questionid = $questionId;
-		";
+		$questionQuery = "SELECT 	a.surveyid,
+									a.answernumber,
+									a.answertext,
+									coalesce(a.lowvalue, 0) as lowvalue,
+									coalesce(a.highvalue, 0) as highvalue,
+									a.ratingdescription1,
+									a.ratingdescription2,
+									a.ratingdescription3,
+									a.ratingdescription4,
+									a.ratingdescription5,
+									a.ratingdescription6,
+									a.ratingdescription7,
+									a.ratingdescription8,
+									a.ratingdescription9,
+									a.ratingdescription10,
+									a.datecreated
+						FROM  devpoll.questions q
+						JOIN  devpoll.answers a
+						ON    q.surveyid = a.surveyid
+						AND   q.questionnumber = a.questionnumber
+						WHERE q.questionid = $questionId;";
 
 		// Get the questions and answers for this survey.
 		$result = $conn->query($questionQuery);
@@ -244,7 +237,8 @@
 	    											highvalue, 
 	    											lowdescription, 
 	    											highdescription, 
-	    											datecreated) 
+	    											datecreated,
+	    											lastmodified) 
 	    								VALUES(		$surveyId, 
 	    											$questionNumber, 
 	    											$answerNumber, 
@@ -261,7 +255,8 @@
 	    											'$ratingdescription8', 
 	    											'$ratingdescription9', 
 	    											'$ratingdescription10', 
-	    											'$dateCreated');";
+	    											'$dateCreated',
+	    											now());";
 
 				// Execute the query.
 	    		$result = $conn->query($sql);
