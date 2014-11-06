@@ -1,10 +1,6 @@
-<?php
-	/******************************************************************************
-		Check the username and password entered by the user against the database
-	******************************************************************************/
-?>
-
 <?php	
+	// Check the username and password entered by the user against the database
+
 	// Start the sessions that hold the user information for the pages.
 	session_start();
 
@@ -16,7 +12,7 @@
 	require("connectToDB.php");
 	
 	// If the username and password exist in the database.
-	if ($rs = $conn->query("SELECT userid, accesscode FROM security WHERE userid = '$username'"))
+	if ($rs = $conn->query("SELECT userid, password FROM devpoll.security WHERE userid = '$username'"))
 	{
 		$exists = $rs->num_rows;		// Check if name exists
 
@@ -26,9 +22,9 @@
 			// Fetch the rows into an associative array.
 			$arr = $rs->fetch_array(MYSQLI_ASSOC);
 
-			// Get the userid and accesscode from the table.
+			// Get the userid and password from the table.
 			$tableUsers = $arr['userid'];
-			$tablePassword = $arr['accesscode'];
+			$tablePassword = $arr['password'];
 
 			// Compare the entered username and password to make sure they are allowed in.
 			if (($username == $tableUsers) && ($password == $tablePassword))

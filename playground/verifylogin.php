@@ -1,10 +1,6 @@
 <?php
-	/****************************************
-		Check that the user session exists
-	****************************************/
-?>
+	// Check that the user session exists
 
-<?php
 	// Start the sessions that hold the user information for the pages.
 	session_start();
 

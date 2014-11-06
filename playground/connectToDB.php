@@ -1,10 +1,4 @@
 <?php
-	/*****************************
-		Connect to the database
-	*****************************/
-?>
-
-<?php
 	// Connect to the database.
 	define("HOSTNAME", "localhost");
 	define("USERNAME", "devpoll");

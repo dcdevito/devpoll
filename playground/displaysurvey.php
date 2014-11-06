@@ -1,15 +1,12 @@
 <?php
-	/************************************************************************
-		Draw the questions and answers on the screen for a given survey id
-	************************************************************************/
-?>
+	// Draw the questions and answers on the screen for a given survey id
 
-<?php
 	// Make sure the person is logged in.
 	include("verifylogin.php");
-?>
 
-<?php
+	//**********************************************
+	//	Draw the questions on the screen
+	//**********************************************
 	function drawQuestions($surveyId, $surveyName)
 	{
 		// Import the library of question and answer functions.

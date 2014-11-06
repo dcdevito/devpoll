@@ -1,89 +1,74 @@
 <?php
-	/**********************************************
-		Add the rating question to the database
-	**********************************************/
-?>
-
-<?php
-	// Start the session values.
-	session_start();
+	// Add the rating question to the database
 
 	// Get the variables posted to the page.
-	$questionNumber = mysql_real_escape_string($_POST['questionNumber']);
-	$questionType = mysql_real_escape_string($_POST['createType']);
-	$questionText = mysql_real_escape_string($_POST['questionText']);
-	$surveyId = mysql_real_escape_string($_POST['surveyId']);
-	$surveyName = mysql_real_escape_string($_POST['surveyName']);
-	$everyQuestion = mysql_real_escape_string($_POST['everyQuestion']);
+	$surveyId = mysql_real_escape_string($_POST['sId']);
+	$questionNumber = mysql_real_escape_string($_POST['quNo']);
+	$questionType = mysql_real_escape_string($_POST['quType']);
+	$questionText = mysql_real_escape_string($_POST['quText']);
+	$numberOfDescriptions = mysql_real_escape_string($_POST['descCount']);
 
-	$value = mysql_real_escape_string($_POST['numberOfDescriptions']);
-	$ratingValue = mysql_real_escape_string($_POST['ratingValue']);
 
 	$lowValue = 1;
 	$highValue= $ratingValue;
 
 	// Rating descriptions.
-	$description1 = mysql_real_escape_string($_POST['ratingdescription1']);
-	$description2 = mysql_real_escape_string($_POST['ratingdescription2']);
-	$description3 = mysql_real_escape_string($_POST['ratingdescription3']);
-	$description4 = mysql_real_escape_string($_POST['ratingdescription4']);
-	$description5 = mysql_real_escape_string($_POST['ratingdescription5']);
-	$description6 = mysql_real_escape_string($_POST['ratingdescription6']);
-	$description7 = mysql_real_escape_string($_POST['ratingdescription7']);
-	$description8 = mysql_real_escape_string($_POST['ratingdescription8']);
-	$description9 = mysql_real_escape_string($_POST['ratingdescription9']);
-	$description10 = mysql_real_escape_string($_POST['ratingdescription10']);
+	$ratingdescription1 = mysql_real_escape_string($_POST['radesc1']);
+	$ratingdescription2 = mysql_real_escape_string($_POST['radesc2']);
+	$ratingdescription3 = mysql_real_escape_string($_POST['radesc3']);
+	$ratingdescription4 = mysql_real_escape_string($_POST['radesc4']);
+	$ratingdescription5 = mysql_real_escape_string($_POST['radesc5']);
+	$ratingdescription6 = mysql_real_escape_string($_POST['radesc6']);
+	$ratingdescription7 = mysql_real_escape_string($_POST['radesc7']);
+	$ratingdescription8 = mysql_real_escape_string($_POST['radesc8']);
+	$ratingdescription9 = mysql_real_escape_string($_POST['radesc9']);
+	$ratingdescription10 = mysql_real_escape_string($_POST['radesc10']);
 
 	// Add a rating question to the database.
-	addRating(	$surveyId, 
-				$questionNumber, 
-				$questionType, 
-				$questionText, 
-				$lowValue, 
-				$highValue, 
-				$description1,
-				$description2,
-				$description3,
-				$description4,
-				$description5,
-				$description6,
-				$description7,
-				$description8,
-				$description9,
-				$description10
-			);
-
-	// Set the session values.
-	$_SESSION['surveyInProgress'] = 'YES';
-	$_SESSION['surveyId'] = $surveyId;
-	$_SESSION['surveyName'] = $surveyName;
-	$_SESSION['questionNumber'] = $questionNumber;
-	$_SESSION['everyQuestion'] = $everyQuestion;
+	$message = $addRating(	$surveyId, 
+							$questionNumber, 
+							$questionType, 
+							$questionText, 
+							$lowValue, 
+							$highValue, 
+							$ratingdescription1,
+							$ratingdescription2,
+							$ratingdescription3,
+							$ratingdescription4,
+							$ratingdescription5,
+							$ratingdescription6,
+							$ratingdescription7,
+							$ratingdescription8,
+							$ratingdescription9,
+							$ratingdescription10
+						);
 
 	// Return to the create survey page.
-	header('Location: createsurvey.php');
+	echo "<p>$message</p>";
 
-	/**********************************************
-		Add the rating question to the database
-	**********************************************/
+	//**********************************************
+	//	Add the rating question to the database
+	//**********************************************
 	function addRating(	$surveyId, 
 						$questionNumber, 
 						$questionType, 
 						$questionText, 
 						$lowValue, 
 						$highValue, 
-						$description1,
-						$description2,
-						$description3,
-						$description4,
-						$description5,
-						$description6,
-						$description7,
-						$description8,
-						$description9,
-						$description10 
-					)
+						$ratingdescription1,
+						$ratingdescription2,
+						$ratingdescription3,
+						$ratingdescription4,
+						$ratingdescription5,
+						$ratingdescription6,
+						$ratingdescription7,
+						$ratingdescription8,
+						$ratingdescription9,
+						$ratingdescription10)
 	{
+		$questionAdded = true;
+		$message = '';
+
 		// Connect to the database.
 		include("connectToDB.php");
 
@@ -91,58 +76,82 @@
 		$conn->autocommit(false);
 
 		// Insert the rating question to the database.
-		$conn->query("INSERT INTO questions(surveyId, questionNumber, questionText, questionType, lastmodified) 
-							VALUES ($surveyId, $questionNumber, '$questionText', 'rating', now());");
+		$query = "INSERT INTO questions(	surveyId, 
+											questionNumber, 
+											questionText, 
+											questionType, 
+											datecreated,
+											lastmodified) 
+								VALUES (	$surveyId, 
+											$questionNumber, 
+											'$questionText', 
+											'rating', 
+											now(),
+											now());";
+
+		$result = $conn->query($query);
+
+		if (!$result)
+		{
+			$questionAdded = false;
+			$message = "Q: "."ErrNo = ".$conn->errno." Error = ".$conn->error." Query = ".$query;
+		}		
 
 		// Insert the rating descriptions to the database.
-		$conn->query("INSERT INTO 
-								answers
-								(
-									surveyId, 
-									questionNumber, 
-									answerNumber, 
-									lowValue, 
-									highvalue, 
-									description1, 
-									description2,
-									description3,
-									description4,
-									description5,
-									description6,
-									description7,
-									description8,
-									description9,
-									description10
-								) 
-							VALUES
-								(	
-									$surveyId, 
-									$questionNumber, 
-									0, 
-									$lowValue, 
-									$highValue, 
-									'$description1', 
-									'$description2', 
-									'$description3', 
-									'$description4', 
-									'$description5', 
-									'$description6', 
-									'$description7', 
-									'$description8', 
-									'$description9', 
-									'$description10' 
-								);
-				");
+		$aQuery = "INSERT INTO answers(	surveyId, 
+										questionNumber, 
+										answerNumber, 
+										lowValue, 
+										highvalue, 
+										ratingdescription1, 
+										ratingdescription2,
+										ratingdescription3,
+										ratingdescription4,
+										ratingdescription5,
+										ratingdescription6,
+										ratingdescription7,
+										ratingdescription8,
+										ratingdescription9,
+										ratingdescription10,
+										datecreated,
+										lastmodified) 
+							VALUES (	$surveyId, 
+										$questionNumber, 
+										0, 
+										$lowValue, 
+										$highValue, 
+										'$ratingdescription1', 
+										'$ratingdescription2', 
+										'$ratingdescription3', 
+										'$ratingdescription4', 
+										'$ratingdescription5', 
+										'$ratingdescription6', 
+										'$ratingdescription7', 
+										'$ratingdescription8', 
+										'$ratingdescription9', 
+										'$ratingdescription10',
+										now(),
+										now());";
+
+		$aResult = $conn->query($aQuery);
+
+		if (!$aResult)
+		{
+			$questionAdded = false;
+			$message = $message." A2: "."Errno = ".$conn->errno." Error = ".$conn->error." Query = ".$aQuery;
+		}
 
 		// Commit the transaction.
 		$conn->commit();		
 
-		if ($conn->errno != 0)
-		{
-			echo "error ".$conn->error."<br/>";
-		}
-
 		// Close the connetion.
 		$conn->close();
+
+		if ($questionAdded)
+		{
+			$message = "Success";
+		}
+
+		return $message;
 	}
 ?>

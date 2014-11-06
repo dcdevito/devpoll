@@ -1,9 +1,3 @@
-<?php
-	/***************************************************
-		Register a username and password for the User
-	***************************************************/
-?>
-
 <html>
 	<head>
 		<title>DevPoll Registration</title>
@@ -25,6 +19,8 @@
 </html>
 
 <?php
+	// Register a username and password for the User
+
 	// Start the sessions that hold the user information for the pages.
 	session_start();
 
@@ -83,7 +79,7 @@
 							$conn->autocommit(false);
 
 							// Insert the values into the database.
-							$conn->query("INSERT INTO security(userid, accesscode) VALUES ('$username', '$password');") or die(mysql_error());
+							$conn->query("INSERT INTO security(userid, password) VALUES ('$username', '$password');") or die(mysql_error());
 
 							$conn->query("INSERT INTO users(userid, districtId, firstName, lastName, email) VALUES ('$username', $districtId, '$firstName', '$lastName', '$email');");
 

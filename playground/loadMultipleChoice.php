@@ -1,10 +1,6 @@
 <?php
-	/**********************************************************************************
-		Create the textboxes returned by the AJAX call for multiple choice questions
-	**********************************************************************************/
-?>
+	// Create the textboxes returned by the AJAX call for multiple choice questions
 
-<?php
 	$answers = $_POST['answers'];
 	$answerCount = $_POST['answercount'];
 
@@ -27,12 +23,15 @@
 	{
 		$value = $mcAnswer[$i - 1];
 
-		$answersValue .= "Answer $i: <input type='text' name='mcanswer$i' id='mcanswer$i' value='$value'><br/>";
+		$answersValue .= "Answer $i: <input type='text' id='mcanswer$i' name='mcanswer$i' value='$value'><br/>";
 	}
 
 	$answersValue .= "<br/>";
-	$answersValue .= "<input type='hidden' name='numberOfAnswers' value='$answers'>";
-	$answersValue .= "<p><input type='submit' value='Create Question'>&nbsp;&nbsp;<input type='button' value='Cancel'></p>";
+	$answersValue .= "<input type='hidden' id='mcAnswerCount' name='numberOfAnswers' value='$answers'>";
+	$answersValue .= "<p>";
+	$answersValue .= "<input type='button' value='Create Question' onclick='addMultipleChoice();'>";
+	$answersValue .= "&nbsp;&nbsp;";
+	$answersValue .= "<input type='button' value='Cancel'></p>";
 
 	echo $answersValue;
 ?>

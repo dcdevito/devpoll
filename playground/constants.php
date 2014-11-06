@@ -1,10 +1,4 @@
 <?php
-	/**************************************************
-		The constant values used throughout the site
-	**************************************************/
-?>
-
-<?php
 // Constant values.
 define("MAX_ANSWERS", 10);
 define("MAX_RATING", 10);

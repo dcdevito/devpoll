@@ -1,18 +1,12 @@
 <?php
-	/**************************************************
-		Include the selected questions in the survey
-	**************************************************/
-?>
+	// Include the selected questions in the survey
 
-<?php
 	// Make sure the person is logged in.
 	include("verifylogin.php");
 
 	// Constant values.
 	include("constants.php");
-?>
 
-<?php
 	try
 	{
 		// The variables past to the page.
@@ -55,9 +49,9 @@
 		echo "Error in includequestionsinsurvey ", $e->getMessage(), "<br/>";
 	}
 
-	/**************************************
-		Redirect page to a different url
-	**************************************/
+	//**************************************
+	//	Redirect page to a different url
+	//**************************************
 	function redirect($url)
 	{
 	    if (!headers_sent())
@@ -76,10 +70,10 @@
 	    }
 	}
 
-	/*****************************************************
-		Get the maximum question number for the survey, 
-		so we just add the question on the end
-	*****************************************************/
+	//*****************************************************
+	//	Get the maximum question number for the survey, 
+	//	so we just add the question on the end
+	//*****************************************************
 	function getMaxQuestionNumber($surveyId)
 	{
 		// Connect to the database.
@@ -112,9 +106,9 @@
 
 	}
 
-	/*************************************************
-		Get the question for the given question id
-	*************************************************/
+	//*************************************************
+	//	Get the question for the given question id
+	//*************************************************
 	function getQuestionForId($questionId)
 	{
 		// Connect to the database.
@@ -142,9 +136,9 @@
 		return $result;		
 	}
 
-	/************************************************
-		Get the answers for the given question id
-	************************************************/
+	//************************************************
+	//	Get the answers for the given question id
+	//************************************************
 	function getAnswersForId($questionId)
 	{
 		// Connect to the database.
@@ -157,8 +151,16 @@
 						a.answertext,
 						coalesce(a.lowvalue, 0) as lowvalue,
 						coalesce(a.highvalue, 0) as highvalue,
-						a.lowdescription,
-						a.highdescription,
+						a.ratingdescription1,
+						a.ratingdescription2,
+						a.ratingdescription3,
+						a.ratingdescription4,
+						a.ratingdescription5,
+						a.ratingdescription6,
+						a.ratingdescription7,
+						a.ratingdescription8,
+						a.ratingdescription9,
+						a.ratingdescription10,
 						a.datecreated
 						FROM devpoll.questions q
 						JOIN devpoll.answers a
@@ -177,9 +179,9 @@
 		return $result;		
 	}
 
-	/***********************************************
-		Insert the given question into the survey 
-	***********************************************/
+	//***********************************************
+	//	Insert the given question into the survey 
+	//***********************************************
 	function insertQuestionToSurvey($surveyId, $questionNumber, $questionResult, $answerResult)
 	{
 		// Connect to the database.
@@ -198,8 +200,18 @@
 	    		$questionType = $row['questiontype'];
 	    		$dateCreated = $row['datecreated'];
 
-	    		$sql = "INSERT INTO devpoll.questions(surveyid, questionnumber, questiontext, questiontype, datecreated, lastmodified) 
-	    				VALUES($surveyId, $questionNumber, '$questionText', '$questionType', '$dateCreated', 'now()');";
+	    		$sql = "INSERT INTO devpoll.questions(	surveyid, 
+	    												questionnumber, 
+	    												questiontext, 
+	    												questiontype, 
+	    												datecreated, 
+	    												lastmodified) 
+	    									VALUES(		$surveyId, 
+	    												$questionNumber, 
+	    												'$questionText', 
+	    												'$questionType', 
+	    												'$dateCreated', 
+	    												'now()');";
 
 	    		// Execute the query.
 	    		$conn->query($sql);
@@ -213,17 +225,46 @@
 	    		$answerText = $row['answertext'];
 	    		$lowValue = $row['lowvalue'];
 	    		$highValue = $row['highvalue'];
-	    		$lowDescription = $row['lowdescription'];
-	    		$highDescription = $row['highdescription'];
+	    		$ratingdescription1 = $row['ratingdescription1'];
+	    		$ratingdescription2 = $row['ratingdescription2'];
+	    		$ratingdescription3 = $row['ratingdescription3'];
+	    		$ratingdescription4 = $row['ratingdescription4'];
+	    		$ratingdescription5 = $row['ratingdescription5'];
+	    		$ratingdescription6 = $row['ratingdescription6'];
+	    		$ratingdescription7 = $row['ratingdescription7'];
+	    		$ratingdescription8 = $row['ratingdescription8'];
+	    		$ratingdescription9 = $row['ratingdescription9'];
+	    		$ratingdescription10 = $row['ratingdescription10'];
 	    		$dateCreated = $row['datecreated'];
 
-	    		$sql = "INSERT INTO devpoll.answers(surveyid, questionnumber, answernumber, answertext, 
-	    											lowvalue, highvalue, lowdescription, highdescription, datecreated) 
-	    				VALUES($surveyId, $questionNumber, $answerNumber, '$answerText', 
-	    						$lowValue, $highValue, '$lowDescription', '$highDescription', '$dateCreated');";
+	    		$sql = "INSERT INTO devpoll.answers(surveyid, 
+	    											questionnumber, 
+	    											answernumber, answertext, 
+	    											lowvalue, 
+	    											highvalue, 
+	    											lowdescription, 
+	    											highdescription, 
+	    											datecreated) 
+	    								VALUES(		$surveyId, 
+	    											$questionNumber, 
+	    											$answerNumber, 
+	    											'$answerText', 
+	    											$lowValue, 
+	    											$highValue, 
+	    											'$ratingdescription1', 
+	    											'$ratingdescription2', 
+	    											'$ratingdescription3', 
+	    											'$ratingdescription4', 
+	    											'$ratingdescription5', 
+	    											'$ratingdescription6', 
+	    											'$ratingdescription7', 
+	    											'$ratingdescription8', 
+	    											'$ratingdescription9', 
+	    											'$ratingdescription10', 
+	    											'$dateCreated');";
 
 				// Execute the query.
-	    		$conn->query($sql);
+	    		$result = $conn->query($sql);
 	    	}
 	
 			// Commit the SQL queries and go back to non-transaction mode.

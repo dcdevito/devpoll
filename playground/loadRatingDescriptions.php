@@ -1,22 +1,18 @@
 <?php
-	/*****************************************************************************
-		Create the textboxes returned by the AJAX call for rating descriptions
-	*****************************************************************************/
-?>
+	// Create the textboxes returned by the AJAX call for rating descriptions
 
-<?php
-	$descriptions = $_POST['descriptions'];
+	$radescriptions = $_POST['ratingdescriptions'];
 
 
 	// Holds the value to be returned back to the createsurvey page.
-	$descriptionsValue = "";
+	$ratingDescriptionsValue = "";
 
-	for ($i = 1; $i <= $descriptions; $i++)
+	for ($i = 1; $i <= $radescriptions; $i++)
 	{
-		$descriptionsValue .= "Description $i: <input type='text' name='ratingdescription$i'><br/>";
+		$ratingDescriptionsValue .= "Rating Description $i: <input type='text' id='radescription$i' name='radescription$i'><br/>";
 	}
-	$descriptionsValue .= "<br/>";
-	$descriptionsValue .= "<input type='hidden' name='numberOfDescriptions' value='$descriptions'>";
+	$ratingDescriptionsValue .= "<br/>";
+	$ratingDescriptionsValue .= "<input type='hidden' id='ratingCount' name='numberOfDescriptions' value='$radescriptions'>";
 
-	echo $descriptionsValue;
+	echo $ratingDescriptionsValue;
 ?>

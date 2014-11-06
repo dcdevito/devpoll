@@ -1,21 +1,12 @@
 <?php
-	/******************************************************
-		Add the multiple choice question to the database
-	******************************************************/
-?>
-
-<?php
-	// Start the session values.
-	session_start();
+	// Add the Multiple Choice question to the database
 
 	// Get the variables posted to the page.
-	$questionNumber = mysql_real_escape_string($_POST['questionNumber']);
-	$questionType = mysql_real_escape_string($_POST['createType']);
-	$questionText = mysql_real_escape_string($_POST['questionText']);
-	$numberOfAnswers = mysql_real_escape_string($_POST['numberOfAnswers']);
-	$surveyId = mysql_real_escape_string($_POST['surveyId']);
-	$surveyName = mysql_real_escape_string($_POST['surveyName']);
-	$everyQuestion = mysql_real_escape_string($_POST['everyQuestion']);
+	$surveyId = mysql_real_escape_string($_POST['sId']);
+	$questionNumber = mysql_real_escape_string($_POST['quNo']);
+	$questionType = mysql_real_escape_string($_POST['quType']);
+	$questionText = mysql_real_escape_string($_POST['quText']);
+	$numberOfAnswers = mysql_real_escape_string($_POST['ansCount']);
 
 	// Loop through the answers and create an array of the values.
 	$answers = array();
@@ -28,23 +19,20 @@
 	}
 
 	// Add the multiple choice question to the database.
-	addMultipleChoice($surveyId, $questionNumber, $questionType, $questionText, $numberOfAnswers, $answers);
-
-	// Set the session values.
-	$_SESSION['surveyInProgress'] = 'YES';
-	$_SESSION['surveyId'] = $surveyId;
-	$_SESSION['surveyName'] = $surveyName;
-	$_SESSION['questionNumber'] = $questionNumber;
-	$_SESSION['everyQuestion'] = $everyQuestion;
+	$message = addMultipleChoice($surveyId, $questionNumber, $questionType, $questionText, $numberOfAnswers, $answers);
 
 	// Return to the create survey page.
-	header('Location: createsurvey.php');
+	echo "<p>$message</p>";
 
-	/******************************************************
-		Add the multiple choice question to the database
-	******************************************************/
+
+	//******************************************************
+	//	Add the Multiple Choice question to the database
+	//******************************************************
 	function addMultipleChoice($surveyId, $questionNumber, $questionType, $questionText, $numberOfAnswers, $answers)
 	{
+		$questionAdded = true;
+		$message = '';
+
 		// Connect to the database.
 		include("connectToDB.php");
 
@@ -52,10 +40,26 @@
 		$conn->autocommit(false);
 
 		// Insert the multiple choice question to the database.
-		$questionQuery = "INSERT INTO questions(surveyId, questionNumber, questionText, questionType, lastmodified) 
-							VALUES ($surveyId, $questionNumber, '$questionText', 'multipleChoice', now());";
+		$questionQuery = "INSERT INTO questions(	surveyId, 
+													questionNumber, 
+													questionText, 
+													questionType, 
+													datecreated,
+													lastmodified) 
+										VALUES (	$surveyId, 
+													$questionNumber, 
+													'$questionText', 
+													'multipleChoice', 
+													now(),
+													now());";
 
-		$conn->query($questionQuery);
+		$qResult = $conn->query($questionQuery);
+
+		if (!$qResult)
+		{
+			$questionAdded = false;
+			$message = "Q: "."ErrNo = ".$conn->errno." Error = ".$conn->error." Query = ".$questionQuery;
+		}
 
 		// Loop through the answers entered and insert them to the database.
 		if ($numberOfAnswers > 0)
@@ -64,10 +68,26 @@
 			{
 				$answer = $answers[$i];
 
-				$answerQuery = "INSERT INTO answers(surveyId, questionNumber, answerNumber, answerText)
-									VALUES($surveyId, $questionNumber, $i, '$answer');";
+				$answerQuery = "INSERT INTO answers(	surveyId, 
+														questionNumber, 
+														answerNumber, 
+														answerText,
+														datecreated,
+														lastmodified)
+											VALUES(		$surveyId, 
+														$questionNumber, 
+														$i, 
+														'$answer',
+														now(),
+														now());";
 
-				$conn->query($answerQuery);
+				$aResult = $conn->query($answerQuery);
+
+				if (!$aResult)
+				{
+					$questionAdded = false;
+					$message = $message." A1: "."Errno = ".$conn->errno." Error = ".$conn->error." Query = ".$answerQuery;					
+				}
 			}
 		}
 
@@ -76,5 +96,13 @@
 
 		// Close the connetion.
 		$conn->close();
+
+		// If everything worked - return a successful messgae.
+		if ($questionAdded)
+		{
+			$message = "Success";
+		}
+
+		return $message;
 	}
 ?>

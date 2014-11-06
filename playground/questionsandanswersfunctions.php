@@ -1,14 +1,10 @@
 <?php
-	/*****************************************************************
-		A collection of functions used in the creation of a survey
-	*****************************************************************/
-?>
+	// A collection of functions used in the creation of a survey
 
-<?php
-	/***********************************************************************
-		Get the maximum rating value for any rating question in a survey,
-		for formatting the answers across the page properly
-	***********************************************************************/		
+	//***********************************************************************
+	//	Get the maximum rating value for any rating question in a survey,
+	//	for formatting the answers across the page properly
+	//***********************************************************************
 	function getMaxRatingValue($surveyId)
 	{
 		echo "Beginning of getMaxRatingValue<br/>";
@@ -16,12 +12,9 @@
 		// Connect to the database.
 		require("connectToDB.php");
 
-		$numberQuery = "
-						SELECT
-						max(a.highvalue) as maxhighvalue
-						from devpoll.answers a
-						where surveyid = $surveyId;
-						";
+		$numberQuery = "SELECT 	max(a.highvalue) as maxhighvalue
+						FROM 	devpoll.answers a
+						WHERE 	surveyid = $surveyId;";
 
 		echo "Query = $numberQuery<br/>";
 
@@ -51,9 +44,9 @@
 		return $max;
 	}	
 
-	/*************************************************************
-		Return the questions and answers for a given survey id 
-	*************************************************************/	
+	//*************************************************************
+	//	Return the questions and answers for a given survey id 
+	//*************************************************************
 	function getSurveyQuestionsAndAnsers($surveyId)
 	{
 		echo "Surveyid = $surveyId<br/>";
@@ -61,34 +54,31 @@
 		// Connect to the database.
 		require("connectToDB.php");
 
-		$questionQuery = "
-						SELECT
-						s.surveyname,
-						q.questionnumber,
-						q.questiontext,
-						q.questiontype,
-						a.answernumber,
-						a.answertext,
-						a.lowvalue,
-						a.highvalue,
-						a.description1,
-						a.description2,
-						a.description3,
-						a.description4,
-						a.description5,
-						a.description6,
-						a.description7,
-						a.description8,
-						a.description9,
-						a.description10
-						FROM devpoll.questions q
-						JOIN devpoll.answers a
-						ON q.surveyid = a.surveyid
-						AND q.questionnumber = a.questionnumber
-						JOIN devpoll.survey s
-						ON q.surveyid = s.surveyid
-						WHERE q.surveyid = $surveyId;
-		";
+		$questionQuery = "SELECT 	s.surveyname,
+									q.questionnumber,
+									q.questiontext,
+									q.questiontype,
+									a.answernumber,
+									a.answertext,
+									a.lowvalue,
+									a.highvalue,
+									a.ratingdescription1,
+									a.ratingdescription2,
+									a.ratingdescription3,
+									a.ratingdescription4,
+									a.ratingdescription5,
+									a.ratingdescription6,
+									a.ratingdescription7,
+									a.ratingdescription8,
+									a.ratingdescription9,
+									a.ratingdescription10
+						FROM 		devpoll.questions q
+						JOIN 		devpoll.answers a
+						ON 			q.surveyid = a.surveyid
+						AND 		q.questionnumber = a.questionnumber
+						JOIN 		devpoll.survey s
+						ON 			q.surveyid = s.surveyid
+						WHERE 		q.surveyid = $surveyId;";
 
 		// Get the questions and answers for this survey.
 		$result = $conn->query($questionQuery);
@@ -105,9 +95,9 @@
 		return $result;
 	}
 
-	/***************************************************
-		Display the questions and answers in a table
-	***************************************************/
+	//***************************************************
+	//	Display the questions and answers in a table
+	//***************************************************
 	function displaySurveyQuestions($result, $surveyName, $surveyId)
 	{
 		echo "Beginning of displaySurveyQuestions<br/>";
@@ -179,17 +169,17 @@
 					case "rating":
 						$lowValue = $row['lowvalue'];
 						$highValue = $row['highvalue'];
-						$description = array(
-										$row['description1'],
-										$row['description2'],
-										$row['description3'],
-										$row['description4'],
-										$row['description5'],
-										$row['description6'],
-										$row['description7'],
-										$row['description8'],
-										$row['description9'],
-										$row['description10']
+						$ratingdescription = array(
+										$row['ratingdescription1'],
+										$row['ratingdescription2'],
+										$row['ratingdescription3'],
+										$row['ratingdescription4'],
+										$row['ratingdescription5'],
+										$row['ratingdescription6'],
+										$row['ratingdescription7'],
+										$row['ratingdescription8'],
+										$row['ratingdescription9'],
+										$row['ratingdescription10']
 									);
 
 						/*****
@@ -217,7 +207,7 @@
 						echo "<tr>";
 						for ($i = 0; $i < $highValue; $i++)
 						{
-							$columnValue = $description[$i];
+							$columnValue = $ratingdescription[$i];
 							echo "<td width='$columnWidth%'>$columnValue</td>";
 						}
 						echo "</tr>";

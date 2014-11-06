@@ -1,10 +1,6 @@
 <?php
-	/*********************************************************
-		Display the selected question so it can be edited
-	*********************************************************/
-?>
+	// Display the selected question so it can be edited
 
-<?php
 	// Make sure the person is logged in.
 	include("verifylogin.php");
 
@@ -19,9 +15,9 @@
 		<script type="text/javascript">
 			// AJAX calls to save the edited questions.
 
-			/*****************************
-				Default AJAX call stuff
-			*****************************/
+			//*****************************
+			//	Default AJAX call stuff
+			//*****************************
 			var XMLHttpRequestObject = false;
 
 			if (window.XMLHttpRequest)
@@ -33,9 +29,9 @@
 				XMLHttpRequestObject = new ActiveXObject("Microsoft.XMLHTTP");
 			}
 
-			/*************************************************************
-				Load the answer boxes for the multiple choice question
-			*************************************************************/
+			//*************************************************************
+			//	Load the answer boxes for the multiple choice question
+			//*************************************************************
 			function loadMultipleChoice()
 			{
 				if (XMLHttpRequestObject)
@@ -86,9 +82,9 @@
 				XMLHttpRequestObject.send(sendstring);
 			}
 
-			/************************************************************
-				Load the answer boxes for the several answer question
-			************************************************************/
+			//************************************************************
+			//	Load the answer boxes for the several answer question
+			//************************************************************
 			function loadSeveralAnswers()
 			{
 				if (XMLHttpRequestObject)
@@ -128,9 +124,9 @@
 				XMLHttpRequestObject.send(sendstring);				
 			}
 
-			/*************************************************
-				Load the boxes for the rating descriptions
-			*************************************************/
+			//*************************************************
+			//	Load the boxes for the rating descriptions
+			//*************************************************
 			function addRatingDescriptions()
 			{
 				if (XMLHttpRequestObject)
@@ -156,9 +152,9 @@
 				XMLHttpRequestObject.send('descriptions=' + descriptions);
 			}
 
-			/*******************************************
-				Save the edited true/false question 
-			*******************************************/
+			//*******************************************
+			//	Save the edited true/false question 
+			//*******************************************
 			function saveTrueFalse()
 			{
 				if (XMLHttpRequestObject)
@@ -233,9 +229,9 @@
 				XMLHttpRequestObject.send(sendstring);
 			}
 
-			/***************************************
-				Launch the includequestions page
-			***************************************/
+			//***************************************
+			//	Launch the includequestions page
+			//***************************************
 			function includeQuestions()
 			{
 				// Launch the Include Questions page.
@@ -267,9 +263,9 @@
 				displayQuestion($districtId, $surveyId, $result);
 			//}
 
-	/******************************************
-		Add the survey name to the Database
-	******************************************/
+	//******************************************
+	//	Add the survey name to the Database
+	//******************************************
 	function addSurveyToDB($surveyName, $districtId)
 	{
 		// Connect to the database.
@@ -305,9 +301,9 @@
 		$conn->close();
 	}
 
-	/**********************************
-		Create a trueFalse question
-	**********************************/
+	//**********************************
+	//	Create a trueFalse question
+	//**********************************
 	function editTrueFalse($districtId, $surveyId, $questionId, $questionNumber, $questionText, $trueAnswer, $falseAnswer)
 	{
 		echo "
@@ -389,9 +385,9 @@
 		";
 	}
 
-	/****************************************
-		Create a multiple choice question
-	****************************************/
+	//****************************************
+	//	Create a multiple choice question
+	//****************************************
 	function editMultipleChoice($districtId, $surveyId, $questionId, $questionNumber, $questionText, $answers)
 	{
 		// Get how many answers we have.
@@ -469,9 +465,9 @@
 		";
 	}
 
-	/***************************************
-		Create a several answer question
-	***************************************/
+	//***************************************
+	//	Create a several answer question
+	//***************************************
 	function editSeveralAnswer($districtId, $surveyId, $questionId, $questionNumber, $questionText, $answers)
 	{
 		// Get how many answers we have.
@@ -551,9 +547,9 @@
 		";
 	}
 
-	/***************************************
-		Create a free form text question
-	***************************************/
+	//***************************************
+	//	Create a free form text question
+	//***************************************
 	function editFreeFormText($districtId, $surveyId, $questionId, $questionNumber, $questionText)
 	{
 		echo "
@@ -583,9 +579,9 @@
 		";
 	}
 
-	/*******************************
-		Create a rating question
-	*******************************/
+	//*******************************
+	//	Create a rating question
+	//*******************************
 	function editRating($districtId, $surveyId, $questionId, $questionNumber, $questionText, $lowValue, $highValue, $descriptions)
 	{
 		echo "
@@ -655,44 +651,41 @@
 	}
 
 
-	/************************************************************************
-		Get the question for the given question id in the given survey id
-	************************************************************************/
+	//************************************************************************
+	//	Get the question for the given question id in the given survey id
+	//************************************************************************
 	function getSelectedQuestion($districtId, $surveyId, $questionId)
 	{
 		// Connect to the database.
 		require("connectToDB.php");
 
-		$questionQuery = "
-						SELECT
-						q.questionid,
-						q.questionnumber,
-						q.questiontext,
-						q.questiontype,
-						a.answernumber,
-						a.answertext,
-						a.lowvalue,
-						a.highvalue,
-						a.description1,
-						a.description2,
-						a.description3,
-						a.description4,
-						a.description5,
-						a.description6,
-						a.description7,
-						a.description8,
-						a.description9,
-						a.description10
-						FROM devpoll.questions q
-						JOIN devpoll.answers a
-						ON q.surveyid = a.surveyid
-						AND q.questionnumber = a.questionnumber
-						JOIN devpoll.survey s
-						ON q.surveyid = s.surveyid
-						WHERE s.districtId = $districtId
-						AND s.surveyid = $surveyId
-						AND q.questionid = $questionId;
-		";
+		$questionQuery = "SELECT 	q.questionid,
+									q.questionnumber,
+									q.questiontext,
+									q.questiontype,
+									a.answernumber,
+									a.answertext,
+									a.lowvalue,
+									a.highvalue,
+									a.ratingdescription1,
+									a.ratingdescription2,
+									a.ratingdescription3,
+									a.ratingdescription4,
+									a.ratingdescription5,
+									a.ratingdescription6,
+									a.ratingdescription7,
+									a.ratingdescription8,
+									a.ratingdescription9,
+									a.ratingdescription10
+						FROM 		devpoll.questions q
+						JOIN 		devpoll.answers a
+						ON 			q.surveyid = a.surveyid
+						AND 		q.questionnumber = a.questionnumber
+						JOIN 		devpoll.survey s
+						ON 			q.surveyid = s.surveyid
+						WHERE 		s.districtId = $districtId
+						AND 		s.surveyid = $surveyId
+						AND 		q.questionid = $questionId;";
 
 		// Get the questions and answers for this survey.
 		$result = $conn->query($questionQuery);
@@ -703,13 +696,13 @@
 		return $result;
 	}
 
-	/****************************************************
-		Display the questions we have already created
-	****************************************************/
+	//****************************************************
+	//	Display the questions we have already created
+	//****************************************************
 	function displayQuestion($districtId, $surveyId, $result)
 	{
 		$answers = array();
-		$descriptions = array();
+		$ratingdescriptions = array();
 		$answerLoop = 0;
 
 		// Loop through the result and create the question.
@@ -730,16 +723,16 @@
 			$highValue = $row['highvalue'];
 
 			// The rating descriptions.
-			$descriptions[0] = $row['description1'];
-			$descriptions[1] = $row['description2'];
-			$descriptions[2] = $row['description3'];
-			$descriptions[3] = $row['description4'];
-			$descriptions[4] = $row['description5'];
-			$descriptions[5] = $row['description6'];
-			$descriptions[6] = $row['description7'];
-			$descriptions[7] = $row['description8'];
-			$descriptions[8] = $row['description9'];
-			$descriptions[9] = $row['description10'];
+			$ratingdescriptions[0] = $row['ratingdescription1'];
+			$ratingdescriptions[1] = $row['ratingdescription2'];
+			$ratingdescriptions[2] = $row['ratingdescription3'];
+			$ratingdescriptions[3] = $row['ratingdescription4'];
+			$ratingdescriptions[4] = $row['ratingdescription5'];
+			$ratingdescriptions[5] = $row['ratingdescription6'];
+			$ratingdescriptions[6] = $row['ratingdescription7'];
+			$ratingdescriptions[7] = $row['ratingdescription8'];
+			$ratingdescriptions[8] = $row['ratingdescription9'];
+			$ratingdescriptions[9] = $row['ratingdescription10'];
 		}
 
 		// Redirect to edit the question.

@@ -1,9 +1,3 @@
-<?php
-	/******************************************************
-		If the user forgets the username and/or password
-	******************************************************/
-?>
-
 <html>
 	<head>
 		<title>DevPoll Forgot Login</title>
@@ -35,7 +29,7 @@
 		require("connectToDB.php");
 
 		// Make sure the email address is in the database.
-		$sql = "SELECT s.userid, u.email, s.accesscode FROM devpoll.security s join devpoll.users u ON s.userid = u.userid WHERE s.userid = '$username' AND u.email='$email'";
+		$sql = "SELECT s.userid, u.email, s.password FROM devpoll.security s join devpoll.users u ON s.userid = u.userid WHERE s.userid = '$username' AND u.email='$email'";
 
 		// Obtain a resultset from the query.
 		if ($rs = $conn->query($sql))

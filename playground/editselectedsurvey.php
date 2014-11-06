@@ -1,11 +1,6 @@
 <?php
-	/***************************************************
-		Display the answers for the selected survey,
-		so they can be edited
-	***************************************************/
-?>
+	// Display the answers for the selected survey, so they can be edited
 
-<?php
 	// Make sure the person is logged in.
 	include("verifylogin.php");
 
@@ -16,18 +11,18 @@
 <html>
 	<head>
 		<script>
-			/**************************************
-				Call the include questions page
-			**************************************/
+			//**************************************
+			//	Call the include questions page
+			//**************************************
 			function includeQuestions(surveyId)
 			{
 				// Launch the Include Questions page.
 				window.location = "includequestions.php?si=" + surveyId + "&rp=89267";
 			}
 
-			/**********************************
-				Call the create survey page 
-			**********************************/
+			//**********************************
+			//	Call the create survey page 
+			//**********************************
 			function addQuestions(surveyId)
 			{
 				window.location = "createsurvey.php?si=" + surveyId;
@@ -45,12 +40,12 @@
 ?>
 
 <?php
-	/*
-		Load all of the questions from the database into a grid (i.e. a table).
-		Next to each row there will be an edit and delete button.
-		The edit button will allow the person to change the question and the answers.
-		The delete button will remove the question from the survey.
-	*/
+	//
+	//	Load all of the questions from the database into a grid (i.e. a table).
+	//	Next to each row there will be an edit and delete button.
+	//	The edit button will allow the person to change the question and the answers.
+	//	The delete button will remove the question from the survey.
+	//
 	$districtid = 1;
 
 	// Get the questions and answers for the given district id and survey id.
@@ -59,45 +54,42 @@
 	// Display the questions and answers in a table.
 	displayEditQuestionsAndAnswers($result, $surveyId);
 
-	/************************************************************
-		Get the questions and answers for the given survey id
-	************************************************************/
+	//************************************************************
+	//	Get the questions and answers for the given survey id
+	//************************************************************
 	function getDistrictQuestionsAndAnsers($districtId, $surveyId)
 	{
 		// Connect to the database.
 		require("connectToDB.php");
 
-		$questionQuery = "
-						SELECT
-						q.questionid,
-						a.answerid,
-						s.surveyname,
-						q.questionnumber,
-						q.questiontext,
-						q.questiontype,
-						a.answernumber,
-						a.answertext,
-						a.lowvalue,
-						a.highvalue,
-						a.description1,
-						a.description2,
-						a.description3,
-						a.description4,
-						a.description5,
-						a.description6,
-						a.description7,
-						a.description8,
-						a.description9,
-						a.description10
-						FROM devpoll.questions q
-						JOIN devpoll.answers a
-						ON q.surveyid = a.surveyid
-						AND q.questionnumber = a.questionnumber
-						JOIN devpoll.survey s
-						ON q.surveyid = s.surveyid
-						WHERE s.districtId = $districtId
-						AND s.surveyid = $surveyId;
-		";
+		$questionQuery = "SELECT 	q.questionid,
+									a.answerid,
+									s.surveyname,
+									q.questionnumber,
+									q.questiontext,
+									q.questiontype,
+									a.answernumber,
+									a.answertext,
+									a.lowvalue,
+									a.highvalue,
+									a.ratingdescription1,
+									a.ratingdescription2,
+									a.ratingdescription3,
+									a.ratingdescription4,
+									a.ratingdescription5,
+									a.ratingdescription6,
+									a.ratingdescription7,
+									a.ratingdescription8,
+									a.ratingdescription9,
+									a.ratingdescription10
+						FROM 		devpoll.questions q
+						JOIN 		devpoll.answers a
+						ON 			q.surveyid = a.surveyid
+						AND 		q.questionnumber = a.questionnumber
+						JOIN 		devpoll.survey s
+						ON 			q.surveyid = s.surveyid
+						WHERE 		s.districtId = $districtId
+						AND 		s.surveyid = $surveyId;";
 
 		// Get the questions and answers for this survey.
 		$result = $conn->query($questionQuery);
@@ -109,9 +101,9 @@
 	}
 
 
-	/***************************************************
-		Display the questions and answers in a table
-	***************************************************/
+	//***************************************************
+	//	Display the questions and answers in a table
+	//***************************************************
 	function displayEditQuestionsAndAnswers($result, $surveyId)
 	{
 		echo "<form action='editselectedquestion.php' method='POST'>";
@@ -197,8 +189,8 @@
 					case "rating":
 						echo "<td>Rating</td>";
 
-						$lowDescription = $row['description1'];
-						$highDescription = $row['description10'];
+						$lowDescription = $row['ratingdescription1'];
+						$highDescription = $row['ratingdescription10'];
 						$lowValue = $row['lowvalue'];
 						$highValue = $row['highvalue'];
 
